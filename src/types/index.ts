@@ -1,9 +1,12 @@
 export type CurrencyPreference = 'TL' | 'EUR' | 'USD' | 'GBP';
 export type LanguagePreference = 'TR' | 'EN';
 export type ThemePreference = 'light' | 'dark';
+export type AssetCategory = 'Gelir' | 'Gider' | 'Birikim';
 export type AssetsType = 'Borsa' | 'Döviz' | 'Altın' | 'Kripto' | 'Teemmü';
+export type IncomeSource = 'Maaş' | 'Kira Geliri' | 'Varlıklarım' | 'İkramiye/Prim' | 'Ek İş' |'Miras' | 'Devlet Desteği' | 'Diğer';
 export type ExpenseCategory = 'Ev Alışverişi' | 'Market Alışverişi' | 'Kira' | 'Eğlence' | 'Ulaşım' | 'Taksitler' | 'Borçlar' | 'Faturalar' | 'Sağlık' | 'Diğer';
 export type PaymentMethod = 'Nakit' | 'kredi Kartı' | 'Havale' | 'Taksit';
+export type ExpenseCategoryChart = 'Ev Alışverişi' | 'Market Alışverişi' | 'Kira' | 'Eğlence' | 'Sağlık' | 'Ulaşım' | 'Taksitler' | 'Borçlar' | 'Faturalar' | 'Abonelikler' | 'Diğer';
 
 export interface User {
     id: string;
@@ -64,4 +67,22 @@ export interface Settings {
     invisible_mode: boolean;
     default_language: LanguagePreference;
     theme: ThemePreference;
+}
+
+export interface ExpensesChart {
+    id: string;
+    user_id: string;
+    expense_name: string;
+    expense_category: ExpenseCategoryChart;
+    expenses_amount: number;
+    date: string; // ISO string format
+}
+
+export interface Income {
+    id: string;
+    user_id: string;
+    income_name: string;
+    income_category: IncomeSource;
+    income_amount: number;
+    date: string;
 }

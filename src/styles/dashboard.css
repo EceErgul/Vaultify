@@ -1,0 +1,46 @@
+:root {
+    --color-borsa: #4299E1;
+    --color-doviz: #48BB78;
+    --color-altin: #ECC94B;
+    --color-kripto: #9F7AEA;
+    --color-temettu: #ED64A6;
+
+    --color-maas: #38A169;
+    --color-kira: #D69E2E;
+    --color-varliklarim: #3182CE;
+    --color-ikramiye: #805AD5;
+    --color-ek-is: #319795;
+    --color-miras: #718096;
+    --color-devlet: #E53E3E;
+    --color-gelir-diger: #A0AEC0;
+
+    --color-ev: #F56565;
+    --color-market: #ED8936;
+    --color-gider-kira: #A0522D;
+    --color-eglence: #F6AD55;
+    --color-saglik: #4FD1C5;
+    --color-ulasim: #63B3ED;
+    --color-taksit: #667EEA;
+    --color-borc: #FC8181;
+    --color-fatura: #F687B3;
+    --color-abonelik: #D4D953;
+    --color-gider-diger: #CBD5E0;
+}
+
+.dark {
+    --color-borsa: #63B3ED;
+    --color-doviz: #68D391;
+    --color-altin: #F6E05E;
+    --color-kripto: #B794F4;
+    --color-temettu: #F687B3;
+
+    --color-maas: #48BB78;
+    --color-kira: #F6E05E;
+    --color-varliklarim: #4299E1;
+    --color-ikramiye: #9F7AEA;
+    --color-ek-is: #4FD1C5;
+    
+    --color-ev: #FC8181;
+    --color-market: #F6AD55;
+    --color-fatura: #FBB6CE;
+}
