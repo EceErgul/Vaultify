@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
 
-const Varliklarim = () => {
+const Assets = () => {
   const navigate = useNavigate();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
-  const varliklar = [
+  const Assets = [
     { id: 1, ad: 'APPLE', tur: 'Hisse', miktar: '10 adet', fiyat: '220 $', toplam: '72.600 ₺' },
     { id: 2, ad: 'Altın', tur: 'Döviz', miktar: '50 gram', fiyat: '500.000 ₺', toplam: '500.000 ₺' },
     { id: 3, ad: 'Euro', tur: 'Döviz', miktar: '9.000 €', fiyat: '9.000 €', toplam: '50.000 ₺' },
@@ -26,13 +26,13 @@ const Varliklarim = () => {
       </div>
 
       <div className="flex items-center gap-3 mb-2 ml-1">
-        <GeneralDeleteCheckbox checked={selectedIds.length === varliklar.length} onChange={() => {}} />
+        <GeneralDeleteCheckbox checked={selectedIds.length === Assets.length} onChange={() => {}} />
         <span className="text-sm font-medium">Hepsini Seç</span>
       </div>
 
       <div className="border border-black overflow-hidden rounded-sm">
         <table className="w-full border-collapse">
-          <thead>
+          <thead>            
             <tr className="bg-[#7ECCF4] h-10 border-b border-black">
               <th className="w-12 border-r border-black"></th>
               <th className="border-r border-black p-2 font-medium text-black">Varlık</th>
@@ -43,7 +43,7 @@ const Varliklarim = () => {
             </tr>
           </thead>
           <tbody>
-            {varliklar.map((item, index) => {
+            {Assets.map((item, index) => {
               const isEvenRow = (index + 1) % 2 === 0;
               const bgColor = isEvenRow ? '#B1E5FF' : '#D8F2FF';
 
@@ -88,4 +88,4 @@ const Varliklarim = () => {
   );
 };
 
-export default Varliklarim;
+export default Assets;
