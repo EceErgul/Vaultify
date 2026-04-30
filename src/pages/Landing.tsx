@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 
 const LandingPage = () => {
@@ -67,12 +68,16 @@ const LandingPage = () => {
       <section className="py-20 px-10 max-w-6xl mx-auto">
         <h2 className="text-2xl font-medium mb-8">Hazırsan başlayalım.</h2>
         <div className="flex gap-4">
-          <Button variant="apply" className="w-[120px] h-[40px] bg-[#333D50] hover:bg-[#2A3241]">
-            Kaydol
-          </Button>
-          <button className="w-[120px] h-[40px] border border-[#CDCDCD] rounded shadow-sm text-sm font-medium hover:bg-gray-50 transition-colors">
-            Giriş Yap
-          </button>
+          <Link to="/Register">
+            <Button variant="apply" className="w-[120px] h-[40px] bg-[#333D50] hover:bg-[#2A3241]">
+              Kaydol
+            </Button>
+          </Link>
+          <Link to="/Login">
+            <button className="w-[120px] h-[40px] border border-[#CDCDCD] rounded shadow-sm text-sm font-medium hover:bg-gray-50 transition-colors">
+              Giriş Yap
+            </button>
+          </Link>
         </div>
       </section>
 
