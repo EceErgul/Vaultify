@@ -8,9 +8,10 @@ import { ExpenseCategory, PaymentMethod } from '../../types/index';
 
 interface FiltreleModalProps {
   onClose: () => void;
+  setFilterCount: (count: number) => void;
 }
 
-const FiltreleModal: React.FC<FiltreleModalProps> = ({ onClose }) => {
+const FiltreleModal: React.FC<FiltreleModalProps> = ({ onClose, setFilterCount }) => {
   const [selectedDate, setSelectedDate] = useState<string>('');
 
   const kategoriler: ExpenseCategory[] = [
@@ -21,6 +22,11 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({ onClose }) => {
   const odemeYontemleri: PaymentMethod[] = [
     'Nakit', 'kredi Kartı', 'Havale', 'Taksit'
   ];
+
+  const handleApply = () => {
+    setFilterCount(2); 
+    onClose();
+  };
 
   return (
     <BaseModal title="Filtrele" onClose={onClose}>
@@ -106,7 +112,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({ onClose }) => {
         </div>
 
         <div className="flex justify-end pt-2 pr-4">
-          <Button variant="apply" className="w-[110px] h-[35px] text-sm">
+          <Button variant="apply" className="w-[110px] h-[35px] text-sm" onClick={handleApply}>
             Uygula
           </Button>
         </div>
