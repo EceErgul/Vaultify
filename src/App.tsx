@@ -10,6 +10,7 @@ import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Landing from './pages/Landing';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   const [userStatus, setUserStatus] = useState(false);
@@ -20,6 +21,7 @@ function App() {
         <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route element={<MainLayout isLoggedIn={userStatus} />}>
           <Route path="/dashboard" element={<Dashboard />} />
