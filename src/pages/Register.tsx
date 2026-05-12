@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 
+const Logo = '/src/assets/vaultify_logo_nobackground.png';
+
 const Register = () => {
   const [formData, setFormData] = useState({
     fullName: '',
@@ -12,27 +14,41 @@ const Register = () => {
   
   const [error, setError] = useState('');
 
-  const handleRegister = () => {
+  const handleGoogleRegister = () => {
+    const width = 500;
+    const height = 600;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+    window.open("https://accounts.google.com/gsi/select", "google-register", `width=${width},height=${height},left=${left},top=${top}`);
+  };
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
     if (formData.password !== formData.passwordConfirm) {
       setError('Şifreler birbiriyle eşleşmiyor.');
       return;
     }
-
     if (!formData.email.includes('@')) {
       setError('Geçerli bir e-posta adresi giriniz.');
       return;
     }
-
     setError('');
     console.log("Kayıt başarılı:", formData);
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter text-[#333D50]">
-      <div className="bg-white w-full max-w-[800px] aspect-[4/3] border border-gray-300 shadow-sm relative flex flex-col items-center pt-10 px-10">
+      <div className="bg-white w-full max-w-[800px] min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-10 pb-10 px-10">
         
-        <div className="w-20 h-20 mb-4 opacity-80">
-          <img src="/logo_placeholder.png" alt="Vaultify" className="w-full h-full object-contain" />
+        <Link 
+          to="/landing" 
+          className="absolute top-6 left-6 flex items-center gap-2 bg-[#CDCDCD] px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
+        >
+          <span>←</span> Geri Dön
+        </Link>
+
+        <div className="w-20 h-20 mb-4 opacity-90">
+          <img src={Logo} alt="Vaultify" className="w-full h-full object-contain" />
         </div>
 
         <h2 className="text-2xl font-semibold text-black mb-2">Hesap Oluştur</h2>
@@ -40,8 +56,11 @@ const Register = () => {
           Zaten Hesabınız var mı? <Link to="/login" className="text-blue-500 underline">Giriş Yap.</Link>
         </p>
 
-        <button className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-8">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="" className="w-5 h-5" />
+        <button 
+          onClick={handleGoogleRegister}
+          className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-8"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
           <span className="text-sm font-medium text-gray-700">Google İle Kaydol.</span>
         </button>
 
@@ -51,64 +70,41 @@ const Register = () => {
           <div className="flex-1 h-[1px] bg-gray-300"></div>
         </div>
 
-        <div className="w-full max-w-md space-y-3">
-          <div className="flex items-center justify-end gap-4">
-            <label className="text-sm font-medium whitespace-nowrap">Ad - Soyad:</label>
-            <input 
-              type="text"
-              onChange={(e) => setFormData({...formData, fullName: e.target.value})}
-              className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none"
-            />
+        <form onSubmit={handleRegister} className="w-full max-w-md space-y-3">
+          {[
+            { label: 'Ad - Soyad:', type: 'text', key: 'fullName' },
+            { label: 'E-posta adresi:', type: 'email', key: 'email' },
+            { label: 'Şifre:', type: 'password', key: 'password' },
+            { label: 'Şifre Tekrar:', type: 'password', key: 'passwordConfirm' }
+          ].map((field) => (
+            <div key={field.key} className="flex items-center justify-center gap-4">
+              <label className="text-sm font-medium w-32 text-right whitespace-nowrap">{field.label}</label>
+              <input 
+                type={field.type}
+                onChange={(e) => setFormData({...formData, [field.key]: e.target.value})}
+                className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                required
+              />
+            </div>
+          ))}
+
+          <div className="h-6 flex items-center justify-center mt-2">
+            {error && (
+              <p className="text-[11px] text-red-600 font-medium italic animate-fade-in">
+                {error}
+              </p>
+            )}
           </div>
 
-          <div className="flex items-center justify-end gap-4">
-            <label className="text-sm font-medium whitespace-nowrap">E-posta adresi:</label>
-            <input 
-              type="email"
-              onChange={(e) => setFormData({...formData, email: e.target.value})}
-              className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none"
-            />
+          <div className="flex justify-center mt-4">
+            <Button 
+              type="submit"
+              className="w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all border-none"
+            >
+              Kaydol
+            </Button>
           </div>
-
-          <div className="flex items-center justify-end gap-4">
-            <label className="text-sm font-medium whitespace-nowrap">Şifre:</label>
-            <input 
-              type="password"
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
-              className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none"
-            />
-          </div>
-
-          <div className="flex items-center justify-end gap-4">
-            <label className="text-sm font-medium whitespace-nowrap">Şifre Tekrar:</label>
-            <input 
-              type="password"
-              onChange={(e) => setFormData({...formData, passwordConfirm: e.target.value})}
-              className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {error && (
-          <p className="text-[11px] text-red-600 mt-4 font-medium italic">
-            {error}
-          </p>
-        )}
-
-        <div className="mt-6">
-          <Button 
-            className="w-32 h-10 bg-[#333D50] text-white rounded shadow-md hover:bg-[#2A3241]"
-            onClick={handleRegister}
-          >
-            Kaydol
-          </Button>
-        </div>
-
-        <button 
-          className="absolute bottom-10 right-10 flex items-center gap-2 bg-[#CDCDCD] px-4 py-2 rounded text-sm hover:bg-gray-400 transition-colors shadow-sm font-regular"
-        >
-          <span>←</span> Geri Dön
-        </button>
+        </form>
       </div>
     </div>
   );
