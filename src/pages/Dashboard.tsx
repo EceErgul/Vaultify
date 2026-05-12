@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart as RechartsPieChart, Pie as RechartsPie, Cell as RechartsCell, Tooltip, ResponsiveContainer as RechartsResponsiveContainer } from 'recharts';
 import { Income, ExpensesChart } from '../types';
 import { getCategoryColorVar } from '../utils/colourHelpers';
-import '../styles/index.css';
 import '../styles/dashboard.css';
+
+const PieChart = RechartsPieChart as unknown as React.ComponentType<any>;
+const Pie = RechartsPie as unknown as React.ComponentType<any>;
+const Cell = RechartsCell as unknown as React.ComponentType<any>;
+const ResponsiveContainer = RechartsResponsiveContainer as unknown as React.ComponentType<any>;
 
 const mockIncomes: Income[] = [
   { id: '1', user_id: 'u1', income_name: 'Nisan Maaşı', income_category: 'Maaş', income_amount: 55000, date: '2026-04-01' },
