@@ -1,13 +1,21 @@
+@import './dashboard.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --bg-page: #F7FAFC;
+  --bg-page: #F8FAFC; 
   --bg-card: #FFFFFF;
-  --text-main: #2D3748;
-  --text-muted: #718096;
-  --border-color: #E2E8F0;
+  --text-main: #1E293B;
+  --text-muted: #64748B;
+  --bg-dashboard: var(--bg-page);
+  --text-primary: var(--text-main);
+  --border-color: #F1F5F9;
+  --bg-sidebar: #333D50;
+  --sidebar-active: #3b475c;
+  --sidebar-hover: rgba(59, 71, 92, 0.5);
+  --sidebar-text: #CDCDCD;
+  --sidebar-accent: #7ECCF4;
 }
 
 .dark {
@@ -16,4 +24,9 @@
   --text-main: #F7FAFC;
   --text-muted: #A0AEC0;
   --border-color: #4A5568;
+  --bg-sidebar: #1E293B;
+  --sidebar-active: #334155;
+  --sidebar-hover: rgba(30, 41, 59, 0.8);
+  --sidebar-text: #94A3B8;
+  --sidebar-accent: #38BDF8;
 }

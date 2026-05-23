@@ -9,11 +9,13 @@ export default {
         extend: {
             colors: {
                 vault: {
-                    dark: "#2D3748",
+                    dark: "var(--bg-sidebar)",
                     blue: "#63B3ED",
                     red: "#FC8181",
                     yellow: "#FEFCBF",
                     gray: "#F7FAFC",
+                    sidebar: "var(--bg-sidebar)",
+                    accent: "var(--sidebar-accent)",
                 },
                 night: {
                     bg: "#1A202C",

@@ -5,7 +5,7 @@ export type AssetCategory = 'Gelir' | 'Gider' | 'Birikim';
 export type AssetsType = 'Borsa' | 'Döviz' | 'Altın' | 'Kripto' | 'Teemmü';
 export type IncomeSource = 'Maaş' | 'Kira Geliri' | 'Varlıklarım' | 'İkramiye/Prim' | 'Ek İş' |'Miras' | 'Devlet Desteği' | 'Diğer';
 export type ExpenseCategory = 'Ev Alışverişi' | 'Market Alışverişi' | 'Kira' | 'Eğlence' | 'Ulaşım' | 'Taksitler' | 'Borçlar' | 'Faturalar' | 'Sağlık' | 'Diğer';
-export type PaymentMethod = 'Nakit' | 'kredi Kartı' | 'Havale' | 'Taksit';
+export type PaymentMethod = 'Nakit' | 'Kredi Kartı' | 'Havale' | 'Taksit';
 export type ExpenseCategoryChart = 'Ev Alışverişi' | 'Market Alışverişi' | 'Kira' | 'Eğlence' | 'Sağlık' | 'Ulaşım' | 'Taksitler' | 'Borçlar' | 'Faturalar' | 'Abonelikler' | 'Diğer';
 
 export interface User {
@@ -58,6 +58,7 @@ export interface Subscription {
 export interface Settings {
     id: string;
     user_id: string;
+    auto_archive: boolean;
     auto_archieve_months: string[];
     default_currency: CurrencyPreference;
     asset_integration_active: boolean;
@@ -73,10 +74,20 @@ export interface ExpensesChart {
     id: string;
     user_id: string;
     expense_name: string;
-    expense_category: ExpenseCategoryChart;
+    expense_category: ExpenseCategory;
     expenses_amount: number;
     date: string; // ISO string format
 }
+
+export interface ExpensesCategoryChart {
+    id: string;
+    user_id: string;
+    expense_name: string;
+    expense_category_chart: ExpenseCategoryChart;
+    expenses_amount: number;
+    date: string; // ISO string format
+}
+
 
 export interface Income {
     id: string;
@@ -86,3 +97,17 @@ export interface Income {
     income_amount: number;
     date: string;
 }
+
+export interface FilterState {
+  searchTerm: string;
+  date: string; //ISO string format
+  category: ExpenseCategory | null;
+  paymentMethod: PaymentMethod | null;
+  minAmount: string;
+  maxAmount: string;
+  expenseName: string;
+  dateSort: 'asc' | 'desc';
+  amountSort: 'asc' | 'desc';
+}
+
+// backend ile devam edelim. Simdi dosya yapisini kurarak baslayalim.

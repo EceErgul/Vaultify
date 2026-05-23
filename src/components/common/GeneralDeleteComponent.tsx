@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from './Button'; // Dosya yolunu projene göre kontrol et
 
 interface GeneralDeleteComponentProps {
   label: string;
@@ -14,25 +15,15 @@ export const GeneralDeleteComponent: React.FC<GeneralDeleteComponentProps> = ({
   className 
 }) => {
   return (
-    <button
+    <Button
+      variant="delete"
       onClick={onDelete}
       disabled={disabled}
-      className={`
-        flex items-center justify-center gap-2
-        bg-[#FF8A8A] hover:bg-[#ff7171] active:bg-[#f36565]
-        text-black font-bold text-sm
-        px-6 py-2.5
-        border border-black
-        rounded-[8px]
-        shadow-[0px_4px_0px_0px_rgba(0,0,0,0.2)]
-        transition-all duration-150
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${className}
-      `}
+      className={className} 
     >
       <span className="text-lg leading-none">-</span>
       {label}
-    </button>
+    </Button>
   );
 };
 

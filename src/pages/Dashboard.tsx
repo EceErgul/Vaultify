@@ -1,137 +1,165 @@
-import React, { useEffect, useState } from 'react';
-import { PieChart as RechartsPieChart, Pie as RechartsPie, Cell as RechartsCell, Tooltip, ResponsiveContainer as RechartsResponsiveContainer } from 'recharts';
-import { Income, ExpensesChart } from '../types';
-import { getCategoryColorVar } from '../utils/colourHelpers';
+import React, { useMemo, useEffect, useState } from 'react';
+import * as Recharts from 'recharts';
 import '../styles/dashboard.css';
+import { Income, ExpensesCategoryChart } from '../types/index';
+import { getCategoryColorVar } from '../utils/colourHelpers';
 
-const PieChart = RechartsPieChart as unknown as React.ComponentType<any>;
-const Pie = RechartsPie as unknown as React.ComponentType<any>;
-const Cell = RechartsCell as unknown as React.ComponentType<any>;
-const ResponsiveContainer = RechartsResponsiveContainer as unknown as React.ComponentType<any>;
+const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
 
 const mockIncomes: Income[] = [
-  { id: '1', user_id: 'u1', income_name: 'Nisan Maaşı', income_category: 'Maaş', income_amount: 55000, date: '2026-04-01' },
-  { id: '2', user_id: 'u1', income_name: 'Daire 3 Kira', income_category: 'Kira Geliri', income_amount: 15000, date: '2026-04-05' },
-  { id: '3', user_id: 'u1', income_name: 'Hisse Temettü', income_category: 'Varlıklarım', income_amount: 5000, date: '2026-04-10' },
-  { id: '4', user_id: 'u1', income_name: 'Özel Ders', income_category: 'Ek İş', income_amount: 8000, date: '2026-04-12' },
+  { id: '1', user_id: 'u1', income_name: 'Maaş', income_category: 'Maaş', income_amount: 55000, date: '2026-04-01' },
+  { id: '2', user_id: 'u1', income_name: 'Yan Gelir', income_category: 'Ek İş', income_amount: 8000, date: '2026-04-05' },
+  { id: '3', user_id: 'u1', income_name: 'Hisse', income_category: 'Varlıklarım', income_amount: 12000, date: '2026-04-10' },
 ];
 
-const mockExpenses: ExpensesChart[] = [
-  { id: 'e1', user_id: 'u1', expense_name: 'Nisan Kirası', expense_category: 'Kira', expenses_amount: 20000, date: '2026-04-01' },
-  { id: 'e2', user_id: 'u1', expense_name: 'Haftalık Market', expense_category: 'Market Alışverişi', expenses_amount: 3500, date: '2026-04-02' },
-  { id: 'e3', user_id: 'u1', expense_name: 'Sinema ve Yemek', expense_category: 'Eğlence', expenses_amount: 2500, date: '2026-04-03' },
-  { id: 'e4', user_id: 'u1', expense_name: 'Yakıt', expense_category: 'Ulaşım', expenses_amount: 4000, date: '2026-04-04' },
-  { id: 'e5', user_id: 'u1', expense_name: 'Elektrik & Su', expense_category: 'Faturalar', expenses_amount: 3000, date: '2026-04-05' },
+const mockExpenses: ExpensesCategoryChart[] = [
+  { id: 'e1', user_id: 'u1', expense_name: 'Kira', expense_category_chart: 'Kira', expenses_amount: 20000, date: '2026-04-01' },
+  { id: 'e2', user_id: 'u1', expense_name: 'Market', expense_category_chart: 'Market Alışverişi', expenses_amount: 6000, date: '2026-04-02' },
+  { id: 'e3', user_id: 'u1', expense_name: 'İnternet', expense_category_chart: 'Abonelikler', expenses_amount: 1500, date: '2026-04-05' },
 ];
+
+const FALLBACK_COLORS: Record<string, string> = {
+  '--color-maas': '#38A169',
+  '--color-kira': '#D69E2E',
+  '--color-varliklarim': '#3182CE',
+  '--color-ev': '#F56565',
+  '--color-market': '#ED8936',
+  '--color-gider-kira': '#A0522D',
+  '--color-eglence': '#F6AD55',
+  '--color-saglik': '#4FD1C5',
+  '--color-ulasim': '#63B3ED',
+  '--color-taksit': '#667EEA',
+  '--color-borc': '#FC8181',
+  '--color-fatura': '#F687B3',
+  '--color-abonelik': '#D4D953',
+  '--color-ek-is': '#319795',
+  '--color-gelir-diger': '#A0AEC0',
+  '--color-gider-diger': '#CBD5E0'
+};
 
 const Dashboard: React.FC = () => {
-  const getVar = (name: string) => {
-    if (typeof window === 'undefined') return '#CBD5E0';
-    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#CBD5E0';
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const resolveCssColor = (cssVarName: string) => {
+    if (typeof window === 'undefined') return `var(${cssVarName})`;
+    const cleanVarName = cssVarName.replace('var(', '').replace(')', '').trim();
+    
+    const value = getComputedStyle(document.documentElement).getPropertyValue(cleanVarName).trim();
+    return value || FALLBACK_COLORS[cleanVarName] || '#CBD5E0';
   };
 
-  const totalIncome = mockIncomes.reduce((acc, curr) => acc + curr.income_amount, 0);
-  const totalExpense = mockExpenses.reduce((acc, curr) => acc + curr.expenses_amount, 0);
-  const totalSavings = mockIncomes
-    .filter(i => i.income_category === 'Varlıklarım')
-    .reduce((acc, curr) => acc + curr.income_amount, 0);
+  const sections = useMemo(() => {
+    const totalIncome = mockIncomes.reduce((acc, curr) => acc + curr.income_amount, 0);
+    const totalExpense = mockExpenses.reduce((acc, curr) => acc + curr.expenses_amount, 0);
 
-  const incomeCategoryData = mockIncomes.reduce((acc: any[], curr) => {
-    const existing = acc.find(a => a.name === curr.income_category);
-    if (existing) existing.value += curr.income_amount;
-    else acc.push({ name: curr.income_category, value: curr.income_amount });
-    return acc;
-  }, []);
+    const incomeData = mockIncomes.map(item => ({
+      name: item.income_category,
+      value: item.income_amount,
+      fill: resolveCssColor(getCategoryColorVar(item.income_category))
+    }));
 
-  const expenseCategoryData = mockExpenses.reduce((acc: any[], curr) => {
-    const existing = acc.find(a => a.name === curr.expense_category);
-    if (existing) existing.value += curr.expenses_amount;
-    else acc.push({ name: curr.expense_category, value: curr.expenses_amount });
-    return acc;
-  }, []);
+    const expenseData = mockExpenses.map(item => ({
+      name: item.expense_category_chart,
+      value: item.expenses_amount,
+      fill: resolveCssColor(getCategoryColorVar(item.expense_category_chart))
+    }));
 
-  const sections = [
-    { 
-      title: "Net Varlık", 
-      amount: totalIncome - totalExpense, 
-      data: [
-        { name: 'Gelir', value: totalIncome, colorKey: '--color-maas' },
-        { name: 'Gider', value: totalExpense, colorKey: '--color-ev' },
-        { name: 'Birikim', value: totalSavings, colorKey: '--color-birikim' },
-      ] 
-    },
-    { title: "Gelir Dağılımı", amount: totalIncome, data: incomeCategoryData },
-    { title: "Gider Dağılımı", amount: totalExpense, data: expenseCategoryData },
-  ];
+    return [
+      { 
+        title: "Net Varlık Özeti", 
+        amount: totalIncome - totalExpense, 
+        data: [
+          { name: 'Gelir', value: totalIncome, fill: resolveCssColor('--color-maas') },
+          { name: 'Gider', value: totalExpense, fill: resolveCssColor('--color-ev') },
+          { name: 'Birikim', value: totalIncome * 0.1, fill: resolveCssColor('--color-varliklarim') },
+        ] 
+      },
+      { title: "Gelir Dağılımı", amount: totalIncome, data: incomeData },
+      { title: "Gider Dağılımı", amount: totalExpense, data: expenseData },
+    ];
+  }, [isMounted]);
+
+  if (!isMounted) return null;
 
   return (
-    <div className="flex flex-col items-center space-y-12 py-10 bg-[var(--bg-dashboard)] min-h-screen transition-colors duration-500">
-      {sections.map((section, idx) => (
-        <div 
-          key={idx} 
-          className="w-full max-w-2xl bg-[var(--bg-card)] rounded-[25px] p-8 shadow-v-soft border border-gray-100 dark:border-gray-800 transition-all"
-        >
-          <div className="mb-6 flex justify-between items-end">
-            <h2 className="text-2xl font-bold text-[var(--text-primary)]">
-              {section.title}
-            </h2>
-            <span className="text-lg font-medium opacity-70 text-[var(--text-primary)]">
-              {section.amount.toLocaleString()} ₺
-            </span>
-          </div>
+    <div className="p-8 space-y-10 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] transition-colors duration-300">
+      <div className="max-w-6xl mx-auto pb-20">
+        {sections.map((section, idx) => (
+          <div 
+            key={idx}
+            className="mb-12 w-full bg-[var(--bg-card)] rounded-[var(--v-card)] p-8 shadow-v-soft border border-[var(--border-color)] group hover:border-[var(--sidebar-accent)] transition-all"
+          >
+            <div className="mb-8 flex justify-between items-end border-b border-[var(--border-color)] pb-6">
+              <div>
+                <h2 className="text-2xl font-bold group-hover:text-[var(--sidebar-accent)] transition-colors">
+                  {section.title}
+                </h2>
+                <p className="text-sm text-[var(--text-muted)] mt-1 uppercase tracking-widest">Finansal Özet</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-black text-[var(--sidebar-accent)]">
+                  {section.amount.toLocaleString()} ₺
+                </span>
+              </div>
+            </div>
 
-          <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={section.data}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={80}
-                  outerRadius={130}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {section.data.map((entry: any, index: number) => {
-                    const finalKey = entry.colorKey || getCategoryColorVar(entry.name);
-                    return <Cell key={`cell-${index}`} fill={getVar(finalKey)} />;
-                  })}
-                </Pie>
-                <Tooltip 
-                  formatter={(value: any) => `${Number(value).toLocaleString()} ₺`}
-                  contentStyle={{ 
-                    borderRadius: '16px', 
-                    border: 'none', 
-                    backgroundColor: 'var(--bg-card)', 
-                    color: 'var(--text-primary)',
-                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
-                  }}
-                  itemStyle={{ color: 'var(--text-primary)' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="mt-8 grid grid-cols-2 gap-4">
-            {section.data.map((item: any, i: number) => {
-               const finalKey = item.colorKey || getCategoryColorVar(item.name);
-               return (
-                <div key={i} className="flex items-center space-x-3 text-sm text-[var(--text-primary)]">
-                  <div 
-                    className="w-4 h-4 rounded-md flex-shrink-0" 
-                    style={{ backgroundColor: getVar(finalKey) }} 
+            <div className="h-[400px] w-full min-h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={section.data}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={110}
+                    outerRadius={155}
+                    paddingAngle={8}
+                    dataKey="value"
+                    stroke="none"
+                    cornerRadius={8}
+                  >
+                    {section.data.map((entry: any, index: number) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ 
+                      borderRadius: '16px', 
+                      backgroundColor: '#1e293b', 
+                      border: 'none',
+                      color: '#fff' 
+                    }}
+                    formatter={(value: any) => `${Number(value).toLocaleString()} ₺`}
                   />
-                  <div className="flex flex-col truncate">
-                    <span className="font-semibold opacity-90">{item.name}</span>
-                    <span className="text-xs opacity-60">{item.value.toLocaleString()} ₺</span>
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {section.data.map((item: any, i: number) => (
+                <div 
+                  key={i} 
+                  className="flex items-center space-x-4 p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-color)]"
+                >
+                  <div 
+                    className="w-5 h-5 rounded-full flex-shrink-0" 
+                    style={{ backgroundColor: item.fill }}
+                  />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold truncate">{item.name}</span>
+                    <span className="text-xs text-[var(--text-muted)] font-medium">
+                      {item.value.toLocaleString()} ₺
+                    </span>
                   </div>
                 </div>
-               );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 };

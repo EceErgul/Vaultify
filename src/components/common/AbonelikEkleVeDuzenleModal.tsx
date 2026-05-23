@@ -34,21 +34,21 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose }) => 
     <BaseModal title="Abonelik Ekle" onClose={onClose}>
       <div className="grid grid-cols-[160px_1fr] items-center gap-y-4 font-inter pr-4 mt-2">
         
-        <label className="font-bold text-lg">Abonelik Adı:</label>
+        <label className="font-medium text-lg">Abonelik Adı:</label>
         <Input placeholder="netflix, amazon prime vb." />
 
-        <label className="font-bold text-lg">Ödeme Günü:</label>
+        <label className="font-medium text-lg">Ödeme Günü:</label>
         <Input placeholder="ayın kaçında ödeniyor?" />
 
-        <label className="font-bold text-lg">Fiyat:</label>
+        <label className="font-medium text-lg">Fiyat:</label>
         <Input placeholder="Abonelik fiyatı" />
 
-        <label className="font-bold text-lg leading-tight">
+        <label className="font-medium text-lg leading-tight">
           Abonelik<br />Başlangıcı:
         </label>
-        <Input placeholder="Toplam harcanan para" />
+        <Input placeholder="Başlangıç Tarihi" />
 
-        <label className="font-bold text-lg leading-tight">
+        <label className="font-medium text-lg leading-tight">
           Deneme<br />Sürümü:
         </label>
         <div onClick={() => setIsTrial(!isTrial)}>
@@ -73,21 +73,21 @@ export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, in
     <BaseModal title="Abonelik Düzenle" onClose={onClose}>
       <div className="grid grid-cols-[160px_1fr] items-center gap-y-4 font-inter pr-4 mt-2">
         
-        <label className="font-bold text-lg">Abonelik Adı:</label>
+        <label className="font-medium text-lg">Abonelik Adı:</label>
         <Input defaultValue={initialData?.name} placeholder="netflix, amazon prime vb." />
 
-        <label className="font-bold text-lg">Ödeme Günü:</label>
+        <label className="font-medium text-lg">Ödeme Günü:</label>
         <Input defaultValue={initialData?.payDay} placeholder="ayın kaçında ödeniyor?" />
 
-        <label className="font-bold text-lg">Fiyat:</label>
+        <label className="font-medium text-lg">Fiyat:</label>
         <Input defaultValue={initialData?.price} placeholder="Abonelik fiyatı" />
 
-        <label className="font-bold text-lg leading-tight">
+        <label className="font-medium text-lg leading-tight">
           Abonelik<br />Başlangıcı:
         </label>
-        <Input defaultValue={initialData?.startDate} placeholder="Başlangıç Günü" />
+        <Input defaultValue={initialData?.startDate} placeholder="Başlangıç Tarihi" />
 
-        <label className="font-bold text-lg leading-tight">
+        <label className="font-medium text-lg leading-tight">
           Deneme<br />Sürümü:
         </label>
         <div onClick={() => setIsTrial(!isTrial)}>

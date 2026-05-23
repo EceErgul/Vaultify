@@ -35,7 +35,7 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose }) => {
         <Input placeholder="Gelirin Alındığı Tarih" />
 
         <label className="font-medium text-sm text-[#333D50]">Gelir Adı:</label>
-        <Input placeholder="Gelir adı buraya" />
+        <Input placeholder="Gelir adı" />
 
         <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
         <Dropdown 

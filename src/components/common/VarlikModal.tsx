@@ -6,10 +6,11 @@ import Button from './Button';
 import { AssetsType } from '../../types/index';
 
 interface VarlikEkleModalProps {
+  isOpen: boolean;
   onClose: () => void;
 }
 
-const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ onClose }) => {
+const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ isOpen, onClose }) => {
   const [assetName, setAssetName] = useState<string>('');
   const [selectedType, setSelectedType] = useState<AssetsType>('Borsa');
   const [amount, setAmount] = useState<number>(0);
@@ -22,6 +23,8 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ onClose }) => {
     setTotal(amount * price);
   }, [amount, price]);
 
+  if (!isOpen) return null;
+
   const handleAdd = () => {
     console.log({
       asset_name: assetName,
@@ -29,6 +32,9 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ onClose }) => {
       total_quantity: amount,
       total_cost: total
     });
+    setAssetName('');
+    setAmount(0);
+    setPrice(0);
     onClose();
   };
 
@@ -39,6 +45,7 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ onClose }) => {
         <label className="text-sm font-medium text-[#333D50]">Varlık:</label>
         <Input 
           placeholder="Varlık (altın, gümüş, hisse vb.) buraya girilecek" 
+          value={assetName}
           onChange={(e) => setAssetName(e.target.value)}
         />
 
@@ -66,7 +73,7 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ onClose }) => {
         <label className="text-sm font-medium text-[#333D50]">Toplam:</label>
         <Input 
           isTotal 
-          value={total > 0 ? `${total.toLocaleString()} ₺` : "miktar ve fiyata göre otomatik hesaplanacak"} 
+          value={total > 0 ? `${total.toLocaleString()} ₺` : "Miktar ve fiyata göre otomatik hesaplanacak"} 
         />
       </div>
 

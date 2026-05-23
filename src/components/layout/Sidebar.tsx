@@ -12,27 +12,30 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-darkBg text-white p-6 flex-col justify-between hidden md:flex border-r border-gray-800">
-      <div>
-        <div className="mb-10 px-4">
-          <h1 className="text-2xl font-bold tracking-wider text-vaultBlue">VAULTIFY</h1>
+    <aside className="fixed left-0 top-0 h-full w-64 bg-[var(--bg-sidebar)] text-[var(--sidebar-text)] flex flex-col md:flex border-r border-black/10">
+      <div className="py-10">
+        <div className="mb-8 px-8">
         </div>
         
-        <nav className="space-y-2">
+        <nav className="flex flex-col">
           {menuItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center space-x-4 px-4 py-3 rounded-xl transition-all ${
+                `flex items-center space-x-4 px-8 py-5 transition-all duration-200 border-l-4 ${
                   isActive 
-                  ? 'bg-vaultBlue text-white shadow-lg shadow-vaultBlue/20' 
-                  : 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                  ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-accent)] border-[var(--sidebar-accent)]' 
+                  : 'text-[var(--sidebar-text)] border-transparent hover:text-[var(--sidebar-accent)] hover:bg-[var(--sidebar-hover)]'
                 }`
               }
             >
-              <item.icon size={20} />
-              <span className="font-medium">{item.name}</span>
+              {({ isActive }) => (
+                <>
+                  <item.icon size={22} strokeWidth={isActive ? 2.5 : 2} />
+                  <span className="text-lg font-medium">{item.name}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </nav>

@@ -4,6 +4,7 @@ import Input from './Input';
 import Button from './Button';
 
 interface VarlikAyrintisiDuzenleProps {
+  isOpen: boolean;
   onClose: () => void;
   initialData?: {
     date?: string;
@@ -12,7 +13,10 @@ interface VarlikAyrintisiDuzenleProps {
   };
 }
 
-const VarlikAyrintisiDuzenle: React.FC<VarlikAyrintisiDuzenleProps> = ({ onClose, initialData }) => {
+const VarlikAyrintisiDuzenle: React.FC<VarlikAyrintisiDuzenleProps> = ({ isOpen, onClose, initialData }) => {
+
+  if (!isOpen) return null;
+
   return (
     <BaseModal title="Varlık Ayrıntısı Düzenle" onClose={onClose}>
       <div className="grid grid-cols-[140px_1fr] items-center gap-y-6 font-inter pr-4 mt-4">
@@ -24,7 +28,7 @@ const VarlikAyrintisiDuzenle: React.FC<VarlikAyrintisiDuzenleProps> = ({ onClose
           className="h-10 text-sm"
         />
 
-        <label className="font-bold text-lg text-black text-right pr-4">Miktar:</label>
+        <label className="font-bold text-lg text-black">Miktar:</label>
         <Input 
           defaultValue={initialData?.amount} 
           placeholder="ne kadar alındı?" 
@@ -44,9 +48,7 @@ const VarlikAyrintisiDuzenle: React.FC<VarlikAyrintisiDuzenleProps> = ({ onClose
         <Button 
           variant="apply" 
           className="w-[140px] h-[40px] text-base font-medium shadow-sm"
-          onClick={() => {
-            onClose();
-          }}
+          onClick={onClose}
         >
           Uygula
         </Button>

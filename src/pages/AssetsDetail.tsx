@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/common/Button';
 import VarlikAyrintisiDuzenle from '../components/common/VarlikAyrintisiDuzenleModal';
 
-const AssetsDetail = ({ assetName = "Altın" }) => {
+const AssetsDetail = () => {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [lastUpdate] = useState("1dk önce");
+
+  const assetName = id === "1" ? "APPLE" : "Altın"; 
 
   const details = [
     { id: 1, date: '02.05.2026', amount: '10 gram', price: '7.100 ₺', current: '7500 ₺', profit: '+400 ₺', ratio: '%5.6' },
@@ -23,13 +27,15 @@ const AssetsDetail = ({ assetName = "Altın" }) => {
   };
 
   return (
-    <div className="p-8 font-inter max-w-6xl mx-auto">
+    <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen">
       <div className="flex justify-center items-center relative mb-10">
-        <h1 className="text-3xl font-semibold text-black">{assetName}</h1>
+        <h1 className="text-3xl font-medium text-black uppercase tracking-tight">
+          {assetName} Detayları
+        </h1>
         <div className="absolute right-0">
           <Button 
             variant="add" 
-            className="w-[120px] h-[35px] text-sm shadow-md"
+            className="w-[130px] h-[35px] text-sm shadow-md"
             onClick={() => navigate(-1)}
           >
             ← Geri Dön
@@ -37,34 +43,34 @@ const AssetsDetail = ({ assetName = "Altın" }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
         {[
           { label: "Toplam Miktar", value: "88 gram" },
           { label: "Ortalama Maliyet", value: "2.550 ₺" },
           { label: "Toplam Maliyet", value: "89.250 ₺" },
           { label: "Toplam Değer", value: "92.500 ₺" }
         ].map((card, i) => (
-          <div key={i} className="bg-[#FFF5D9] border border-black rounded-[15px] h-48 flex flex-col items-center justify-center p-4 text-center shadow-sm">
-            <span className="font-medium text-xl text-black mb-6 leading-tight">{card.label}</span>
-            <span className="font-regular text-lg text-black">{card.value}</span>
+          <div key={i} className="bg-[#FFF5D9] border border-black rounded-[15px] h-44 flex flex-col items-center justify-center p-4 text-center shadow-sm transition-transform hover:scale-[1.02]">
+            <span className="font-medium text-lg text-gray-700 mb-4 leading-tight">{card.label}</span>
+            <span className="font-bold text-2xl text-black">{card.value}</span>
           </div>
         ))}
       </div>
 
-      <div className="flex justify-between items-end mb-1 px-1">
-        <span className="text-[10px] font-regular text-gray-500">En Son Güncelleme: {lastUpdate}</span>
+      <div className="flex justify-between items-end mb-2 px-1">
+        <span className="text-[11px] font-medium text-gray-500 italic">En Son Güncelleme: {lastUpdate}</span>
       </div>
 
-      <div className="border border-black overflow-hidden rounded-sm">
+      <div className="border border-black overflow-hidden rounded-md shadow-lg">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-[#FFEF79] h-10 border-b border-black text-black text-sm">
-              <th className="border-r border-black p-2 font-medium">Alış Tarihi</th>
-              <th className="border-r border-black p-2 font-medium">Miktar</th>
-              <th className="border-r border-black p-2 font-medium">Alış Fiyatı</th>
-              <th className="border-r border-black p-2 font-medium">Bugünkü Değer</th>
-              <th className="border-r border-black p-2 font-medium">Kâr/Zarar</th>
-              <th className="p-2 font-medium">İşlem</th>
+            <tr className="bg-[#FFEF79] h-12 border-b border-black text-black text-sm">
+              <th className="border-r border-black p-2 font-bold uppercase">Alış Tarihi</th>
+              <th className="border-r border-black p-2 font-bold uppercase">Miktar</th>
+              <th className="border-r border-black p-2 font-bold uppercase">Alış Fiyatı</th>
+              <th className="border-r border-black p-2 font-bold uppercase">Bugünkü Değer</th>
+              <th className="border-r border-black p-2 font-bold uppercase">Kâr/Zarar</th>
+              <th className="p-2 font-bold uppercase">İşlem</th>
             </tr>
           </thead>
           <tbody>
@@ -76,28 +82,38 @@ const AssetsDetail = ({ assetName = "Altın" }) => {
                 <tr 
                   key={row.id} 
                   style={{ backgroundColor: bgColor }}
-                  className="h-12 border-b border-black last:border-0 text-sm text-black"
+                  className="h-14 border-b border-black last:border-0 text-sm text-black hover:brightness-95 transition-all"
                 >
-                  <td className="border-r border-black text-center font-regular">{row.date}</td>
-                  <td className="border-r border-black text-center font-regular">{row.amount}</td>
-                  <td className="border-r border-black text-center font-regular">{row.price}</td>
-                  <td className="border-r border-black text-center font-regular">{row.current}</td>
+                  <td className="border-r border-black text-center">{row.date}</td>
+                  <td className="border-r border-black text-center">{row.amount}</td>
+                  <td className="border-r border-black text-center">{row.price}</td>
+                  <td className="border-r border-black text-center">{row.current}</td>
                   
-                  <td className="border-r border-black text-center font-regular relative group cursor-help">
-                    {row.profit}
-                    <div className="invisible group-hover:visible absolute z-10 -top-8 left-1/2 -translate-x-1/2 bg-white border border-black px-2 py-1 text-[10px] rounded shadow-lg">
-                      {row.ratio}
+                  <td className="border-r border-black text-center relative group cursor-help font-semibold">
+                    <span className={row.profit.includes('+') ? 'text-green-700' : 'text-red-700'}>
+                      {row.profit}
+                    </span>
+                    <div className="invisible group-hover:visible absolute z-20 -top-10 left-1/2 -translate-x-1/2 bg-black text-white px-3 py-1 text-[11px] rounded-full shadow-xl">
+                      Oran: {row.ratio}
                     </div>
                   </td>
 
-                  <td className="text-center font-regular">
-                    <div className="flex justify-center items-center gap-2">
-                      <button onClick={() => setIsEditModalOpen(true)} className="hover:scale-110 transition-transform">
-                        <span role="img" aria-label="edit">📝</span>
+                  <td className="text-center">
+                    <div className="flex justify-center items-center gap-4">
+                      <button 
+                        onClick={() => setIsEditModalOpen(true)} 
+                        className="hover:scale-125 transition-transform text-xl"
+                        title="Düzenle"
+                      >
+                        📝
                       </button>
-                      <span className="text-gray-400">/</span>
-                      <button onClick={() => handleDelete(row.id)} className="hover:scale-110 transition-transform">
-                        <span role="img" aria-label="delete">🗑️</span>
+                      <span className="text-gray-400">|</span>
+                      <button 
+                        onClick={() => handleDelete(row.id)} 
+                        className="hover:scale-125 transition-transform text-xl"
+                        title="Sil"
+                      >
+                        🗑️
                       </button>
                     </div>
                   </td>
@@ -108,9 +124,10 @@ const AssetsDetail = ({ assetName = "Altın" }) => {
         </table>
       </div>
 
-      {isEditModalOpen && (
-        <VarlikAyrintisiDuzenle onClose={() => setIsEditModalOpen(false)} />
-      )}
+      <VarlikAyrintisiDuzenle 
+        isOpen={isEditModalOpen} 
+        onClose={() => setIsEditModalOpen(false)} 
+      />
     </div>
   );
 };

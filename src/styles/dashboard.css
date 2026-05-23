@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
     --color-borsa: #4299E1;
     --color-doviz: #48BB78;
@@ -25,6 +29,9 @@
     --color-fatura: #F687B3;
     --color-abonelik: #D4D953;
     --color-gider-diger: #CBD5E0;
+
+    --v-card: 24px;
+    --shadow-v-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
 }
 
 .dark {
@@ -35,12 +42,23 @@
     --color-temettu: #F687B3;
 
     --color-maas: #48BB78;
-    --color-kira: #F6E05E;
+    --color-kira: #ECC94B;
     --color-varliklarim: #4299E1;
     --color-ikramiye: #9F7AEA;
     --color-ek-is: #4FD1C5;
-    
+    --color-miras: #A0AEC0;
+    --color-devlet: #F56565;
+    --color-gelir-diger: #CBD5E0;
+
     --color-ev: #FC8181;
     --color-market: #F6AD55;
+    --color-gider-kira: #C07A5A;
+    --color-eglence: #FBD38D;
+    --color-saglik: #81E6D9;
+    --color-ulasim: #90CDF4;
+    --color-taksit: #A3BFFA;
+    --color-borc: #FEB2B2;
     --color-fatura: #FBB6CE;
+    --color-abonelik: #E9ED7F;
+    --color-gider-diger: #E2E8F0;
 }

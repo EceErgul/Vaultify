@@ -1,5 +1,7 @@
+import React from 'react';
 import { CircleUser } from 'lucide-react';
-
+import LogoImg from '../../assets/vaultify_logo_nobackground.png';
+import { Link } from 'react-router-dom';
 
 interface HeaderProps {
   isLoggedIn?: boolean;
@@ -8,34 +10,32 @@ interface HeaderProps {
 
 const Header = ({ isLoggedIn, userProfilePicture }: HeaderProps) => {
   return (
-    <header className="h-20 bg-darkBg flex items-center justify-between px-8 text-white">
+    <header className="h-20 bg-[var(--bg-sidebar)] flex items-center justify-between px-8 text-white border-b border-black/10 top-0 w-full z-50">
       <div className="flex items-center space-x-3">
-        <img src="/assets/vaultify_logo_nobackground.png" alt="Logo" className="w-10 h-10" />
-        <span className="text-xl font-bold">VAULTIFY</span>
+        <img src={LogoImg} alt="Vaultify Logo" className="w-10 h-10 object-contain" />
+        <span className="text-xl font-bold tracking-tight">VAULTIFY</span>
       </div>
 
       <nav className="flex items-center space-x-6">
         {isLoggedIn ? (
           <>
-            <button className="text-gray-300 hover:text-white">Çıkış yap</button>
-            <div className="w-10 h-10 rounded-full bg-gray-500 flex items-center justify-center overflow-hidden border border-gray-600">
-            {userProfilePicture ? (
-                <img 
-                src={userProfilePicture} 
-                alt="Profil" 
-                className="w-full h-full object-cover" 
-                />
-            ) : (
-                <CircleUser size={80} className="text-white opacity-80" strokeWidth={1.5} />
-            )}
+            <button className="text-[var(--sidebar-text)] hover:text-white transition-colors">Çıkış yap</button>
+            <div className="w-10 h-10 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-white/10">
+              {userProfilePicture ? (
+                <img src={userProfilePicture} alt="Profil" className="w-full h-full object-cover" />
+              ) : (
+                <CircleUser size={28} className="text-white opacity-80" strokeWidth={1.5} />
+              )}
             </div>
           </>
         ) : (
           <>
-            <button className="text-gray-300 hover:text-white">Giriş Yap</button>
-            <button className="bg-vaultBlue px-4 py-2 rounded-lg font-medium hover:bg-blue-600 transition-all">
-              Kaydol
-            </button>
+            <Link to="/login">
+              <button className="text-[var(--sidebar-text)] hover:text-white transition-colors font-medium">Giriş Yap</button>
+            </Link>
+            <Link to="/register">
+              <button className="text-[var(--sidebar-text)] hover:text-white transition-colors font-medium">Kaydol</button>
+            </Link>
           </>
         )}
       </nav>

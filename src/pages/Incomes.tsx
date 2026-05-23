@@ -3,13 +3,22 @@ import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/com
 import Button from '../components/common/Button';
 import { GelirEkleModal, GelirDuzenleModal } from '../components/common/GelirModallari';
 
+interface IncomeItem {
+  id: number;
+  tarih: string;
+  ad: string;
+  kategori: string;
+  miktar: string;
+}
+
 const Incomes = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedIncome, setSelectedIncome] = useState<IncomeItem | null>(null);
 
-  const gelirler = [
+  const gelirler: IncomeItem[] = [
     { id: 1, tarih: '20.05.2026', ad: 'Maaş', kategori: 'Maaş', miktar: '315.000 ₺' },
     { id: 2, tarih: '19.05.2026', ad: 'Kira', kategori: 'Kira', miktar: '85.000 ₺' },
     { id: 3, tarih: '19.05.2026', ad: 'Varlıklarım', kategori: 'Varlıklarım', miktar: '3.000.000 ₺' },
@@ -21,10 +30,24 @@ const Incomes = () => {
     );
   };
 
+  const handleRowDoubleClick = (item: IncomeItem) => {
+    if (isDeleteMode) return;
+
+    setSelectedIncome(item);
+    setIsEditModalOpen(true);
+  };
+
   return (
     <div className="p-8 font-inter max-w-6xl mx-auto">
       <div className="flex justify-between items-start mb-6">
-        <h2 className="text-3xl font-semibold text-black">Gelirler</h2>
+        <div>
+          <h2 className="text-3xl font-semibold text-black">Gelirler</h2>
+          {!isDeleteMode && (
+            <p className="text-xs text-gray-400 mt-1 italic">
+              Düzenlemek istediğiniz gelirin üzerine <span className="font-semibold text-gray-600">çift tıklayabilirsiniz.</span>
+            </p>
+          )}
+        </div>
         <div className="flex flex-col gap-2">
           <Button 
             variant="add" 
@@ -42,14 +65,6 @@ const Incomes = () => {
               setSelectedIds([]);
             }} 
           />
-
-          <Button 
-            variant="filter" 
-            className="w-[140px] h-[32px] text-[11px] bg-[#FFEF79] border border-black shadow-sm text-black"
-            onClick={() => setIsEditModalOpen(true)}
-          >
-            Gelir Düzenle
-          </Button>
         </div>
       </div>
 
@@ -86,10 +101,16 @@ const Incomes = () => {
                 <tr 
                   key={item.id} 
                   style={{ backgroundColor: bgColor }}
-                  className="h-12 border-b border-black last:border-0 text-sm text-black"
+                  onDoubleClick={() => handleRowDoubleClick(item)} 
+                  className={`h-12 border-b border-black last:border-0 text-sm text-black transition-all select-none ${
+                    !isDeleteMode ? 'cursor-pointer hover:opacity-85' : ''
+                  }`}
                 >
                   {isDeleteMode && (
-                    <td className="text-center border-r border-black/20">
+                    <td 
+                      className="text-center border-r border-black/20"
+                      onClick={(e) => e.stopPropagation()} 
+                    >
                       <div className="flex justify-center items-center h-full">
                         <GeneralDeleteCheckbox 
                           checked={selectedIds.includes(item.id)} 
@@ -101,7 +122,7 @@ const Incomes = () => {
                   <td className="border-r border-black px-4 text-center font-regular">{item.tarih}</td>
                   <td className="border-r border-black px-4 text-center font-regular">{item.ad}</td>
                   <td className="border-r border-black px-4 text-center font-regular">{item.kategori}</td>
-                  <td className="text-center font-regular px-4 font-regular">{item.miktar}</td>
+                  <td className="text-center font-regular px-4">{item.miktar}</td>
                 </tr>
               );
             })}
@@ -112,7 +133,7 @@ const Incomes = () => {
       {isDeleteMode && (
         <div className="mt-8 flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Button 
-            variant="apply" 
+            variant="applyDelete" 
             className="w-[110px] h-[32px] text-sm shadow-md"
             onClick={() => console.log("Silinecek Gelirler:", selectedIds)}
           >
@@ -126,7 +147,20 @@ const Incomes = () => {
       )}
       
       {isEditModalOpen && (
-        <GelirDuzenleModal onClose={() => setIsEditModalOpen(false)} />
+        <GelirDuzenleModal 
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedIncome(null);
+          }}
+          initialData={{
+            date: selectedIncome?.tarih,
+            name: selectedIncome?.ad,
+            category: selectedIncome?.kategori as any,
+            amount: selectedIncome 
+              ? parseFloat(selectedIncome.miktar.replace(/\./g, '').replace(' ₺', '')) 
+              : undefined
+          }}
+        />
       )}
     </div>
   );
