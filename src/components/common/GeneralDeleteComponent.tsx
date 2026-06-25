@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from './Button'; // Dosya yolunu projene göre kontrol et
+import Button from './Button';
 
 interface GeneralDeleteComponentProps {
   label: string;

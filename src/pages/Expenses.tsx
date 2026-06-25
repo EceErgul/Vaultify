@@ -1,8 +1,18 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
 import HarcamaEkleModal from '../components/common/HarcamaEkleModal';
 import FiltreleModal, { FilterState } from '../components/common/FiltreleModal';
+import { apiRequest } from '../utils/api';
+
+interface Expense {
+  id: string;
+  expense_name: string;
+  expense_category: string;
+  payment_method: string;
+  expenses_amount: number | string;
+  date: string;
+}
 
 const initialFilterValues: FilterState = {
   searchTerm: '',
@@ -18,16 +28,28 @@ const initialFilterValues: FilterState = {
 
 const Expenses = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState<FilterState>(initialFilterValues);
+  const [harcamalar, setHarcamalar] = useState<Expense[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const harcamalar = [
-    { id: 1, tarih: '20.05.2026 14.06.34', ad: 'Market Alışverişi', kategori: 'Ev Alışverişi', yontem: 'Kredi Kartı', tutar: '4.000 ₺', rawTutar: 4000 },
-    { id: 2, tarih: '19.05.2026 18.46.09', ad: 'Giysi Alışverişi', kategori: 'Giysi Alışverişi', yontem: 'Kredi Kartı', tutar: '6.500 ₺', rawTutar: 6500 },
-    { id: 3, tarih: '19.05.2026 18.35.57', ad: 'Dışarıda Yemek', kategori: 'Eğlence', yontem: 'Kredi Kartı', tutar: '750 ₺', rawTutar: 750 },
-  ];
+  const fetchExpenses = async () => {
+    try {
+      setLoading(true);
+      const data = await apiRequest('/expenses');
+      setHarcamalar(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchExpenses();
+  }, []);
 
   const activeFilterCount = useMemo(() => {
     let count = 0;
@@ -46,63 +68,69 @@ const Expenses = () => {
     if (currentFilters.searchTerm) {
       const term = currentFilters.searchTerm.toLowerCase();
       result = result.filter(item => 
-        item.ad.toLowerCase().includes(term) || 
-        item.kategori.toLowerCase().includes(term)
+        item.expense_name.toLowerCase().includes(term) || 
+        item.expense_category.toLowerCase().includes(term)
       );
     }
 
     if (currentFilters.expenseName) {
       result = result.filter(item => 
-        item.ad.toLowerCase().includes(currentFilters.expenseName.toLowerCase())
+        item.expense_name.toLowerCase().includes(currentFilters.expenseName.toLowerCase())
       );
     }
 
     if (currentFilters.category) {
-      result = result.filter(item => item.kategori === currentFilters.category);
+      result = result.filter(item => item.expense_category === currentFilters.category);
     }
 
     if (currentFilters.paymentMethod) {
-      result = result.filter(item => item.yontem.toLowerCase() === currentFilters.paymentMethod?.toLowerCase());
+      result = result.filter(item => item.payment_method.toLowerCase() === currentFilters.paymentMethod?.toLowerCase());
     }
 
     if (currentFilters.minAmount) {
-      result = result.filter(item => item.rawTutar >= parseFloat(currentFilters.minAmount));
+      result = result.filter(item => Number(item.expenses_amount) >= parseFloat(currentFilters.minAmount));
     }
     if (currentFilters.maxAmount) {
-      result = result.filter(item => item.rawTutar <= parseFloat(currentFilters.maxAmount));
+      result = result.filter(item => Number(item.expenses_amount) <= parseFloat(currentFilters.maxAmount));
     }
 
     if (currentFilters.date) {
-      result = result.filter(item => item.tarih.startsWith(currentFilters.date));
+      result = result.filter(item => item.date.startsWith(currentFilters.date));
     }
 
     result.sort((a, b) => {
-      const parseDateStr = (str: string) => {
-        const [datePart, timePart] = str.split(' ');
-        const [d, m, y] = datePart.split('.');
-        const [h, min, s] = timePart.split('.');
-        return new Date(`${y}-${m}-${d}T${h}:${min}:${s}`).getTime();
-      };
-
-      const dateA = parseDateStr(a.tarih);
-      const dateB = parseDateStr(b.tarih);
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
 
       if (dateA !== dateB) {
         return currentFilters.dateSort === 'asc' ? dateA - dateB : dateB - dateA;
       }
 
       return currentFilters.amountSort === 'asc' 
-        ? a.rawTutar - b.rawTutar 
-        : b.rawTutar - a.rawTutar;
+        ? Number(a.expenses_amount) - Number(b.expenses_amount) 
+        : Number(b.expenses_amount) - Number(a.expenses_amount);
     });
 
     return result;
-  }, [currentFilters]);
+  }, [harcamalar, currentFilters]);
 
-  const toggleSelect = (id: number) => {
+  const toggleSelect = (id: string) => {
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await Promise.all(
+        selectedIds.map(id => apiRequest(`/expenses/${id}`, { method: 'DELETE' }))
+      );
+      fetchExpenses();
+      setIsDeleteMode(false);
+      setSelectedIds([]);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -163,9 +191,16 @@ const Expenses = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredHarcamalar.map((item, index) => {
+            {loading ? (
+              <tr className="h-12 bg-white">
+                <td colSpan={isDeleteMode ? 6 : 5} className="text-center text-xs">
+                  Harcamalar yükleniyor...
+                </td>
+              </tr>
+            ) : filteredHarcamalar.map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
+              const formattedDate = new Date(item.date).toLocaleString('tr-TR');
 
               return (
                 <tr 
@@ -183,15 +218,15 @@ const Expenses = () => {
                       </div>
                     </td>
                   )}
-                  <td className="border-r border-black px-4 text-center font-regular">{item.tarih}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.ad}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.kategori}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.yontem}</td>
-                  <td className="text-center font-regular px-4">{item.tutar}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{formattedDate}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{item.expense_name}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{item.expense_category}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{item.payment_method}</td>
+                  <td className="text-center font-regular px-4">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</td>
                 </tr>
               );
             })}
-            {filteredHarcamalar.length === 0 && (
+            {!loading && filteredHarcamalar.length === 0 && (
               <tr className="h-12 bg-white">
                 <td colSpan={isDeleteMode ? 6 : 5} className="text-center text-gray-400 italic text-xs">
                   Aranan kriterlere uygun harcama bulunamadı.
@@ -202,12 +237,12 @@ const Expenses = () => {
         </table>
       </div>
 
-      {isDeleteMode && (
+      {isDeleteMode && selectedIds.length > 0 && (
         <div className="mt-8 flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Button 
             variant="applyDelete" 
             className="w-[120px] h-[35px] text-sm shadow-md"
-            onClick={() => console.log("Silinecekler:", selectedIds)}
+            onClick={handleConfirmDelete}
           >
             Onayla
           </Button>
@@ -215,7 +250,7 @@ const Expenses = () => {
       )}
 
       {isAddModalOpen && (
-        <HarcamaEkleModal onClose={() => setIsAddModalOpen(false)} />
+        <HarcamaEkleModal onClose={() => { setIsAddModalOpen(false); fetchExpenses(); }} />
       )}
       
       {isFilterModalOpen && (

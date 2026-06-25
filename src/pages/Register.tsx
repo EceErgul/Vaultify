@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
+import { apiRequest } from '../utils/api';
 
 const Logo = '/src/assets/vaultify_logo_nobackground.png';
 
@@ -13,6 +14,8 @@ const Register = () => {
   });
   
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleGoogleRegister = () => {
     const width = 500;
@@ -22,8 +25,9 @@ const Register = () => {
     window.open("https://accounts.google.com/gsi/select", "google-register", `width=${width},height=${height},left=${left},top=${top}`);
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (formData.password !== formData.passwordConfirm) {
       setError('Şifreler birbiriyle eşleşmiyor.');
       return;
@@ -32,8 +36,38 @@ const Register = () => {
       setError('Geçerli bir e-posta adresi giriniz.');
       return;
     }
+
     setError('');
-    console.log("Kayıt başarılı:", formData);
+    setLoading(true);
+
+    try {
+      // Backend şemasına ve DB kolonlarına uyum sağlamak için payload ayarlanıyor
+      const response = await apiRequest('/auth/register', {
+        method: 'POST',
+        body: {
+          full_name: formData.fullName, // DB / Backend beklentisine göre map edildi
+          email: formData.email,
+          password: formData.password
+        },
+      });
+
+      if (response && response.token) {
+        localStorage.setItem('token', response.token);
+        navigate('/dashboard');
+      } else {
+        navigate('/login');
+      }
+    } catch (err: any) {
+      console.error('Kayıt hatası:', err);
+      // Eğer doğrudan ağ hatası ise kullanıcıya daha açıklayıcı bir mesaj gösterelim
+      if (err?.message === 'Failed to fetch') {
+        setError('Sunucuya bağlanılamadı. Lütfen backend sunucunuzun çalıştığından ve internet bağlantınızdan emin olun.');
+      } else {
+        setError(err?.message || 'Kayıt işlemi sırasında bir hata oluştu.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,7 +92,9 @@ const Register = () => {
 
         <button 
           onClick={handleGoogleRegister}
-          className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-8"
+          type="button"
+          disabled={loading}
+          className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-8 disabled:opacity-50"
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
           <span className="text-sm font-medium text-gray-700">Google İle Kaydol.</span>
@@ -72,17 +108,19 @@ const Register = () => {
 
         <form onSubmit={handleRegister} className="w-full max-w-md space-y-3">
           {[
-            { label: 'Ad - Soyad:', type: 'text', key: 'fullName' },
-            { label: 'E-posta adresi:', type: 'email', key: 'email' },
-            { label: 'Şifre:', type: 'password', key: 'password' },
-            { label: 'Şifre Tekrar:', type: 'password', key: 'passwordConfirm' }
+            { label: 'Ad - Soyad:', type: 'text', key: 'fullName', value: formData.fullName },
+            { label: 'E-posta adresi:', type: 'email', key: 'email', value: formData.email },
+            { label: 'Şifre:', type: 'password', key: 'password', value: formData.password },
+            { label: 'Şifre Tekrar:', type: 'password', key: 'passwordConfirm', value: formData.passwordConfirm }
           ].map((field) => (
             <div key={field.key} className="flex items-center justify-center gap-4">
               <label className="text-sm font-medium w-32 text-right whitespace-nowrap">{field.label}</label>
               <input 
                 type={field.type}
+                value={field.value}
                 onChange={(e) => setFormData({...formData, [field.key]: e.target.value})}
                 className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                disabled={loading}
                 required
               />
             </div>
@@ -90,7 +128,7 @@ const Register = () => {
 
           <div className="h-6 flex items-center justify-center mt-2">
             {error && (
-              <p className="text-[11px] text-red-600 font-medium italic animate-fade-in">
+              <p className="text-[11px] text-red-600 font-medium italic animate-fade-in text-center">
                 {error}
               </p>
             )}
@@ -99,9 +137,10 @@ const Register = () => {
           <div className="flex justify-center mt-4">
             <Button 
               type="submit"
-              className="w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all border-none"
+              disabled={loading}
+              className="w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all border-none disabled:opacity-50"
             >
-              Kaydol
+              {loading ? 'Kaydediliyor...' : 'Kaydol'}
             </Button>
           </div>
         </form>

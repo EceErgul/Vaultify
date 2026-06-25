@@ -3,20 +3,9 @@ import * as Recharts from 'recharts';
 import '../styles/dashboard.css';
 import { Income, ExpensesCategoryChart } from '../types/index';
 import { getCategoryColorVar } from '../utils/colourHelpers';
+import { apiRequest } from '../utils/api';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
-
-const mockIncomes: Income[] = [
-  { id: '1', user_id: 'u1', income_name: 'Maaş', income_category: 'Maaş', income_amount: 55000, date: '2026-04-01' },
-  { id: '2', user_id: 'u1', income_name: 'Yan Gelir', income_category: 'Ek İş', income_amount: 8000, date: '2026-04-05' },
-  { id: '3', user_id: 'u1', income_name: 'Hisse', income_category: 'Varlıklarım', income_amount: 12000, date: '2026-04-10' },
-];
-
-const mockExpenses: ExpensesCategoryChart[] = [
-  { id: 'e1', user_id: 'u1', expense_name: 'Kira', expense_category_chart: 'Kira', expenses_amount: 20000, date: '2026-04-01' },
-  { id: 'e2', user_id: 'u1', expense_name: 'Market', expense_category_chart: 'Market Alışverişi', expenses_amount: 6000, date: '2026-04-02' },
-  { id: 'e3', user_id: 'u1', expense_name: 'İnternet', expense_category_chart: 'Abonelikler', expenses_amount: 1500, date: '2026-04-05' },
-];
 
 const FALLBACK_COLORS: Record<string, string> = {
   '--color-maas': '#38A169',
@@ -39,33 +28,54 @@ const FALLBACK_COLORS: Record<string, string> = {
 
 const Dashboard: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const [incomes, setIncomes] = useState<Income[]>([]);
+  const [expenses, setExpenses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [incomeData, expenseData] = await Promise.all([
+        apiRequest('/incomes'),
+        apiRequest('/expenses')
+      ]);
+      setIncomes(incomeData);
+      setExpenses(expenseData);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     setIsMounted(true);
+    fetchDashboardData();
   }, []);
 
   const resolveCssColor = (cssVarName: string) => {
     if (typeof window === 'undefined') return `var(${cssVarName})`;
     const cleanVarName = cssVarName.replace('var(', '').replace(')', '').trim();
-    
     const value = getComputedStyle(document.documentElement).getPropertyValue(cleanVarName).trim();
     return value || FALLBACK_COLORS[cleanVarName] || '#CBD5E0';
   };
 
   const sections = useMemo(() => {
-    const totalIncome = mockIncomes.reduce((acc, curr) => acc + curr.income_amount, 0);
-    const totalExpense = mockExpenses.reduce((acc, curr) => acc + curr.expenses_amount, 0);
+    if (!isMounted) return [];
 
-    const incomeData = mockIncomes.map(item => ({
+    const totalIncome = incomes.reduce((acc, curr) => acc + Number(curr.income_amount), 0);
+    const totalExpense = expenses.reduce((acc, curr) => acc + Number(curr.expenses_amount), 0);
+
+    const incomeChartData = incomes.map(item => ({
       name: item.income_category,
-      value: item.income_amount,
+      value: Number(item.income_amount),
       fill: resolveCssColor(getCategoryColorVar(item.income_category))
     }));
 
-    const expenseData = mockExpenses.map(item => ({
-      name: item.expense_category_chart,
-      value: item.expenses_amount,
-      fill: resolveCssColor(getCategoryColorVar(item.expense_category_chart))
+    const expenseChartData = expenses.map(item => ({
+      name: item.expense_category || item.expense_category_chart,
+      value: Number(item.expenses_amount),
+      fill: resolveCssColor(getCategoryColorVar(item.expense_category || item.expense_category_chart))
     }));
 
     return [
@@ -78,12 +88,18 @@ const Dashboard: React.FC = () => {
           { name: 'Birikim', value: totalIncome * 0.1, fill: resolveCssColor('--color-varliklarim') },
         ] 
       },
-      { title: "Gelir Dağılımı", amount: totalIncome, data: incomeData },
-      { title: "Gider Dağılımı", amount: totalExpense, data: expenseData },
+      { title: "Gelir Dağılımı", amount: totalIncome, data: incomeChartData },
+      { title: "Gider Dağılımı", amount: totalExpense, data: expenseChartData },
     ];
-  }, [isMounted]);
+  }, [incomes, expenses, isMounted]);
 
-  if (!isMounted) return null;
+  if (!isMounted || loading) {
+    return (
+      <div className="p-8 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] flex items-center justify-center">
+        <span className="text-lg font-medium">Panel verileri yükleniyor...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="p-8 space-y-10 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] transition-colors duration-300">
@@ -116,7 +132,7 @@ const Dashboard: React.FC = () => {
                     cy="50%"
                     innerRadius={110}
                     outerRadius={155}
-                    paddingAngle={8}
+                    paddingAngle={section.data.length > 1 ? 8 : 0}
                     dataKey="value"
                     stroke="none"
                     cornerRadius={8}

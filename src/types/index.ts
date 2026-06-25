@@ -109,5 +109,3 @@ export interface FilterState {
   dateSort: 'asc' | 'desc';
   amountSort: 'asc' | 'desc';
 }
-
-// backend ile devam edelim. Simdi dosya yapisini kurarak baslayalim.

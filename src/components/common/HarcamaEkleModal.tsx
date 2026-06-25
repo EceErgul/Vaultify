@@ -9,28 +9,28 @@ interface HarcamaEkleModalProps {
   onClose: () => void;
 }
 
+const KATEGORILER: ExpenseCategory[] = [
+  'Ev Alışverişi',
+  'Market Alışverişi',
+  'Kira',
+  'Eğlence',
+  'Ulaşım',
+  'Taksitler',
+  'Borçlar',
+  'Faturalar',
+  'Sağlık',
+  'Diğer'
+];
+
+const ODEME_YONTEMLERI: PaymentMethod[] = [
+  'Nakit',
+  'Kredi Kartı',
+  'Havale',
+  'Taksit'
+];
+
 const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose }) => {
   const [amount, setAmount] = useState<number | ''>('');
-
-  const kategoriler: ExpenseCategory[] = [
-    'Ev Alışverişi',
-    'Market Alışverişi',
-    'Kira',
-    'Eğlence',
-    'Ulaşım',
-    'Taksitler',
-    'Borçlar',
-    'Faturalar',
-    'Sağlık',
-    'Diğer'
-  ];
-
-  const odemeYontemleri: PaymentMethod[] = [
-    'Nakit',
-    'kredi Kartı',
-    'Havale',
-    'Taksit'
-  ];
 
   return (
     <BaseModal title="Harcama Ekle" onClose={onClose}>
@@ -40,21 +40,25 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose }) => {
         <Input type="text" placeholder="gün/ay/yıl" />
 
         <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
-        <Dropdown 
-          options={kategoriler} 
-          onSelect={(v) => console.log(v)} 
-          placeholder="Dropdown Seçimi"
-        />
+        <div className="relative max-h-[200px]">
+          <Dropdown 
+            options={KATEGORILER} 
+            onSelect={(v) => console.log(v)} 
+            placeholder="Kategori Seçin"
+          />
+        </div>
 
         <label className="font-medium text-sm text-[#333D50]">Harcama Adı:</label>
         <Input placeholder="Buraya Yazılacak" />
 
-        <label className="font-medium text-sm text-[#333D50]">Ödeme:</label>
-        <Dropdown 
-          options={odemeYontemleri} 
-          onSelect={(v) => console.log(v)} 
-          placeholder="Kredi Kartı, Havale vb."
-        />
+       integrity  <label className="font-medium text-sm text-[#333D50]">Ödeme:</label>
+        <div className="relative max-h-[200px]">
+          <Dropdown 
+            options={ODEME_YONTEMLERI} 
+            onSelect={(v) => console.log(v)} 
+            placeholder="Ödeme Yöntemi Seçin"
+          />
+        </div>
 
         <label className="font-medium text-sm text-[#333D50]">Tutar:</label>
         <Input 

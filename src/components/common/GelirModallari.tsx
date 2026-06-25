@@ -8,6 +8,7 @@ import { IncomeSource } from '../../types/index';
 interface GelirModalProps {
   onClose: () => void;
   initialData?: {
+    id?: string; // İsteğe bağlı (optional) yaparak TypeScript hatasını çözdük
     date?: string;
     name?: string;
     category?: IncomeSource;
@@ -15,18 +16,18 @@ interface GelirModalProps {
   };
 }
 
-export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose }) => {
-  const gelirKategorileri: IncomeSource[] = [
-    'Maaş', 
-    'Kira Geliri', 
-    'Varlıklarım', 
-    'İkramiye/Prim', 
-    'Ek İş', 
-    'Miras', 
-    'Devlet Desteği', 
-    'Diğer'
-  ];
+const GELIR_KATEGORILERI: IncomeSource[] = [
+  'Maaş', 
+  'Kira Geliri', 
+  'Varlıklarım', 
+  'İkramiye/Prim', 
+  'Ek İş', 
+  'Miras', 
+  'Devlet Desteği', 
+  'Diğer'
+];
 
+export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose }) => {
   return (
     <BaseModal title="Gelir Ekle" onClose={onClose}>
       <div className="grid grid-cols-[120px_1fr] items-center gap-y-5 font-inter pr-4">
@@ -38,11 +39,14 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose }) => {
         <Input placeholder="Gelir adı" />
 
         <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
-        <Dropdown 
-          options={gelirKategorileri} 
-          onSelect={(v) => console.log(v)} 
-          placeholder="Dropdown Menüsü" 
-        />
+        {/* max-h ve overflow ayarlarıyla aşağı kaydırılabilir stabil dropdown yapısı */}
+        <div className="relative max-h-[200px]">
+          <Dropdown 
+            options={GELIR_KATEGORILERI} 
+            onSelect={(v) => console.log(v)} 
+            placeholder="Kategori Seçin" 
+          />
+        </div>
 
         <label className="font-medium text-sm text-[#333D50]">Miktar:</label>
         <Input type="number" placeholder="Gelir Miktarı" />
@@ -59,17 +63,6 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose }) => {
 };
 
 export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialData }) => {
-  const gelirKategorileri: IncomeSource[] = [
-    'Maaş', 
-    'Kira Geliri', 
-    'Varlıklarım', 
-    'İkramiye/Prim', 
-    'Ek İş', 
-    'Miras', 
-    'Devlet Desteği', 
-    'Diğer'
-  ];
-
   return (
     <BaseModal title="Gelir Düzenle" onClose={onClose}>
       <div className="grid grid-cols-[120px_1fr] items-center gap-y-5 font-inter pr-4">
@@ -81,11 +74,13 @@ export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialD
         <Input defaultValue={initialData?.name} placeholder="Gelir adı buraya" />
 
         <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
-        <Dropdown 
-          options={gelirKategorileri} 
-          onSelect={(v) => console.log(v)} 
-          placeholder={initialData?.category || "Dropdown Menüsü"} 
-        />
+        <div className="relative max-h-[200px]">
+          <Dropdown 
+            options={GELIR_KATEGORILERI} 
+            onSelect={(v) => console.log(v)} 
+            placeholder={initialData?.category || "Kategori Seçin"} 
+          />
+        </div>
 
         <label className="font-medium text-sm text-[#333D50]">Miktar:</label>
         <Input type="number" defaultValue={initialData?.amount} placeholder="Gelir Miktarı" />

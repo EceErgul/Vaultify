@@ -1,7 +1,7 @@
 import React from 'react';
 import { CircleUser } from 'lucide-react';
 import LogoImg from '../../assets/vaultify_logo_nobackground.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   isLoggedIn?: boolean;
@@ -9,6 +9,14 @@ interface HeaderProps {
 }
 
 const Header = ({ isLoggedIn, userProfilePicture }: HeaderProps) => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+    window.location.reload();
+  };
+
   return (
     <header className="h-20 bg-[var(--bg-sidebar)] flex items-center justify-between px-8 text-white border-b border-black/10 top-0 w-full z-50">
       <div className="flex items-center space-x-3">
@@ -19,7 +27,12 @@ const Header = ({ isLoggedIn, userProfilePicture }: HeaderProps) => {
       <nav className="flex items-center space-x-6">
         {isLoggedIn ? (
           <>
-            <button className="text-[var(--sidebar-text)] hover:text-white transition-colors">Çıkış yap</button>
+            <button 
+              onClick={handleLogout}
+              className="text-[var(--sidebar-text)] hover:text-white transition-colors cursor-pointer"
+            >
+              Çıkış yap
+            </button>
             <div className="w-10 h-10 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-white/10">
               {userProfilePicture ? (
                 <img src={userProfilePicture} alt="Profil" className="w-full h-full object-cover" />

@@ -1,18 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, type Dispatch, type SetStateAction } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
+import { apiRequest } from '../utils/api';
 
 const Logo = '/src/assets/vaultify_logo_nobackground.png';
 
-const Login = () => {
+interface LoginProps {
+  setUserStatus: Dispatch<SetStateAction<boolean>>;
+}
+
+const Login = ({ setUserStatus }: LoginProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(true);
+    setError(false);
+    setLoading(true);
+
+    try {
+      const response = await apiRequest('/auth/login', {
+        method: 'POST',
+        body: { email, password },
+      });
+
+      if (response && response.token) {
+        localStorage.setItem('token', response.token);
+        setUserStatus(true);
+        navigate('/dashboard');
+      } else {
+        setError(true);
+      }
+    } catch (err) {
+      console.error('Giriş hatası:', err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,7 +63,7 @@ const Login = () => {
         </p>
 
         <button 
-          onClick={() => {/* Google Logic */}}
+          onClick={() => {}}
           type="button"
           className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-10 bg-white"
         >
@@ -59,6 +86,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                disabled={loading}
                 required
               />
             </div>
@@ -70,6 +98,7 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                disabled={loading}
                 required
               />
             </div>
@@ -92,9 +121,10 @@ const Login = () => {
             
             <Button 
               type="submit"
-              className="mt-6 w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all duration-200 border-none"
+              className="mt-6 w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all duration-200 border-none disabled:opacity-50"
+              disabled={loading}
             >
-              Giriş
+              {loading ? 'Giriş Yapılıyor...' : 'Giriş'}
             </Button>
           </div>
         </form>

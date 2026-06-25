@@ -1,17 +1,34 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
+import { apiRequest } from '../utils/api';
 
 const Logo = '/src/assets/vaultify_logo_nobackground.png';
 
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Sıfırlama e-postası gönderildi:", email);
-    setSubmitted(true);
+    setError('');
+    setLoading(true);
+
+    try {
+      await apiRequest('/auth/forgot-password', {
+        method: 'POST',
+        body: { email },
+      });
+
+      setSubmitted(true);
+    } catch (err: any) {
+      console.error("Sıfırlama isteği hatası:", err);
+      setError(err?.message || "Bu e-posta adresine ait bir hesap bulunamadı veya bir hata oluştu.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -47,16 +64,26 @@ const ResetPassword = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="ornek@mail.com"
                   className="w-64 h-9 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500 transition-all"
+                  disabled={loading}
                   required
                 />
               </div>
 
+              {error && (
+                <div className="text-center">
+                  <p className="text-[11px] text-red-600 font-medium italic animate-fade-in">
+                    {error}
+                  </p>
+                </div>
+              )}
+
               <div className="flex justify-center mt-8">
                 <Button 
                   type="submit"
-                  className="w-auto px-8 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all whitespace-nowrap border-none outline-none"
+                  disabled={loading}
+                  className="w-auto px-8 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all whitespace-nowrap border-none outline-none disabled:opacity-50"
                 >
-                  Sıfırlama Linki Gönder
+                  {loading ? 'İstek Gönderiliyor...' : 'Sıfırlama Linki Gönder'}
                 </Button>
               </div>
             </form>

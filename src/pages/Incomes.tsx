@@ -1,30 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
 import { GelirEkleModal, GelirDuzenleModal } from '../components/common/GelirModallari';
+import { apiRequest } from '../utils/api';
 
 interface IncomeItem {
-  id: number;
-  tarih: string;
-  ad: string;
-  kategori: string;
-  miktar: string;
+  id: string;
+  date: string;
+  income_name: string;
+  income_category: string;
+  income_amount: number | string;
 }
 
 const Incomes = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedIncome, setSelectedIncome] = useState<IncomeItem | null>(null);
+  const [gelirler, setGelirler] = useState<IncomeItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const gelirler: IncomeItem[] = [
-    { id: 1, tarih: '20.05.2026', ad: 'Maaş', kategori: 'Maaş', miktar: '315.000 ₺' },
-    { id: 2, tarih: '19.05.2026', ad: 'Kira', kategori: 'Kira', miktar: '85.000 ₺' },
-    { id: 3, tarih: '19.05.2026', ad: 'Varlıklarım', kategori: 'Varlıklarım', miktar: '3.000.000 ₺' },
-  ];
+  const fetchIncomes = async () => {
+    try {
+      setLoading(true);
+      const data = await apiRequest('/incomes');
+      setGelirler(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const toggleSelect = (id: number) => {
+  useEffect(() => {
+    fetchIncomes();
+  }, []);
+
+  const toggleSelect = (id: string) => {
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
@@ -32,9 +45,21 @@ const Incomes = () => {
 
   const handleRowDoubleClick = (item: IncomeItem) => {
     if (isDeleteMode) return;
-
     setSelectedIncome(item);
     setIsEditModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await Promise.all(
+        selectedIds.map(id => apiRequest(`/incomes/${id}`, { method: 'DELETE' }))
+      );
+      fetchIncomes();
+      setIsDeleteMode(false);
+      setSelectedIds([]);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -93,9 +118,16 @@ const Incomes = () => {
             </tr>
           </thead>
           <tbody>
-            {gelirler.map((item, index) => {
+            {loading ? (
+              <tr className="h-12 bg-white">
+                <td colSpan={isDeleteMode ? 5 : 4} className="text-center text-xs">
+                  Gelirler yükleniyor...
+                </td>
+              </tr>
+            ) : gelirler.map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
+              const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
 
               return (
                 <tr 
@@ -119,23 +151,30 @@ const Incomes = () => {
                       </div>
                     </td>
                   )}
-                  <td className="border-r border-black px-4 text-center font-regular">{item.tarih}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.ad}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.kategori}</td>
-                  <td className="text-center font-regular px-4">{item.miktar}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{formattedDate}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{item.income_name}</td>
+                  <td className="border-r border-black px-4 text-center font-regular">{item.income_category}</td>
+                  <td className="text-center font-regular px-4">{Number(item.income_amount).toLocaleString('tr-TR')} ₺</td>
                 </tr>
               );
             })}
+            {!loading && gelirler.length === 0 && (
+              <tr className="h-12 bg-white">
+                <td colSpan={isDeleteMode ? 5 : 4} className="text-center text-gray-400 italic text-xs">
+                  Henüz gelir kaydı bulunmuyor.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {isDeleteMode && (
+      {isDeleteMode && selectedIds.length > 0 && (
         <div className="mt-8 flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Button 
             variant="applyDelete" 
             className="w-[110px] h-[32px] text-sm shadow-md"
-            onClick={() => console.log("Silinecek Gelirler:", selectedIds)}
+            onClick={handleConfirmDelete}
           >
             Onayla
           </Button>
@@ -143,22 +182,22 @@ const Incomes = () => {
       )}
 
       {isAddModalOpen && (
-        <GelirEkleModal onClose={() => setIsAddModalOpen(false)} />
+        <GelirEkleModal onClose={() => { setIsAddModalOpen(false); fetchIncomes(); }} />
       )}
       
-      {isEditModalOpen && (
+      {isEditModalOpen && selectedIncome && (
         <GelirDuzenleModal 
           onClose={() => {
             setIsEditModalOpen(false);
             setSelectedIncome(null);
+            fetchIncomes();
           }}
           initialData={{
-            date: selectedIncome?.tarih,
-            name: selectedIncome?.ad,
-            category: selectedIncome?.kategori as any,
-            amount: selectedIncome 
-              ? parseFloat(selectedIncome.miktar.replace(/\./g, '').replace(' ₺', '')) 
-              : undefined
+            id: selectedIncome.id,
+            date: selectedIncome.date,
+            name: selectedIncome.income_name,
+            category: selectedIncome.income_category as any,
+            amount: Number(selectedIncome.income_amount)
           }}
         />
       )}
