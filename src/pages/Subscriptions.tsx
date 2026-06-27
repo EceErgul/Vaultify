@@ -67,11 +67,13 @@ const Subscriptions = () => {
   };
 
   const getLogoUrl = (name: string) => {
-    const cleanName = name.toLowerCase().replace(/\s+/g, '');
-    if (cleanName.includes('youtube') || cleanName.includes('google') || cleanName.includes('gmail')) {
-      return 'https://www.google.com/favicon.ico';
-    }
-    return `https://logo.clearbit.com/${cleanName}.com`;
+  const cleanName = name
+    .toLowerCase()
+    .replace(/premium|plus|family|tv|music|pro|app/g, '')
+    .replace(/\s+/g, '')
+    .trim();
+
+    return `https://icon.horse/icon/${cleanName}.com`;
   };
 
   const aylikToplam = subscriptions.reduce((acc, curr) => acc + Number(curr.cost), 0);
@@ -135,7 +137,8 @@ const Subscriptions = () => {
                       alt={sub.subscription_name} 
                       className="w-6 h-6 object-contain"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://www.google.com/favicon.ico';
+                        (e.target as HTMLImageElement).src = 'https://cdn-icons-png.flaticon.com/512/2721/2721980.png'; 
+                        (e.target as HTMLImageElement).onerror = null;
                       }}
                     />
                   </div>
@@ -206,6 +209,7 @@ const Subscriptions = () => {
       {isEditOpen && selectedSubscription && (
         <AbonelikDuzenleModal 
           initialData={{
+            id: selectedSubscription.id,
             name: selectedSubscription.subscription_name,
             payDay: String(selectedSubscription.payment_day),
             price: String(selectedSubscription.cost),
@@ -217,6 +221,7 @@ const Subscriptions = () => {
             setSelectedSubscription(null); 
             fetchSubscriptions(); 
           }} 
+          onSuccess={fetchSubscriptions}
         />
       )}
       

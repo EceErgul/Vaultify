@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { getAssets, getAssetById, createAsset, deleteAsset } from '../controllers/asset.controller';
-import { getAssetTransactions, addTransaction } from '../controllers/assetDetail.controller';
+import { getAssetTransactions, addTransaction, deleteTransaction, updateTransaction } from '../controllers/assetDetail.controller';
 import { protect } from '../middlewares/auth.middleware';
 
 const router = Router();
@@ -14,5 +14,7 @@ router.delete('/:id', deleteAsset);
 
 router.get('/:assetId/transactions', getAssetTransactions);
 router.post('/:assetId/transactions', addTransaction);
+router.delete('/transactions/:txId', deleteTransaction);
+router.put('/transactions/:txId', updateTransaction);
 
 export default router;

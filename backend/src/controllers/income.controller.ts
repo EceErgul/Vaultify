@@ -28,3 +28,12 @@ export const deleteIncome = async (req: AuthRequest, res: Response, next: NextFu
     next(error);
   }
 };
+
+export const updateIncome = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const income = await incomeService.updateIncome(req.userId!, req.params.id, req.body);
+    res.status(200).json({ success: true, data: income });
+  } catch (error) {
+    next(error);
+  }
+};

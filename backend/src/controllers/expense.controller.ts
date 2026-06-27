@@ -28,3 +28,12 @@ export const deleteExpense = async (req: AuthRequest, res: Response, next: NextF
     next(error);
   }
 };
+
+export const updateExpense = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const updated = await expenseService.updateExpense(req.userId!, req.params.id, req.body);
+    res.status(200).json({ success: true, data: updated });
+  } catch (error) {
+    next(error);
+  }
+};

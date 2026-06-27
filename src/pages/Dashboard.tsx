@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import * as Recharts from 'recharts';
 import '../styles/dashboard.css';
-import { Income, ExpensesCategoryChart } from '../types/index';
+import { Income } from '../types/index';
 import { getCategoryColorVar } from '../utils/colourHelpers';
 import { apiRequest } from '../utils/api';
 
@@ -30,19 +30,21 @@ const Dashboard: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
+  const [assets, setAssets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [incomeData, expenseData] = await Promise.all([
-        apiRequest('/incomes'),
-        apiRequest('/expenses')
-      ]);
-      setIncomes(incomeData);
-      setExpenses(expenseData);
+      const incomeData = await apiRequest('/incomes');
+      const expenseData = await apiRequest('/expenses');
+      const assetData = await apiRequest('/assets');
+      
+      setIncomes(incomeData || []);
+      setExpenses(expenseData || []);
+      setAssets(assetData || []);
     } catch (error) {
-      console.error(error);
+      console.error("Dashboard veri çekme hatası:", error);
     } finally {
       setLoading(false);
     }
@@ -65,6 +67,7 @@ const Dashboard: React.FC = () => {
 
     const totalIncome = incomes.reduce((acc, curr) => acc + Number(curr.income_amount), 0);
     const totalExpense = expenses.reduce((acc, curr) => acc + Number(curr.expenses_amount), 0);
+    const totalAssets = assets.reduce((acc, curr) => acc + Number(curr.total_cost), 0); // Toplam varlık hesaplandı
 
     const incomeChartData = incomes.map(item => ({
       name: item.income_category,
@@ -81,17 +84,17 @@ const Dashboard: React.FC = () => {
     return [
       { 
         title: "Net Varlık Özeti", 
-        amount: totalIncome - totalExpense, 
+        amount: (totalIncome - totalExpense) + totalAssets, // Net varlığa varlıkları ekledik
         data: [
           { name: 'Gelir', value: totalIncome, fill: resolveCssColor('--color-maas') },
           { name: 'Gider', value: totalExpense, fill: resolveCssColor('--color-ev') },
-          { name: 'Birikim', value: totalIncome * 0.1, fill: resolveCssColor('--color-varliklarim') },
+          { name: 'Birikim (Varlıklar)', value: totalAssets, fill: resolveCssColor('--color-varliklarim') },
         ] 
       },
       { title: "Gelir Dağılımı", amount: totalIncome, data: incomeChartData },
       { title: "Gider Dağılımı", amount: totalExpense, data: expenseChartData },
     ];
-  }, [incomes, expenses, isMounted]);
+  }, [incomes, expenses, assets, isMounted]);
 
   if (!isMounted || loading) {
     return (
@@ -109,7 +112,7 @@ const Dashboard: React.FC = () => {
             key={idx}
             className="mb-12 w-full bg-[var(--bg-card)] rounded-[var(--v-card)] p-8 shadow-v-soft border border-[var(--border-color)] group hover:border-[var(--sidebar-accent)] transition-all"
           >
-            <div className="mb-8 flex justify-between items-end border-b border-[var(--border-color)] pb-6">
+             <div className="mb-8 flex justify-between items-end border-b border-[var(--border-color)] pb-6">
               <div>
                 <h2 className="text-2xl font-bold group-hover:text-[var(--sidebar-accent)] transition-colors">
                   {section.title}
@@ -118,7 +121,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="text-right">
                 <span className="text-2xl font-black text-[var(--sidebar-accent)]">
-                  {section.amount.toLocaleString()} ₺
+                  {section.amount.toLocaleString('tr-TR')} ₺
                 </span>
               </div>
             </div>
@@ -142,12 +145,7 @@ const Dashboard: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ 
-                      borderRadius: '16px', 
-                      backgroundColor: '#1e293b', 
-                      border: 'none',
-                      color: '#fff' 
-                    }}
+                    contentStyle={{ borderRadius: '16px', backgroundColor: '#1e293b', border: 'none', color: '#fff' }}
                     formatter={(value: any) => `${Number(value).toLocaleString()} ₺`}
                   />
                 </PieChart>
@@ -156,18 +154,12 @@ const Dashboard: React.FC = () => {
 
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {section.data.map((item: any, i: number) => (
-                <div 
-                  key={i} 
-                  className="flex items-center space-x-4 p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-color)]"
-                >
-                  <div 
-                    className="w-5 h-5 rounded-full flex-shrink-0" 
-                    style={{ backgroundColor: item.fill }}
-                  />
+                <div key={i} className="flex items-center space-x-4 p-4 rounded-2xl bg-[var(--bg-page)] border border-[var(--border-color)]">
+                  <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ backgroundColor: item.fill }} />
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-bold truncate">{item.name}</span>
                     <span className="text-xs text-[var(--text-muted)] font-medium">
-                      {item.value.toLocaleString()} ₺
+                      {item.value.toLocaleString('tr-TR')} ₺
                     </span>
                   </div>
                 </div>

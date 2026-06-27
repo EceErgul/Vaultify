@@ -27,3 +27,25 @@ export const deleteExpense = async (userId: string, expenseId: string) => {
   }
   return result.rows[0];
 };
+
+export const updateExpense = async (userId: string, expenseId: string, expenseData: any) => {
+  const { expense_name, expense_category, payment_method, expenses_amount, date } = expenseData;
+  
+  const result = await pool.query(
+    `UPDATE expenses 
+     SET expense_name = $1, 
+         expense_category = $2, 
+         payment_method = $3, 
+         expenses_amount = $4, 
+         date = $5 
+     WHERE id = $6 AND user_id = $7 
+     RETURNING *`,
+    [expense_name, expense_category, payment_method, expenses_amount, date, expenseId, userId]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('Expense not found or unauthorized');
+  }
+
+  return result.rows[0];
+};

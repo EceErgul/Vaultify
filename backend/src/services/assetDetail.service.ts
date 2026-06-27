@@ -58,3 +58,59 @@ export const addTransaction = async (userId: string, assetId: string, transactio
     client.release();
   }
 };
+
+export const deleteTransaction = async (userId: string, txId: string) => {
+  const transactionCheck = await pool.query(
+    `SELECT at.*
+     FROM asset_transactions at
+     JOIN assets a ON at.asset_id = a.id
+     WHERE at.id = $1::uuid AND a.user_id = $2::uuid`,
+    [txId, userId]
+  );
+
+  if (transactionCheck.rows.length === 0) {
+    throw new Error('İşlem bulunamadı veya bu işleme erişim yetkiniz yok.');
+  }
+
+  const deletedResult = await pool.query(
+    'DELETE FROM asset_transactions WHERE id = $1 RETURNING *',
+    [txId]
+  );
+
+  return deletedResult.rows[0];
+};
+
+export const updateTransaction = async (userId: string, txId: string, body: any) => {
+  const transactionCheck = await pool.query(
+    `SELECT at.*
+     FROM asset_transactions at
+     JOIN assets a ON at.asset_id = a.id
+     WHERE at.id = $1::uuid AND a.user_id = $2::uuid`,
+    [txId, userId]
+  );
+
+  if (transactionCheck.rows.length === 0) {
+    throw new Error('İşlem bulunamadı veya bu işleme erişim yetkiniz yok.');
+  }
+
+  const updatedResult = await pool.query(
+    `UPDATE asset_transactions
+     SET transaction_type = $1,
+         date = $2,
+         total_quantity = $3,
+         price_per_unit = $4,
+         total_value = $5
+     WHERE id = $6
+     RETURNING *`,
+    [
+      body.transactionType ?? body.transaction_type,
+      body.date,
+      body.totalQuantity ?? body.total_quantity,
+      body.pricePerUnit ?? body.price_per_unit,
+      body.totalValue ?? body.total_value,
+      txId
+    ]
+  );
+
+  return updatedResult.rows[0];
+};

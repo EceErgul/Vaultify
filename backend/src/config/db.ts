@@ -7,11 +7,10 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false 
   },
-  max: 10,
+  max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000, 
-});
-
+});2
 pool.on('connect', () => {
   console.log('🔌 Neon DB bağlantı havuzu (Pool) başarıyla kuruldu.');
 });

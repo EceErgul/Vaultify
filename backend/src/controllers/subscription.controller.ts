@@ -20,6 +20,15 @@ export const createSubscription = async (req: AuthRequest, res: Response, next: 
   }
 };
 
+export const updateSubscription = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const sub = await subscriptionService.updateSubscription(req.userId!, req.params.id, req.body);
+    res.status(200).json({ success: true, data: sub });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const deleteSubscription = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const sub = await subscriptionService.deleteSubscription(req.userId!, req.params.id);

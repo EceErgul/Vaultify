@@ -17,6 +17,23 @@ export const createSubscription = async (userId: string, subData: any) => {
   return result.rows[0];
 };
 
+export const updateSubscription = async (userId: string, subId: string, subData: any) => {
+  const { subscription_name, cost, payment_day, start_date, is_trial } = subData;
+  
+  const result = await pool.query(
+    `UPDATE subscriptions 
+     SET subscription_name = $1, cost = $2, payment_day = $3, start_date = $4, is_trial = $5 
+     WHERE id = $6 AND user_id = $7 
+     RETURNING *`,
+    [subscription_name, cost, payment_day, start_date, is_trial, subId, userId]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('Subscription not found or unauthorized');
+  }
+  return result.rows[0];
+};
+
 export const deleteSubscription = async (userId: string, subId: string) => {
   const result = await pool.query(
     'DELETE FROM subscriptions WHERE id = $1 AND user_id = $2 RETURNING *',

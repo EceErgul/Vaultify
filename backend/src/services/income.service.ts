@@ -27,3 +27,23 @@ export const deleteIncome = async (userId: string, incomeId: string) => {
   }
   return result.rows[0];
 };
+
+export const updateIncome = async (userId: string, incomeId: string, incomeData: any) => {
+  const { income_name, income_category, income_amount, date } = incomeData;
+  
+  const result = await pool.query(
+    `UPDATE incomes 
+     SET income_name = $1, 
+         income_category = $2, 
+         income_amount = $3, 
+         date = $4 
+     WHERE id = $5 AND user_id = $6 
+     RETURNING *`,
+    [income_name, income_category, income_amount, date, incomeId, userId]
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error('Income record not found or unauthorized');
+  }
+  return result.rows[0];
+};

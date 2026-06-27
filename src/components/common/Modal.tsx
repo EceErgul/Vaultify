@@ -25,7 +25,7 @@ const BaseModal: React.FC<BaseModalProps> = ({ title, onClose, children }) => {
             {title}
           </h2>
 
-          <div className="space-y-4">
+          <div className="relative z-50 space-y-4"> 
             {children}
           </div>
         </div>

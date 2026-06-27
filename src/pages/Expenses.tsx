@@ -1,8 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
+import { GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
 import HarcamaEkleModal from '../components/common/HarcamaEkleModal';
 import FiltreleModal, { FilterState } from '../components/common/FiltreleModal';
+import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 
 interface Expense {
@@ -29,8 +30,10 @@ const initialFilterValues: FilterState = {
 const Expenses = () => {
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [currentFilters, setCurrentFilters] = useState<FilterState>(initialFilterValues);
   const [harcamalar, setHarcamalar] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +54,16 @@ const Expenses = () => {
     fetchExpenses();
   }, []);
 
+  const handleEdit = (expense: Expense) => {
+    setEditingExpense(expense);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingExpense(null);
+    setIsModalOpen(true);
+  };
+
   const activeFilterCount = useMemo(() => {
     let count = 0;
     if (currentFilters.searchTerm.trim() !== '') count++;
@@ -64,7 +77,6 @@ const Expenses = () => {
 
   const filteredHarcamalar = useMemo(() => {
     let result = [...harcamalar];
-
     if (currentFilters.searchTerm) {
       const term = currentFilters.searchTerm.toLowerCase();
       result = result.filter(item => 
@@ -72,59 +84,42 @@ const Expenses = () => {
         item.expense_category.toLowerCase().includes(term)
       );
     }
-
     if (currentFilters.expenseName) {
-      result = result.filter(item => 
-        item.expense_name.toLowerCase().includes(currentFilters.expenseName.toLowerCase())
-      );
+      result = result.filter(item => item.expense_name.toLowerCase().includes(currentFilters.expenseName.toLowerCase()));
     }
-
     if (currentFilters.category) {
       result = result.filter(item => item.expense_category === currentFilters.category);
     }
-
     if (currentFilters.paymentMethod) {
       result = result.filter(item => item.payment_method.toLowerCase() === currentFilters.paymentMethod?.toLowerCase());
     }
-
     if (currentFilters.minAmount) {
       result = result.filter(item => Number(item.expenses_amount) >= parseFloat(currentFilters.minAmount));
     }
     if (currentFilters.maxAmount) {
       result = result.filter(item => Number(item.expenses_amount) <= parseFloat(currentFilters.maxAmount));
     }
-
     if (currentFilters.date) {
       result = result.filter(item => item.date.startsWith(currentFilters.date));
     }
-
     result.sort((a, b) => {
+      const amountA = Number(a.expenses_amount);
+      const amountB = Number(b.expenses_amount);
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-
-      if (dateA !== dateB) {
-        return currentFilters.dateSort === 'asc' ? dateA - dateB : dateB - dateA;
-      }
-
-      return currentFilters.amountSort === 'asc' 
-        ? Number(a.expenses_amount) - Number(b.expenses_amount) 
-        : Number(b.expenses_amount) - Number(a.expenses_amount);
+      if (currentFilters.amountSort) return currentFilters.amountSort === 'asc' ? amountA - amountB : amountB - amountA;
+      return currentFilters.dateSort === 'asc' ? dateA - dateB : dateB - dateA;
     });
-
     return result;
   }, [harcamalar, currentFilters]);
 
   const toggleSelect = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
-    );
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]);
   };
 
   const handleConfirmDelete = async () => {
     try {
-      await Promise.all(
-        selectedIds.map(id => apiRequest(`/expenses/${id}`, { method: 'DELETE' }))
-      );
+      await Promise.all(selectedIds.map(id => apiRequest(`/expenses/${id}`, { method: 'DELETE' })));
       fetchExpenses();
       setIsDeleteMode(false);
       setSelectedIds([]);
@@ -138,28 +133,15 @@ const Expenses = () => {
       <div className="flex justify-between items-start mb-6">
         <h2 className="text-2xl font-semibold tracking-tight text-black">Toplam Harcamalarım</h2>
         <div className="flex flex-col gap-2">
-          <Button 
-            variant="add" 
-            className="w-[140px] h-[32px] text-[11px] shadow-sm"
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            + Harcama Ekle
-          </Button>
+          <Button variant="add" className="w-[140px] h-[32px] text-[11px] shadow-sm" onClick={handleOpenAddModal}>+ Harcama Ekle</Button>
           
-          <GeneralDeleteComponent 
-            label="Harcama Sil" 
-            className="w-[140px] h-[32px] text-[11px]"
-            onDelete={() => {
-                setIsDeleteMode(!isDeleteMode);
-                setSelectedIds([]);
-            }} 
-          />
+          {!isDeleteMode ? (
+            <Button variant="delete" className="w-[140px] h-[32px] text-[11px]" onClick={() => setIsDeleteMode(true)}>Harcama Sil</Button>
+          ) : (
+            <Button variant="delete" className="w-[140px] h-[32px] text-[11px] !bg-gray-500 !text-white" onClick={() => { setIsDeleteMode(false); setSelectedIds([]); }}>Vazgeç</Button>
+          )}
 
-          <Button 
-            variant="filter"
-            className="w-[140px] h-[32px] text-[11px] bg-[#FFEF79] border border-black shadow-sm"
-            onClick={() => setIsFilterModalOpen(true)}
-          >
+          <Button variant="filter" className="w-[140px] h-[32px] text-[11px] bg-[#FFEF79] border border-black shadow-sm" onClick={() => setIsFilterModalOpen(true)}>
             Filtrele ≡ ({activeFilterCount})
           </Button>
         </div>
@@ -187,79 +169,78 @@ const Expenses = () => {
               <th className="border-r border-black p-2 font-regular">Harcama Adı</th>
               <th className="border-r border-black p-2 font-regular">Kategori</th>
               <th className="border-r border-black p-2 font-regular">Ödeme Yöntemi</th>
-              <th className="p-2 font-regular">Tutar</th>
+              <th className="border-r border-black p-2 font-regular">Tutar</th>
+              {!isDeleteMode && <th className="p-2 font-regular">İşlem</th>}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className="h-12 bg-white">
-                <td colSpan={isDeleteMode ? 6 : 5} className="text-center text-xs">
-                  Harcamalar yükleniyor...
-                </td>
-              </tr>
+              <tr className="h-12 bg-white"><td colSpan={6} className="text-center text-xs">Harcamalar yükleniyor...</td></tr>
             ) : filteredHarcamalar.map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
-              const formattedDate = new Date(item.date).toLocaleString('tr-TR');
+              const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
 
               return (
-                <tr 
-                  key={item.id} 
-                  style={{ backgroundColor: bgColor }}
-                  className="h-12 border-b border-black last:border-0 text-sm text-black"
-                >
+                <tr key={item.id} style={{ backgroundColor: bgColor }} className="h-12 border-b border-black last:border-0 text-sm text-black">
                   {isDeleteMode && (
                     <td className="text-center border-r border-black/20">
-                      <div className="flex justify-center items-center h-full">
-                        <GeneralDeleteCheckbox 
-                          checked={selectedIds.includes(item.id)} 
-                          onChange={() => toggleSelect(item.id)} 
-                        />
-                      </div>
+                      <GeneralDeleteCheckbox checked={selectedIds.includes(item.id)} onChange={() => toggleSelect(item.id)} />
                     </td>
                   )}
                   <td className="border-r border-black px-4 text-center font-regular">{formattedDate}</td>
                   <td className="border-r border-black px-4 text-center font-regular">{item.expense_name}</td>
                   <td className="border-r border-black px-4 text-center font-regular">{item.expense_category}</td>
                   <td className="border-r border-black px-4 text-center font-regular">{item.payment_method}</td>
-                  <td className="text-center font-regular px-4">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</td>
+                  <td className="border-r border-black text-center font-regular px-4">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</td>
+                  {!isDeleteMode && (
+                    <td className="text-center">
+                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-900 hover:text-black">Düzenle</button>
+                    </td>
+                  )}
                 </tr>
               );
             })}
-            {!loading && filteredHarcamalar.length === 0 && (
-              <tr className="h-12 bg-white">
-                <td colSpan={isDeleteMode ? 6 : 5} className="text-center text-gray-400 italic text-xs">
-                  Aranan kriterlere uygun harcama bulunamadı.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
 
       {isDeleteMode && selectedIds.length > 0 && (
         <div className="mt-8 flex justify-end animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <Button 
-            variant="applyDelete" 
-            className="w-[120px] h-[35px] text-sm shadow-md"
-            onClick={handleConfirmDelete}
-          >
-            Onayla
-          </Button>
+          <Button variant="applyDelete" className="w-[120px] h-[35px] text-sm shadow-md" onClick={() => setIsConfirmDeleteOpen(true)}>Onayla</Button>
         </div>
       )}
 
-      {isAddModalOpen && (
-        <HarcamaEkleModal onClose={() => { setIsAddModalOpen(false); fetchExpenses(); }} />
+      {isModalOpen && (
+        <HarcamaEkleModal 
+          onClose={() => { setIsModalOpen(false); setEditingExpense(null); fetchExpenses(); }}
+          onExpenseAdded={fetchExpenses}
+          initialData={editingExpense ? { 
+            id: editingExpense.id,
+            date: editingExpense.date, 
+            amount: editingExpense.expenses_amount, 
+            category: editingExpense.expense_category, 
+            name: editingExpense.expense_name,
+            paymentMethod: editingExpense.payment_method 
+          } : undefined}
+          isEditMode={!!editingExpense}
+        />
       )}
       
       {isFilterModalOpen && (
-        <FiltreleModal 
-          onClose={() => setIsFilterModalOpen(false)}
-          setFilterCount={() => {}}
-          initialFilters={currentFilters}
-          onApplyFilters={(updatedFilters) => setCurrentFilters(updatedFilters)}
-        />
+        <FiltreleModal onClose={() => setIsFilterModalOpen(false)} setFilterCount={() => {}} initialFilters={currentFilters} onApplyFilters={(updatedFilters) => setCurrentFilters(updatedFilters)} />
+      )}
+
+      {isConfirmDeleteOpen && (
+        <BaseModal title="Harcamayı Sil" onClose={() => setIsConfirmDeleteOpen(false)}>
+          <div className="p-4 text-center font-inter">
+            <p className="text-sm mb-6">Seçtiğiniz <b>{selectedIds.length}</b> harcamayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+            <div className="flex justify-center gap-3">
+              <Button variant="cancel" className="w-[100px]" onClick={() => setIsConfirmDeleteOpen(false)}>Vazgeç</Button>
+              <Button variant="applyDelete" className="w-[100px]" onClick={() => { handleConfirmDelete(); setIsConfirmDeleteOpen(false); }}>Sil</Button>
+            </div>
+          </div>
+        </BaseModal>
       )}
     </div>
   );

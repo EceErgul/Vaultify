@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
 import { GelirEkleModal, GelirDuzenleModal } from '../components/common/GelirModallari';
+import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 
 interface IncomeItem {
@@ -17,6 +18,7 @@ const Incomes = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false); // Onay modalı state'i
   const [selectedIncome, setSelectedIncome] = useState<IncomeItem | null>(null);
   const [gelirler, setGelirler] = useState<IncomeItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,11 +56,14 @@ const Incomes = () => {
       await Promise.all(
         selectedIds.map(id => apiRequest(`/incomes/${id}`, { method: 'DELETE' }))
       );
+      
       fetchIncomes();
       setIsDeleteMode(false);
       setSelectedIds([]);
+      setIsConfirmModalOpen(false); // Modalı kapat
     } catch (error) {
-      console.error(error);
+      console.error("Silme hatası:", error);
+      alert("Silme işlemi sırasında bir hata oluştu.");
     }
   };
 
@@ -82,8 +87,8 @@ const Incomes = () => {
             + Gelir Ekle
           </Button>
           
-          <GeneralDeleteComponent 
-            label="Gelir Sil" 
+          <GeneralDeleteComponent
+            label={isDeleteMode ? "Vazgeç" : "Gelir Sil"} 
             className="w-[140px] h-[32px] text-[11px]" 
             onDelete={() => {
               setIsDeleteMode(!isDeleteMode);
@@ -174,11 +179,25 @@ const Incomes = () => {
           <Button 
             variant="applyDelete" 
             className="w-[110px] h-[32px] text-sm shadow-md"
-            onClick={handleConfirmDelete}
+            onClick={() => setIsConfirmModalOpen(true)}
           >
             Onayla
           </Button>
         </div>
+      )}
+
+      {isConfirmModalOpen && (
+        <BaseModal title="Silme Onayı" onClose={() => setIsConfirmModalOpen(false)}>
+          <div className="p-4 text-center font-inter">
+            <p className="mb-6 text-sm text-[#333D50]">
+              Seçili <span className="font-bold">{selectedIds.length}</span> geliri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+            </p>
+            <div className="flex justify-center gap-4">
+              <Button variant="add" onClick={() => setIsConfirmModalOpen(false)} className="w-[100px]">Vazgeç</Button>
+              <Button variant="applyDelete" onClick={handleConfirmDelete} className="w-[100px]">Evet, Sil</Button>
+            </div>
+          </div>
+        </BaseModal>
       )}
 
       {isAddModalOpen && (

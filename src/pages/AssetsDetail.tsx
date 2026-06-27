@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/common/Button';
 import AssetTransactionModal from '../components/common/AssetTransactionModal';
 import VarlikAyrintisiDuzenle from '../components/common/VarlikAyrintisiDuzenleModal';
+import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 
 interface Transaction {
@@ -37,7 +38,11 @@ const AssetsDetail = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [liveRelativeTime, setLiveRelativeTime] = useState<string>('şimdi');
 
-const fetchDetailData = async () => {
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [txToDelete, setTxToDelete] = useState<string | null>(null);
+  const [editingTx, setEditingTx] = useState<Transaction | null>(null);
+
+  const fetchDetailData = async () => {
     if (!id) return;
 
     try {
@@ -115,15 +120,36 @@ const fetchDetailData = async () => {
     return () => clearInterval(interval);
   }, [assetInfo?.lastUpdated]);
 
-  const handleDelete = async (txId: string) => {
-    const confirmDelete = window.confirm("Bu işlem kaydını silmek istediğinize emin misiniz?");
-    if (confirmDelete) {
-      try {
-        await apiRequest(`/transactions/${txId}`, { method: 'DELETE' });
-        fetchDetailData();
-      } catch (error) {
-        console.error("İşlem silinirken hata oluştu:", error);
-      }
+  const handleDeleteClick = (txId: string) => {
+    console.log(" [SİLME ADIM 1] İkona tıklandı. Hedef TX ID:", txId);
+    setTxToDelete(txId);
+    setIsConfirmDeleteOpen(true);
+  };
+
+  const confirmDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    console.log(" [SİLME ADIM 2] 'Evet, Sil' tıklandı. Hafızadaki ID:", txToDelete);
+
+    if (!txToDelete) {
+      alert("Hata: Silinecek işlem ID'si hafızada bulunamadı!");
+      return;
+    }
+
+    try {
+      console.log(` [SİLME ADIM 3] İstek atılıyor -> DELETE /transactions/${txToDelete}`);
+      
+      await apiRequest(`/assets/transactions/${txToDelete}`, { method: 'DELETE' });
+      
+      console.log(" [SİLME ADIM 4] Başarılı! Tablo verisi yeniden çekiliyor...");
+      await fetchDetailData();
+
+    } catch (error: any) {
+      console.error(" [SİLME ADIMında HATA]:", error);
+      alert("Sunucu silme işlemini reddetti!\nSebep: " + (error?.message || "Bilinmeyen API hatası (F12 Konsola bak)"));
+    } finally {
+      setIsConfirmDeleteOpen(false);
+      setTxToDelete(null);
     }
   };
 
@@ -253,7 +279,11 @@ const fetchDetailData = async () => {
                     <td className="text-center">
                       <div className="flex justify-center items-center gap-4">
                         <button 
-                          onClick={() => setIsEditModalOpen(true)} 
+                          type="button"
+                          onClick={() => {
+                            setEditingTx(row);
+                            setIsEditModalOpen(true);
+                          }} 
                           className="hover:scale-125 transition-transform text-xl"
                           title="Düzenle"
                         >
@@ -261,7 +291,8 @@ const fetchDetailData = async () => {
                         </button>
                         <span className="text-gray-400">|</span>
                         <button 
-                          onClick={() => handleDelete(row.id)} 
+                          type="button"
+                          onClick={() => handleDeleteClick(row.id)} 
                           className="hover:scale-125 transition-transform text-xl"
                           title="Sil"
                         >
@@ -286,8 +317,59 @@ const fetchDetailData = async () => {
 
       <VarlikAyrintisiDuzenle 
         isOpen={isEditModalOpen} 
-        onClose={() => { setIsEditModalOpen(false); fetchDetailData(); }} 
+        onClose={() => { 
+          setIsEditModalOpen(false); 
+          setEditingTx(null); 
+        }}
+        onSave={async (data) => {
+          if (!editingTx) return;
+          try {
+            await apiRequest(`/assets/transactions/${editingTx.id}`, { 
+              method: 'PUT', 
+              body: {
+                transactionType: editingTx.transactionType,
+                date: data.date,
+                totalQuantity: parseFloat(data.amount),
+                pricePerUnit: parseFloat(data.price),
+                totalValue: parseFloat(data.amount) * parseFloat(data.price)
+              }
+            });
+            await fetchDetailData();
+          } catch (err) {
+            alert("Düzenleme başarısız oldu!");
+          }
+        }}
+        initialData={editingTx ? {
+          date: editingTx.date.split('T')[0].split('-').reverse().join('/'),
+          amount: editingTx.totalQuantity.toString(),
+          price: editingTx.pricePerUnit.toString()
+        } : undefined}
       />
+
+      {isConfirmDeleteOpen && (
+        <BaseModal title="İşlemi Sil" onClose={() => setIsConfirmDeleteOpen(false)}>
+          <div className="p-6 text-center font-inter">
+            <p className="mb-6 text-black text-lg font-medium">Bu işlem kaydını silmek istediğinize emin misiniz?</p>
+            <div className="flex justify-center items-center gap-4">
+              <Button 
+                variant="cancel" 
+                className="w-[120px] h-[40px] shadow-sm" 
+                onClick={() => setIsConfirmDeleteOpen(false)}
+              >
+                Vazgeç
+              </Button>
+              <Button 
+                variant="apply" 
+                className="w-[120px] h-[40px] !bg-red-600 !text-white shadow-sm hover:!bg-red-700" 
+                onClick={confirmDelete}
+              >
+                Evet, Sil
+              </Button>
+            </div>
+          </div>
+        </BaseModal>
+      )}
+
     </div>
   );
 };
