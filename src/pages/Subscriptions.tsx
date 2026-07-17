@@ -28,6 +28,7 @@ const Subscriptions = () => {
     try {
       setLoading(true);
       const data = await apiRequest('/subscriptions');
+      console.log("API'den gelen ham veri:", data);
       setSubscriptions(data || []);
     } catch (error) {
       console.error('Abonelikler yüklenirken hata oluştu:', error);
@@ -76,11 +77,12 @@ const Subscriptions = () => {
     return `https://icon.horse/icon/${cleanName}.com`;
   };
 
-  const aylikToplam = subscriptions.reduce((acc, curr) => acc + Number(curr.cost), 0);
+  const validSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
+  const aylikToplam = validSubscriptions.reduce((acc, curr) => acc + Number(curr.cost), 0);
   
-  const siradakiOdeme = subscriptions.length > 0 
-    ? [...subscriptions].sort((a, b) => getKalanGun(a.payment_day) - getKalanGun(b.payment_day))[0] 
-    : null;
+  const siradakiOdeme = validSubscriptions.length > 0 
+  ? [...validSubscriptions].sort((a, b) => getKalanGun(a.payment_day) - getKalanGun(b.payment_day))[0] 
+  : null;
 
   return (
     <div className="p-8 font-inter max-w-6xl mx-auto flex flex-col items-center">
@@ -120,9 +122,9 @@ const Subscriptions = () => {
             Yükleniyor...
           </div>
         ) : (
-          subscriptions.map((sub) => {
-            const kalanGun = getKalanGun(sub.payment_day);
-            const abonelikSuresi = getAbonelikSuresi(sub.start_date);
+          validSubscriptions.map((sub) => {
+          const kalanGun = getKalanGun(sub.payment_day);
+          const abonelikSuresi = getAbonelikSuresi(sub.start_date);
 
             return (
               <div 
@@ -172,7 +174,7 @@ const Subscriptions = () => {
       </div>
 
       <div className="flex gap-3 mb-10">
-        {[...Array(subscriptions.length + 1)].map((_, i) => (
+        {[...Array(Math.max(0, validSubscriptions.length + 1))].map((_, i) => (
           <button
             key={i}
             onClick={() => setActiveIndex(i)}
