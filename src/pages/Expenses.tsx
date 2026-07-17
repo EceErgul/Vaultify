@@ -42,9 +42,10 @@ const Expenses = () => {
     try {
       setLoading(true);
       const data = await apiRequest('/expenses');
-      setHarcamalar(data);
+      setHarcamalar(Array.isArray(data) ? data : (data.expenses || data.data || []));
     } catch (error) {
       console.error(error);
+      setHarcamalar([]);
     } finally {
       setLoading(false);
     }
@@ -176,7 +177,7 @@ const Expenses = () => {
           <tbody>
             {loading ? (
               <tr className="h-12 bg-white"><td colSpan={6} className="text-center text-xs">Harcamalar yükleniyor...</td></tr>
-            ) : filteredHarcamalar.map((item, index) => {
+            ) : (Array.isArray(harcamalar) ? harcamalar : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
