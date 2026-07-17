@@ -28,4 +28,4 @@ yarn-error.log*
 *.sln
 *.sw?
 
-backend/uploads/
+backend/src/uploads/

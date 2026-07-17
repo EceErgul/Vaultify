@@ -5,6 +5,7 @@ import apiRoutes from './routes/index';
 import { errorHandler } from './middlewares/error.middleware';
 import { upload } from './middlewares/fileStorage';
 import './jobs/subscriptionCron';
+import path from 'path';
 
 dotenv.config({ path: './backend/.env' });
 
@@ -24,7 +25,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use('/api', apiRoutes);
-app.use('/uploads', express.static('uploads'));
+const uploadPath = path.resolve(__dirname, 'uploads');
+console.log("Sunucu şu yolu servis ediyor:", uploadPath);
+app.use('/uploads', express.static(uploadPath));
 
 app.get('/api/health', (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: 'API is running' });

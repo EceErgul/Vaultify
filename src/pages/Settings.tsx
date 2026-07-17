@@ -189,7 +189,8 @@ const Settings = () => {
       body: formData,
     });
 
-    updateProfileInfo('profileImage', data.url);
+    window.dispatchEvent(new Event('profileUpdated'));
+
     alert("Profil fotoğrafı güncellendi!");
   } catch (error) {
     console.error("Yükleme hatası:", error);

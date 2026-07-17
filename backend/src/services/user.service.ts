@@ -1,4 +1,6 @@
 import pool from '../config/db';
+import fs from 'fs';
+import path from 'path';
 
 export const updateUserSettings = async (userId: string, updates: any) => {
   const fieldConfig: Record<string, { col: string; table: string }> = {
@@ -58,7 +60,25 @@ export const getSettings = async (userId: string) => {
 };
 
 export const updateProfileImage = async (userId: string, imageUrl: string) => {
+  const result = await pool.query('SELECT profile_picture FROM users WHERE id = $1', [userId]);
+  const oldImage = result.rows[0]?.profile_picture;
+
+  if (oldImage) {
+    const filename = path.basename(oldImage); 
+    const oldFilePath = path.join(__dirname, '..', 'uploads', filename);
+
+    if (fs.existsSync(oldFilePath)) {
+      try {
+        fs.unlinkSync(oldFilePath);
+        console.log("Eski profil fotoğrafı sunucudan silindi:", oldFilePath);
+      } catch (err) {
+        console.error("Eski fotoğraf silinirken hata oluştu:", err);
+      }
+    }
+  }
+
   const query = 'UPDATE users SET profile_picture = $1 WHERE id = $2';
   await pool.query(query, [imageUrl, userId]);
+  
   return { success: true };
 };
