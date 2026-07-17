@@ -57,3 +57,8 @@ export const getSettings = async (userId: string) => {
   const newSettings = await db.query(insertQuery, values);
   return newSettings.rows[0];
 };
+
+export const checkInvisibleMode = async (userId: string) => {
+  const result = await pool.query('SELECT invisible_mode FROM settings WHERE user_id = $1', [userId]);
+  return result.rows[0]?.invisible_mode || false;
+};

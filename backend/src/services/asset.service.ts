@@ -1,7 +1,14 @@
 import pool from '../config/db';
 import { getLivePrice } from './market.service';
+import * as settingService from '../services/setting.service';
 
 export const getAssets = async (userId: string) => {
+  const isInvisible = await settingService.checkInvisibleMode(userId);
+
+  if (isInvisible) {
+    return [];
+  }
+
   const result = await pool.query(
     'SELECT * FROM assets WHERE user_id = $1 ORDER BY asset_name ASC',
     [userId]

@@ -1,6 +1,13 @@
 import pool from '../config/db';
+import * as settingService from '../services/setting.service';
 
 export const getAssetTransactions = async (userId: string, assetId: string) => {
+  const isInvisible = await settingService.checkInvisibleMode(userId);
+
+  if (isInvisible) {
+    return [];
+  }
+
   const result = await pool.query(
     `SELECT at.*
      FROM asset_transactions at

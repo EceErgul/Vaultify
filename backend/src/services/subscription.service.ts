@@ -1,6 +1,13 @@
 import pool from '../config/db';
+import * as settingService from '../services/setting.service';
 
 export const getSubscriptions = async (userId: string) => {
+  const isInvisible = await settingService.checkInvisibleMode(userId);
+
+  if (isInvisible) {
+    return [];
+  }
+
   const result = await pool.query(
     'SELECT * FROM subscriptions WHERE user_id = $1 ORDER BY start_date DESC',
     [userId]

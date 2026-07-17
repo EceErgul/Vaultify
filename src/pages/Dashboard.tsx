@@ -6,6 +6,7 @@ import { getCategoryColorVar } from '../utils/colourHelpers';
 import { apiRequest } from '../utils/api';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
+const [isInvisibleMode, setIsInvisibleMode] = useState(false);
 
 const FALLBACK_COLORS: Record<string, string> = {
   '--color-maas': '#38A169',
@@ -36,6 +37,20 @@ const Dashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      
+      const settingsData = await apiRequest('/settings');
+      const settings = settingsData?.data || settingsData;
+      const invisibleActive = settings?.invisible_mode ?? false;
+
+      setIsInvisibleMode(invisibleActive);
+
+      if (invisibleActive) {
+        setIncomes([]);
+        setExpenses([]);
+        setAssets([]);
+        return;
+      }
+
       const incomeData = await apiRequest('/incomes');
       const expenseData = await apiRequest('/expenses');
       const assetData = await apiRequest('/assets');
@@ -112,6 +127,20 @@ const Dashboard: React.FC = () => {
     return (
       <div className="p-8 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] flex items-center justify-center">
         <span className="text-lg font-medium">Panel verileri yükleniyor...</span>
+      </div>
+    );
+  }
+  
+  if (isInvisibleMode) {
+    return (
+      <div className="p-8 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-md p-8 bg-[var(--bg-card)] rounded-[var(--v-card)] border border-[var(--border-color)] shadow-v-soft">
+          <div className="text-4xl">👁️‍🗨️</div>
+          <h2 className="text-xl font-bold">Görünmezlik Modu Aktif</h2>
+          <p className="text-sm text-[var(--text-muted)]">
+            Finansal verilerinizin güvenliği için Dashboard paneli geçici olarak gizlenmiştir. Ayarlar sayfasından bu modu kapatabilirsiniz.
+          </p>
+        </div>
       </div>
     );
   }
