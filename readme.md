@@ -35,20 +35,20 @@ Make sure you have the following installed:
 ### Installation
 
 1. **Clone the repository:**
-   ```bash
-   git clone [https://github.com/your-username/vaultify.git](https://github.com/your-username/vaultify.git)
-   cd vaultify
-   ```
+```bash
+git clone [https://github.com/your-username/vaultify.git](https://github.com/your-username/vaultify.git)
+cd vaultify
+```
 
 2. **Install dependencies:**
-  ```bash
-   npm install
-  ```
+```bash
+npm install
+```
 
 3. **Run the development server:**
-   ```bash
-   npm run dev
-   ```
+```bash
+npm run dev
+```
 
 ---
 
