@@ -1,52 +1,66 @@
-1\. Güvenlik Mimarisi: E2EE (Uçtan Uca Şifreleme)
+# 🔐 Vaultify
 
-Verilerin güvenliği için Web Crypto API kullanarak veriyi tarayıcıda (client-side) şifreleyip öyle saklamalıyız.
+Vaultify is a secure, modern, and robust digital vault backend application designed to safely store, manage, and retrieve sensitive data, credentials, and secrets. Built with TypeScript and Node.js, it prioritizes performance, security, and developer-friendly integration.
 
+---
 
+## 🚀 Features
 
-Anahtar Yönetimi: Kullanıcı bir "Master Password" belirler. Bu şifre asla sunucuya gitmez.
+- **Secure Data Storage:** End-to-end encryption concepts for protecting sensitive user credentials and secrets.
+- **Robust Authentication:** Secure user authentication and authorization using JWT (JSON Web Tokens).
+- **RESTful API:** Clean, predictable, and fully documented endpoints.
+- **Type Safety:** Developed entirely in TypeScript for robust error handling and developer efficiency.
+- **High Performance:** Lightweight backend architecture built on Node.js.
 
+## 🛠️ Tech Stack
 
+- **Runtime:** Node.js
+- **Language:** TypeScript
+- **Framework:** Express.js
+- **Database:** PostgreSQL
+- **Security:** bcrypt / JWT / crypto
 
-Şifreleme: Veriler (harcamalar, yatırımlar) bu şifreden türetilen bir anahtar ile AES-GCM algoritması kullanılarak şifrelenir.
+---
 
+## ⚙️ Getting Started
 
+Follow these steps to set up the project locally on your machine.
 
-Depolama: Veritabanında (veya LocalStorage'da) sadece anlamsız karakter yığınları görünür. Şifre çözme işlemi sadece kullanıcının cihazında gerçekleşir.
+### Prerequisites
 
+Make sure you have the following installed:
+- [Node.js](https://nodejs.org/) (v18 or higher recommended)
+- [npm](https://www.npmjs.com/)
 
+### Installation
 
-2\. Özellik Seti ve Veri Modeli
+1. **Clone the repository:**
+  ```bash
+  git clone https://github.com/EceErgul/Vaultify.git
+  cd vaultify
+  ```
 
-A. Birikimler ve Yatırım Takibi
+2. **Install dependencies:**
+  ```bash
+  npm install
+  ```
 
-Sadece nakit değil, varlık bazlı bir takip sistemi:
+3. **Run the development server:**
+  ```bash
+  npm run dev
+  ```
 
+---
 
+## Security Best Practices
 
-Varlık Türleri: Nakit, Altın, Hisse Senedi, Kripto, Döviz.
+This project implements several security measures to keep your data safe:
 
+- **Password Hashing:** Passwords are never stored in plain text; they are securely hashed using bcrypt.
+- **Environment Isolation:** Sensitive configurations and credentials are managed strictly via environment variables.
 
+---
 
-Döviz Desteği: Kullanıcı örneğin "1000 USD" girdiğinde, sistem bunu güncel kurla ana para birimine (örneğin ₺) çevirir ama mülkiyetin "USD" olduğunu saklar.
+## License
 
-
-
-B. Abonelik ve Harcama Yönetimi
-
-Akıllı Takvim: Ödeme günlerini otomatik işaretleyen bir aylık görünüm.
-
-
-
-Tekrarlayan Harcamalar: "Her ayın 15'inde 150 TL" gibi otomatik tanımlamalar.
-
-
-
-C. Dinamik Dashboard
-
-Net Değer (Net Worth): Toplam birikim - Toplam borç/harcama.
-
-
-
-Varlık Dağılımı: Pasta grafiği (Portföyünün % kaçı döviz, % kaçı altın vb.).
-
+This project is licensed under the **MIT License** - see the LICENSE file for details.
