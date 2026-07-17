@@ -5,11 +5,11 @@ interface DropdownProps {
   options: string[];
   onSelect: (value: string) => void;
   placeholder?: string;
+  value: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder }) => {
+const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder, value }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selected, setSelected] = useState("");
 
   return (
     <div className="relative w-full">
@@ -18,7 +18,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder }) =
         className="flex h-[45px] w-full items-center justify-between overflow-hidden rounded-[6px] border border-[#CDCDCD] bg-white cursor-pointer"
       >
         <span className="px-4 text-sm text-[#333D50] opacity-70">
-          {selected || placeholder || "Seçim yapınız"}
+          {value || placeholder || "Seçim yapınız"}
         </span>
 
         <div className="flex h-[35px] w-[35px] items-center justify-center border-l border-[#CDCDCD] bg-white mr-[4px]">
@@ -32,11 +32,12 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder }) =
             <div
               key={opt}
               onClick={() => {
-                setSelected(opt);
                 onSelect(opt);
                 setIsOpen(false);
               }}
-              className="px-4 py-2 text-sm text-[#333D50] hover:bg-gray-100 cursor-pointer whitespace-nowrap"
+              className={`px-4 py-2 text-sm text-[#333D50] hover:bg-gray-100 cursor-pointer whitespace-nowrap ${
+                value === opt ? 'bg-gray-200 font-bold' : ''
+              }`}
             >
               {opt}
             </div>

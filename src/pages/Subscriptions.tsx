@@ -162,7 +162,7 @@ const Subscriptions = () => {
                   </p>
                   <p className="pt-2">{abonelikSuresi} Aydır Abonesin</p>
                   <p className="text-[11px] opacity-80 italic">
-                    Her ayın <span className="font-bold">{sub.payment_day}</span>. günü <br /> tahsil edilir.
+                    Her ayın <span className="font-bold">{sub.payment_day}</span>. günü <br /> ödenir.
                   </p>
                 </div>
               </div>

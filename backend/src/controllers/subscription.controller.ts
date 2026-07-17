@@ -37,3 +37,12 @@ export const deleteSubscription = async (req: AuthRequest, res: Response, next: 
     next(error);
   }
 };
+
+export const clearAllSubscriptions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const sub = await subscriptionService.clearAllSubscriptions(req.userId!);
+    res.status(200).json({ success: true, message: "Tüm kayıtlar başarıyla temizlendi." });
+  } catch (error) {
+    next(error);
+  }
+};

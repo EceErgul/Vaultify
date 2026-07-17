@@ -10,7 +10,8 @@ export const generateToken = (userId: string): string => {
 export const verifyToken = (token: string): any => {
   try {
     return jwt.verify(token, JWT_SECRET);
-  } catch (error) {
+  } catch (error: any) {
+    console.error("JWT Doğrulama Hatası:", error.message); 
     return null;
   }
 };

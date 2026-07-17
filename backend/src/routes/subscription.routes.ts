@@ -1,11 +1,18 @@
 import { Router } from 'express';
-import { getSubscriptions, createSubscription, deleteSubscription, updateSubscription } from '../controllers/subscription.controller';
+import { 
+  getSubscriptions, 
+  createSubscription, 
+  deleteSubscription, 
+  updateSubscription, 
+  clearAllSubscriptions
+} from '../controllers/subscription.controller';
 import { protect } from '../middlewares/auth.middleware';
 
 const router = Router();
 
 router.use(protect);
 
+router.delete('/clear-all', clearAllSubscriptions); 
 router.get('/', getSubscriptions);
 router.post('/', createSubscription);
 router.delete('/:id', deleteSubscription);

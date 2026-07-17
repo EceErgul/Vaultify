@@ -7,7 +7,7 @@ node_modules/
 dist/
 build/
 
-# Yerel çevresel değişkenler (ÇOK KRİTİK)
+# Yerel çevresel değişkenler
 .env
 .env.local
 .env.development.local
@@ -27,3 +27,5 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
+
+backend/uploads/

@@ -44,3 +44,11 @@ export const deleteSubscription = async (userId: string, subId: string) => {
   }
   return result.rows[0];
 };
+
+export const clearAllSubscriptions = async (userId: string) => {
+  const result = await pool.query(
+    'DELETE FROM subscriptions WHERE user_id = $1 RETURNING *',
+    [userId]
+  );
+  return result.rows;
+}

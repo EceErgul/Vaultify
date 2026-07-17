@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { getEmailTemplate } from '../templates/emailTemplates';
 import * as authService from '../services/auth.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { sendEmail } from '../utils/sendEmail';
@@ -8,6 +9,14 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   try {
     const { full_name, email, password } = req.body;
     const result = await authService.registerUser({ full_name, email, password });
+    const welcomeTemplate = getEmailTemplate('WELCOME', { name: result.user.full_name });
+    
+    sendEmail({
+      email: result.user.email,
+      subject: welcomeTemplate.subject,
+      message: welcomeTemplate.html
+    }).catch(err => console.error("Hoş geldin maili gönderilemedi:", err));
+
     res.status(201).json({ success: true, data: result });
   } catch (error) {
     next(error);
@@ -91,5 +100,15 @@ export const resetPasswordSubmit = async (req: Request, res: Response, next: Nex
   } catch (error) {
     console.error("Şifre güncelleme hatası:", error);
     res.status(400).json({ success: false, message: error instanceof Error ? error.message : 'Bir hata oluştu.' });
+  }
+};
+
+export const resetPasswordRequest = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    console.log("Şifre sıfırlama isteği alındı:", email);
+    res.status(200).json({ success: true, message: "E-posta gönderildi." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Sunucu hatası" });
   }
 };

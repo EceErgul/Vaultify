@@ -31,7 +31,8 @@ export const registerUser = async (userData: any) => {
 };
 
 export const loginUser = async (credentials: any) => {
-  const { email, password } = credentials;
+  const { email } = credentials;
+  const password = credentials.password ? credentials.password.toString().trim() : "";
 
   const userRes = await pool.query(
     'SELECT id, full_name, email, password_hash, profile_picture FROM users WHERE email = $1', 
@@ -43,31 +44,46 @@ export const loginUser = async (credentials: any) => {
   }
 
   const user = userRes.rows[0];
-
-  console.log("Veritabanından gelen kullanıcı verisi:", user);
-
   const dbPasswordHash = user.password_hash || user.passwordhash || user.password;
 
   if (!dbPasswordHash) {
     throw new Error('Database password field is missing or undefined');
   }
 
+  console.log("--- LOGIN DEBUG ---");
+  console.log("Gelen Şifre:", password);
+  console.log("Şifre Türü:", typeof password);
+  console.log("DB Hash:", dbPasswordHash);
+  console.log("Hash Türü:", typeof dbPasswordHash);
+
+  const sanityCheck = await bcrypt.compare('123456', dbPasswordHash);
+  console.log("Sanity Check (123456 ile karşılaştırılıyor):", sanityCheck);
+
   const isMatch = await bcrypt.compare(password, dbPasswordHash);
+  
   if (!isMatch) {
     throw new Error('Invalid email or password');
   }
 
-  const token = generateToken(user.id);
+  console.log("Şifre eşleşti! Token oluşturuluyor...");
 
-  return {
-    user: {
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      profile_picture: user.profile_picture
-    },
-    token
-  };
+  try {
+    const token = generateToken(user.id);
+    console.log("Token başarıyla oluşturuldu:", token ? "Evet" : "Hayır");
+    
+    return {
+      user: {
+        id: user.id,
+        full_name: user.full_name,
+        email: user.email,
+        profile_picture: user.profile_picture
+      },
+      token
+    };
+  } catch (tokenError) {
+    console.error("TOKEN OLUŞTURMA HATASI:", tokenError);
+    throw new Error('Token oluşturulurken hata oluştu.');
+  }
 };
 
 export const getUserProfile = async (userId: string) => {

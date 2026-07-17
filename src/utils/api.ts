@@ -6,9 +6,11 @@ interface RequestOptions extends RequestInit {
 
 export const apiRequest = async (endpoint: string, options: RequestOptions = {}) => {
   const token = localStorage.getItem('token');
-  
+  const hasBody = options.body !== undefined && options.body !== null;
+  const isFormData = options.body instanceof FormData;
+
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    ...(hasBody && !isFormData ? { 'Content-Type': 'application/json' } : {}),
     ...(token && { 'Authorization': `Bearer ${token}` }),
     ...((options.headers as object) || {}),
   };
@@ -18,23 +20,17 @@ export const apiRequest = async (endpoint: string, options: RequestOptions = {})
     headers,
   };
 
-  if (options.body && typeof options.body === 'object') {
+  if (hasBody && !isFormData) {
     config.body = JSON.stringify(options.body);
   }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, config);
-  
-  if (response.status === 401) {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
-    throw new Error('Oturum süresi doldu, lütfen tekrar giriş yapın.');
-  }
-
-  const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || 'Bir hata oluştu');
+    const errorText = await response.text();
+    throw new Error(`İstek başarısız (${response.status}): ${errorText}`);
   }
 
-  return result.data;
+  const data = await response.json();
+  return data;
 };

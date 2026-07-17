@@ -27,8 +27,8 @@ const Login = ({ setUserStatus }: LoginProps) => {
         body: { email, password },
       });
 
-      if (response && response.token) {
-        localStorage.setItem('token', response.token);
+      if (response && response.data && response.data.token) {
+        localStorage.setItem('token', response.data.token);
         setUserStatus(true);
         navigate('/dashboard');
       } else {

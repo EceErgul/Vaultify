@@ -2,14 +2,17 @@ import React from 'react';
 import { CircleUser } from 'lucide-react';
 import LogoImg from '../../assets/vaultify_logo_nobackground.png';
 import { Link, useNavigate } from 'react-router-dom';
+import { useUser } from '../../context/UserContext';
+//DELETE ON DEPLOYMENT
+const BACKEND_URL = 'http://localhost:5000';
 
 interface HeaderProps {
   isLoggedIn?: boolean;
-  userProfilePicture?: string;
 }
 
-const Header = ({ isLoggedIn, userProfilePicture }: HeaderProps) => {
+const Header = ({ isLoggedIn }: HeaderProps) => {
   const navigate = useNavigate();
+  const { userInfo } = useUser();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -34,8 +37,13 @@ const Header = ({ isLoggedIn, userProfilePicture }: HeaderProps) => {
               Çıkış yap
             </button>
             <div className="w-10 h-10 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-white/10">
-              {userProfilePicture ? (
-                <img src={userProfilePicture} alt="Profil" className="w-full h-full object-cover" />
+              {userInfo.profileImage ? (
+                <img 
+                  // Cache sorununu engellemek için sonuna tarih ekledik
+                  src={`${BACKEND_URL}${userInfo.profileImage}?t=${new Date().getTime()}`} 
+                  alt="Profil" 
+                  className="w-full h-full object-cover" 
+                />
               ) : (
                 <CircleUser size={28} className="text-white opacity-80" strokeWidth={1.5} />
               )}

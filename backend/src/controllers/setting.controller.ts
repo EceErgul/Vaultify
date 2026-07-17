@@ -10,3 +10,12 @@ export const updateSettings = async (req: AuthRequest, res: Response, next: Next
     next(error);
   }
 };
+
+export const getSettings = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const settings = await settingService.getSettings(req.userId!);
+    res.status(200).json({ success: true, data: settings });
+  } catch (error) {
+    next(error);
+  }
+};

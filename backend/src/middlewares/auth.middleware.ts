@@ -13,17 +13,19 @@ export const protect = (req: AuthRequest, res: Response, next: NextFunction) => 
   }
 
   if (!token) {
-    res.status(401);
-    throw new Error('Not authorized, no token');
+    return res.status(401).json({ message: 'Not authorized, no token' });
   }
 
-  const decoded = verifyToken(token);
+  try {
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return res.status(401).json({ message: 'Not authorized, token failed' });
+    }
 
-  if (!decoded) {
-    res.status(401);
-    throw new Error('Not authorized, token failed');
+    req.userId = decoded.userId || decoded.id;
+    next();
+  } catch (error) {
+    console.error("Middleware Hata:", error);
+    return res.status(401).json({ message: 'Not authorized, token failed' });
   }
-
-  req.userId = decoded.userId;
-  next();
 };
