@@ -17,7 +17,7 @@ Vaultify is a secure, modern, and robust digital vault backend application desig
 - **Runtime:** Node.js
 - **Language:** TypeScript
 - **Framework:** Express.js (or Fastify)
-- **Database:** MongoDB / PostgreSQL *(choose your database)*
+- **Database:** PostgreSQL
 - **Security:** bcrypt / JWT / crypto
 
 ---
