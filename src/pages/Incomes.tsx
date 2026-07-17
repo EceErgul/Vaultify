@@ -24,16 +24,18 @@ const Incomes = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchIncomes = async () => {
-    try {
-      setLoading(true);
-      const data = await apiRequest('/incomes');
-      setGelirler(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const data = await apiRequest('/incomes');
+
+    setGelirler(Array.isArray(data) ? data : (data.incomes || data.data || []));
+  } catch (error) {
+    console.error(error);
+    setGelirler([]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchIncomes();
@@ -60,7 +62,7 @@ const Incomes = () => {
       fetchIncomes();
       setIsDeleteMode(false);
       setSelectedIds([]);
-      setIsConfirmModalOpen(false); // Modalı kapat
+      setIsConfirmModalOpen(false);
     } catch (error) {
       console.error("Silme hatası:", error);
       alert("Silme işlemi sırasında bir hata oluştu.");
@@ -129,7 +131,7 @@ const Incomes = () => {
                   Gelirler yükleniyor...
                 </td>
               </tr>
-            ) : gelirler.map((item, index) => {
+            ) : (Array.isArray(gelirler) ? gelirler : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
