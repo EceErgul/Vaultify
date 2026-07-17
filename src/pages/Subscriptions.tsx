@@ -29,7 +29,14 @@ const Subscriptions = () => {
       setLoading(true);
       const data = await apiRequest('/subscriptions');
       console.log("API'den gelen ham veri:", data);
-      setSubscriptions(data || []);
+      
+      if (Array.isArray(data)) {
+        setSubscriptions(data);
+      } else if (data && typeof data === 'object') {
+        setSubscriptions(data.subscriptions || data.data || []);
+      } else {
+        setSubscriptions([]);
+      }
     } catch (error) {
       console.error('Abonelikler yüklenirken hata oluştu:', error);
     } finally {
@@ -39,6 +46,13 @@ const Subscriptions = () => {
 
   useEffect(() => {
     fetchSubscriptions();
+
+    const handleUpdate = () => {
+    fetchSubscriptions();
+    };
+    
+    window.addEventListener('abonelikGuncellendi', handleUpdate);
+    return () => window.removeEventListener('abonelikGuncellendi', handleUpdate);
   }, []);
 
   const getCardColor = (paymentDay: number, isTrial: boolean) => {
@@ -223,7 +237,10 @@ const Subscriptions = () => {
             setSelectedSubscription(null); 
             fetchSubscriptions(); 
           }} 
-          onSuccess={fetchSubscriptions}
+          onSuccess={() => {
+            fetchSubscriptions();
+            window.dispatchEvent(new Event('abonelikGuncellendi'));
+          }}
         />
       )}
       
