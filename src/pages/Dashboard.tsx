@@ -40,9 +40,17 @@ const Dashboard: React.FC = () => {
       const expenseData = await apiRequest('/expenses');
       const assetData = await apiRequest('/assets');
       
-      setIncomes(incomeData || []);
-      setExpenses(expenseData || []);
-      setAssets(assetData || []);
+      const parseData = (data: any) => {
+        if (Array.isArray(data)) return data;
+        if (data && typeof data === 'object') {
+          return data.data || data.incomes || data.expenses || data.assets || [];
+        }
+        return [];
+      };
+
+      setIncomes(parseData(incomeData));
+      setExpenses(parseData(expenseData));
+      setAssets(parseData(assetData));
     } catch (error) {
       console.error("Dashboard veri çekme hatası:", error);
     } finally {
@@ -65,19 +73,23 @@ const Dashboard: React.FC = () => {
   const sections = useMemo(() => {
     if (!isMounted) return [];
 
-    const totalIncome = incomes.reduce((acc, curr) => acc + Number(curr.income_amount), 0);
-    const totalExpense = expenses.reduce((acc, curr) => acc + Number(curr.expenses_amount), 0);
-    const totalAssets = assets.reduce((acc, curr) => acc + Number(curr.total_cost), 0); // Toplam varlık hesaplandı
+    const safeIncomes = Array.isArray(incomes) ? incomes : [];
+    const safeExpenses = Array.isArray(expenses) ? expenses : [];
+    const safeAssets = Array.isArray(assets) ? assets : [];
 
-    const incomeChartData = incomes.map(item => ({
+    const totalIncome = safeIncomes.reduce((acc, curr) => acc + Number(curr.income_amount || 0), 0);
+    const totalExpense = safeExpenses.reduce((acc, curr) => acc + Number(curr.expenses_amount || 0), 0);
+    const totalAssets = safeAssets.reduce((acc, curr) => acc + Number(curr.total_cost || 0), 0);
+
+    const incomeChartData = safeIncomes.map(item => ({
       name: item.income_category,
-      value: Number(item.income_amount),
+      value: Number(item.income_amount || 0),
       fill: resolveCssColor(getCategoryColorVar(item.income_category))
     }));
 
-    const expenseChartData = expenses.map(item => ({
+    const expenseChartData = safeExpenses.map(item => ({
       name: item.expense_category || item.expense_category_chart,
-      value: Number(item.expenses_amount),
+      value: Number(item.expenses_amount || 0),
       fill: resolveCssColor(getCategoryColorVar(item.expense_category || item.expense_category_chart))
     }));
 
