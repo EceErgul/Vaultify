@@ -16,7 +16,7 @@ Vaultify is a secure, modern, and robust digital vault backend application desig
 
 - **Runtime:** Node.js
 - **Language:** TypeScript
-- **Framework:** Express.js (or Fastify)
+- **Framework:** Express.js
 - **Database:** PostgreSQL
 - **Security:** bcrypt / JWT / crypto
 
@@ -30,25 +30,25 @@ Follow these steps to set up the project locally on your machine.
 
 Make sure you have the following installed:
 - [Node.js](https://nodejs.org/) (v18 or higher recommended)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+- [npm](https://www.npmjs.com/)
 
 ### Installation
 
 1. **Clone the repository:**
-```bash
-git clone [https://github.com/your-username/vaultify.git](https://github.com/your-username/vaultify.git)
-cd vaultify
-```
+  ```bash
+  git clone https://github.com/EceErgul/Vaultify.git
+  cd vaultify
+  ```
 
 2. **Install dependencies:**
-```bash
-npm install
-```
+  ```bash
+  npm install
+  ```
 
 3. **Run the development server:**
-```bash
-npm run dev
-```
+  ```bash
+  npm run dev
+  ```
 
 ---
 
@@ -56,11 +56,11 @@ npm run dev
 
 This project implements several security measures to keep your data safe:
 
-- Password Hashing: Passwords are never stored in plain text; they are securely hashed using bcrypt.
-- Environment Isolation: Sensitive configurations and credentials are managed strictly via environment variables.
+- **Password Hashing:** Passwords are never stored in plain text; they are securely hashed using bcrypt.
+- **Environment Isolation:** Sensitive configurations and credentials are managed strictly via environment variables.
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the **MIT License** - see the LICENSE file for details.
