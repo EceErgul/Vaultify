@@ -157,7 +157,17 @@ const Dashboard: React.FC = () => {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ borderRadius: '16px', backgroundColor: '#1e293b', border: 'none', color: '#fff' }}
+                    contentStyle={{ 
+                      backgroundColor: 'var(--bg-card)', 
+                      color: 'var(--text-main)', 
+                      borderRadius: '8px', 
+                      border: '1px solid var(--border-color)',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' 
+                    }}
+                    itemStyle={{ 
+                      color: 'var(--text-main)', 
+                      fontWeight: 'bold' 
+                    }}
                     formatter={(value: any) => `${Number(value).toLocaleString()} ₺`}
                   />
                 </PieChart>
