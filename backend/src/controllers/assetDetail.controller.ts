@@ -1,9 +1,13 @@
 import { Response, NextFunction } from 'express';
 import * as assetDetailService from '../services/assetDetail.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
+import { checkInvisibleMode } from '../services/setting.service';
 
 export const getAssetTransactions = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const isInvisible = await checkInvisibleMode(req.userId!);
+    if (isInvisible) return res.status(200).json({ success: true, data: [] });
+
     const transactions = await assetDetailService.getAssetTransactions(req.userId!, req.params.assetId);
     res.status(200).json({ success: true, data: transactions });
   } catch (error) {

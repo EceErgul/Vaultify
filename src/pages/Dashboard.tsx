@@ -6,7 +6,6 @@ import { getCategoryColorVar } from '../utils/colourHelpers';
 import { apiRequest } from '../utils/api';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
-const [isInvisibleMode, setIsInvisibleMode] = useState(false);
 
 const FALLBACK_COLORS: Record<string, string> = {
   '--color-maas': '#38A169',
@@ -29,6 +28,7 @@ const FALLBACK_COLORS: Record<string, string> = {
 
 const Dashboard: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
+  const [isInvisibleMode, setIsInvisibleMode] = useState(false);
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [assets, setAssets] = useState<any[]>([]);
@@ -111,7 +111,7 @@ const Dashboard: React.FC = () => {
     return [
       { 
         title: "Net Varlık Özeti", 
-        amount: (totalIncome - totalExpense) + totalAssets, // Net varlığa varlıkları ekledik
+        amount: (totalIncome - totalExpense) + totalAssets,
         data: [
           { name: 'Gelir', value: totalIncome, fill: resolveCssColor('--color-maas') },
           { name: 'Gider', value: totalExpense, fill: resolveCssColor('--color-ev') },
@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
                   {section.amount.toLocaleString('tr-TR')} ₺
                 </span>
               </div>
-            </div>
+             </div>
 
             <div className="h-[400px] w-full min-h-[400px]">
               <ResponsiveContainer width="100%" height="100%">

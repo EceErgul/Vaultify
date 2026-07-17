@@ -1,9 +1,13 @@
 import { Response, NextFunction } from 'express';
 import * as incomeService from '../services/income.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
+import { checkInvisibleMode } from '../services/setting.service';
 
 export const getIncomes = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const isInvisible = await checkInvisibleMode(req.userId!);
+    if (isInvisible) return res.status(200).json({ success: true, data: [] });
+
     const incomes = await incomeService.getIncomes(req.userId!);
     res.status(200).json({ success: true, data: incomes });
   } catch (error) {

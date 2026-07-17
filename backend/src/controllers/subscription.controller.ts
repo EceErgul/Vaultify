@@ -1,9 +1,13 @@
 import { Response, NextFunction } from 'express';
 import * as subscriptionService from '../services/subscription.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
+import { checkInvisibleMode } from '../services/setting.service';
 
 export const getSubscriptions = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    const isInvisible = await checkInvisibleMode(req.userId!);
+    if (isInvisible) return res.status(200).json({ success: true, data: [] });
+
     const subs = await subscriptionService.getSubscriptions(req.userId!);
     res.status(200).json({ success: true, data: subs });
   } catch (error) {
