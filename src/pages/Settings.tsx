@@ -97,8 +97,9 @@ const Settings = () => {
           });
         }
         
-        const countData = await apiRequest('/subscriptions/protected-count');
-        setProtectedRecordsCount(countData?.count || 0);
+        // BU KISMI GEÇİCİ OLARAK YORUM SATIRINA ALIYORUZ
+        // const countData = await apiRequest('/subscriptions/protected-count');
+        // setProtectedRecordsCount(countData?.count || 0);
 
       } catch (error) {
         console.error('Ayarlar yüklenirken hata oluştu:', error);

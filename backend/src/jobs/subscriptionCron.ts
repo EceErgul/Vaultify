@@ -1,14 +1,14 @@
 import cron from 'node-cron';
 import db from '../config/db';
 import { sendNotificationIfEnabled } from '../services/notification.service';
+import { getEmailTemplate } from '../templates/emailTemplates';
 
 cron.schedule('0 0 * * *', async () => {
   console.log("Bildirim kontrolü başlatıldı...");
 
   const result = await db.query(`
     SELECT u.id, u.email, u.full_name, u.renewal_date, u.trial_end_date, 
-           u.sub_name, u.price, 
-           s.email_notification, s.trial_expiration_notification 
+           u.sub_name, u.price 
     FROM users u
     JOIN settings s ON u.id = s.user_id
   `);
@@ -18,24 +18,34 @@ cron.schedule('0 0 * * *', async () => {
 
     if (user.renewal_date) {
       const renewalDays = calculateDays(user.renewal_date, today);
-      if (user.email_notification && [5, 2, 0].includes(renewalDays)) {
+      if ([5, 2, 0].includes(renewalDays)) {
+        const template = getEmailTemplate('SUBSCRIPTION_REMINDER', {
+            subscriptionName: user.sub_name,
+            amount: user.price,
+            daysLeft: renewalDays
+        });
+
         await sendNotificationIfEnabled(
           user.id,
           'email_notification',
-          'Abonelik Tarihiniz Yaklaşmakta!',
-          `Merhaba ${user.full_name}, abonelik tarihinizın bitmesine ${renewalDays === 0 ? 'bugün' : renewalDays + ' gün'} kaldı.`
+          template.subject,
+          template.html
         );
       }
     }
 
     if (user.trial_end_date) {
       const trialDays = calculateDays(user.trial_end_date, today);
-      if (user.trial_expiration_notification && [5, 2, 0].includes(trialDays)) {
+      if ([5, 2, 0].includes(trialDays)) {
+        const template = getEmailTemplate('TRIAL_EXPIRATION', {
+            name: user.full_name,
+        });
+
         await sendNotificationIfEnabled(
           user.id,
           'trial_expiration_notification',
-          'Deneme Sürümünüz Bitiyor!',
-          `Merhaba ${user.full_name}, deneme sürümünüzün bitmesine ${trialDays === 0 ? 'bugün' : trialDays + ' gün'} kaldı.`
+          template.subject,
+          template.html
         );
       }
     }
