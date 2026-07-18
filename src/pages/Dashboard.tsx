@@ -32,6 +32,7 @@ const Dashboard: React.FC = () => {
   const [incomes, setIncomes] = useState<Income[]>([]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [assets, setAssets] = useState<any[]>([]);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = async () => {
@@ -54,6 +55,7 @@ const Dashboard: React.FC = () => {
       const incomeData = await apiRequest('/incomes');
       const expenseData = await apiRequest('/expenses');
       const assetData = await apiRequest('/assets');
+      const subscriptionData = await apiRequest('/subscriptions');
       
       const parseData = (data: any) => {
         if (Array.isArray(data)) return data;
@@ -66,6 +68,7 @@ const Dashboard: React.FC = () => {
       setIncomes(parseData(incomeData));
       setExpenses(parseData(expenseData));
       setAssets(parseData(assetData));
+      setSubscriptions(parseData(subscriptionData));
     } catch (error) {
       console.error("Dashboard veri çekme hatası:", error);
     } finally {
@@ -91,10 +94,12 @@ const Dashboard: React.FC = () => {
     const safeIncomes = Array.isArray(incomes) ? incomes : [];
     const safeExpenses = Array.isArray(expenses) ? expenses : [];
     const safeAssets = Array.isArray(assets) ? assets : [];
+    const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
 
     const totalIncome = safeIncomes.reduce((acc, curr) => acc + Number(curr.income_amount || 0), 0);
     const totalExpense = safeExpenses.reduce((acc, curr) => acc + Number(curr.expenses_amount || 0), 0);
     const totalAssets = safeAssets.reduce((acc, curr) => acc + Number(curr.total_cost || 0), 0);
+    const totalSubscriptions = safeSubscriptions.reduce((acc, curr) => acc + Number(curr.cost || 0), 0);
 
     const incomeChartData = safeIncomes.map(item => ({
       name: item.income_category,
@@ -115,13 +120,14 @@ const Dashboard: React.FC = () => {
         data: [
           { name: 'Gelir', value: totalIncome, fill: resolveCssColor('--color-maas') },
           { name: 'Gider', value: totalExpense, fill: resolveCssColor('--color-ev') },
+          { name: 'Abonelikler', value: totalSubscriptions, fill: resolveCssColor('--color-abonelik') },
           { name: 'Birikim (Varlıklar)', value: totalAssets, fill: resolveCssColor('--color-varliklarim') },
         ] 
       },
       { title: "Gelir Dağılımı", amount: totalIncome, data: incomeChartData },
       { title: "Gider Dağılımı", amount: totalExpense, data: expenseChartData },
     ];
-  }, [incomes, expenses, assets, isMounted]);
+  }, [incomes, expenses, assets, subscriptions, isMounted]);
 
   if (!isMounted || loading) {
     return (
