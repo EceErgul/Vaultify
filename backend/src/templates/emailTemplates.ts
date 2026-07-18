@@ -10,7 +10,8 @@ type TemplateType =
   | 'SUBSCRIPTION_REMINDER'
   | 'SECURITY_NEW_LOGIN'
   | 'PASSWORD_CHANGED'
-  | 'LOGIN_SUCCESS';
+  | 'LOGIN_SUCCESS'
+  | 'PASSWORD_RESET';
 
 export const getEmailTemplate = (type: TemplateType, data: any) => {
   switch (type) {
@@ -51,7 +52,7 @@ export const getEmailTemplate = (type: TemplateType, data: any) => {
         `
       };
 
-      case 'WELCOME':
+    case 'WELCOME':
       return {
         subject: 'Vaultify\'a Hoş Geldiniz!',
         html: `
@@ -79,6 +80,18 @@ export const getEmailTemplate = (type: TemplateType, data: any) => {
           <h1>Merhaba,</h1>
           <p><strong>${data.subscriptionName}</strong> aboneliğinizin yenilenmesine <strong>${data.daysLeft} gün</strong> kaldı.</p>
           <p>Ödeme yapmanız gereken tarih yaklaşmaktadır.</p>
+        `
+      };
+
+    case 'PASSWORD_RESET':
+      return {
+        subject: 'Vaultify - Şifre Sıfırlama Talebi',
+        html: `
+          <h3>Şifre Sıfırlama Talebi</h3>
+          <p>Vaultify hesabınızın şifresini sıfırlamak için bir talepte bulundunuz.</p>
+          <p>Şifrenizi yenilemek için lütfen aşağıdaki butona tıklayın (Bu link 1 saat geçerlidir):</p>
+          <a href="${data.link}" target="_blank" style="display:inline-block; background-color: #333D50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 10px 0; font-weight: bold;">Şifremi Sıfırla</a>
+          <p>Eğer bu talebi siz yapmadıysanız, lütfen bu e-postayı dikkate almayınız.</p>
         `
       };
 
