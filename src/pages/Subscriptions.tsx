@@ -28,8 +28,6 @@ const Subscriptions = () => {
     try {
       setLoading(true);
       const data = await apiRequest('/subscriptions');
-      console.log("API'den gelen ham veri:", data);
-      
       if (Array.isArray(data)) {
         setSubscriptions(data);
       } else if (data && typeof data === 'object') {
@@ -46,22 +44,16 @@ const Subscriptions = () => {
 
   useEffect(() => {
     fetchSubscriptions();
-
-    const handleUpdate = () => {
-    fetchSubscriptions();
-    };
-    
+    const handleUpdate = () => fetchSubscriptions();
     window.addEventListener('abonelikGuncellendi', handleUpdate);
     return () => window.removeEventListener('abonelikGuncellendi', handleUpdate);
   }, []);
 
   const getCardColor = (paymentDay: number, isTrial: boolean) => {
     if (isTrial) return '#B9B9B9';
-    
     const bugun = new Date().getDate();
     let kalan = paymentDay - bugun;
     if (kalan < 0) kalan += 30;
-
     if (kalan === 0 || kalan <= 2) return '#FF9E9E';
     if (kalan <= 5) return '#FFF6AF';
     return '#B1E5FF';
@@ -82,14 +74,20 @@ const Subscriptions = () => {
   };
 
   const getLogoUrl = (name: string) => {
-  const cleanName = name
-    .toLowerCase()
-    .replace(/premium|plus|family|tv|music|pro|app/g, '')
-    .replace(/\s+/g, '')
-    .trim();
-
+    const cleanName = name.toLowerCase().replace(/premium|plus|family|tv|music|pro|app/g, '').replace(/\s+/g, '').trim();
     return `https://icon.horse/icon/${cleanName}.com`;
   };
+
+  const sortedSubs = [...subscriptions].sort((a, b) => {
+    const daysA = getKalanGun(a.payment_day);
+    const daysB = getKalanGun(b.payment_day);
+    if (daysA !== daysB) return daysA - daysB;
+    return a.subscription_name.localeCompare(b.subscription_name);
+  });
+  
+  const listWithAdd = [...sortedSubs, { id: 'add-card' } as any];
+  const itemsPerPage = 3;
+  const totalPages = Math.ceil(listWithAdd.length / itemsPerPage);
 
   const validSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
   const aylikToplam = validSubscriptions.reduce((acc, curr) => acc + Number(curr.cost), 0);
@@ -123,105 +121,85 @@ const Subscriptions = () => {
 
       <h2 className="text-2xl font-semibold mb-8 tracking-wider">ABONELİKLERİM</h2>
 
-      <div className="flex gap-6 mb-6 w-full justify-center overflow-x-auto pb-4">
+      <div className="w-[660px] overflow-hidden mb-6 min-h-[320px]">
         <div 
-          onClick={() => setIsAddOpen(true)}
-          className="min-w-[220px] h-[300px] bg-[#B9B9B9] rounded-2xl shadow-md border border-black/5 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+          className="flex transition-transform duration-500 ease-in-out"
+          style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
-          <span className="text-4xl text-white">+</span>
-        </div>
-
-        {loading ? (
-          <div className="min-w-[220px] h-[300px] flex items-center justify-center text-sm text-gray-400">
-            Yükleniyor...
-          </div>
-        ) : (
-          validSubscriptions.map((sub) => {
-          const kalanGun = getKalanGun(sub.payment_day);
-          const abonelikSuresi = getAbonelikSuresi(sub.start_date);
-
-            return (
-              <div 
-                key={sub.id} 
-                style={{ backgroundColor: getCardColor(sub.payment_day, sub.is_trial) }}
-                className="min-w-[220px] h-[300px] rounded-2xl shadow-md p-5 flex flex-col relative border border-black/5"
-              >
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border border-black/10">
-                    <img 
-                      src={getLogoUrl(sub.subscription_name)} 
-                      alt={sub.subscription_name} 
-                      className="w-6 h-6 object-contain"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://cdn-icons-png.flaticon.com/512/2721/2721980.png'; 
-                        (e.target as HTMLImageElement).onerror = null;
-                      }}
-                    />
+          {loading ? (
+            <div className="w-[660px] flex items-center justify-center text-sm text-gray-400">
+              Yükleniyor...
+            </div>
+          ) : (
+            listWithAdd.map((item) => {
+              if (item.id === 'add-card') {
+                return (
+                  <div key="add-card" className="min-w-[220px] p-2">
+                    <div 
+                      onClick={() => setIsAddOpen(true)}
+                      className="w-full h-[300px] bg-[#B9B9B9] rounded-2xl shadow-lg border border-black/5 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
+                    >
+                      <span className="text-4xl text-white">+</span>
+                    </div>
                   </div>
-                  <button 
-                    onClick={() => {
-                      setSelectedSubscription(sub);
-                      setIsEditOpen(true);
-                    }}
-                    className="text-[12px] font-regular hover:underline"
-                  >
-                    Düzenle
-                  </button>
-                </div>
+                );
+              }
 
-                <h4 className="text-[15px] font-semibold mb-3">{sub.subscription_name}</h4>
-                
-                <div className="space-y-2 text-[12px] font-regular">
-                  <p>{Number(sub.cost).toLocaleString('tr-TR')} ₺ /ay</p>
-                  <p className="font-medium">
-                    {kalanGun === 0 ? 'Bugün Ödeme Günü' : `${kalanGun} Gün Sonra Ödeme`}
-                  </p>
-                  <p className="pt-2">{abonelikSuresi} Aydır Abonesin</p>
-                  <p className="text-[11px] opacity-80 italic">
-                    Her ayın <span className="font-bold">{sub.payment_day}</span>. günü <br /> ödenir.
-                  </p>
+              const sub = item as Subscription;
+              const kalanGun = getKalanGun(sub.payment_day);
+              const abonelikSuresi = getAbonelikSuresi(sub.start_date);
+
+              return (
+                <div key={sub.id} className="min-w-[220px] p-2">
+                  <div 
+                    style={{ backgroundColor: getCardColor(sub.payment_day, sub.is_trial) }}
+                    className="w-full h-[300px] rounded-2xl shadow-lg p-5 flex flex-col relative border border-black/5 transition-transform hover:scale-[1.02]"
+                  >
+                    <div className="flex justify-between items-start mb-6">
+                      <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border border-black/10">
+                        <img 
+                          src={getLogoUrl(sub.subscription_name)} 
+                          alt={sub.subscription_name} 
+                          className="w-6 h-6 object-contain"
+                          onError={(e) => { (e.target as HTMLImageElement).src = 'https://cdn-icons-png.flaticon.com/512/2721/2721980.png'; }}
+                        />
+                      </div>
+                      <button onClick={() => { setSelectedSubscription(sub); setIsEditOpen(true); }} className="text-[12px] font-regular hover:underline">Düzenle</button>
+                    </div>
+
+                    <h4 className="text-[15px] font-semibold mb-3">{sub.subscription_name}</h4>
+                    
+                    <div className="space-y-2 text-[12px] font-regular">
+                      <p>{Number(sub.cost).toLocaleString('tr-TR')} ₺ /ay</p>
+                      <p className="font-medium">{kalanGun === 0 ? 'Bugün Ödeme Günü' : `${kalanGun} Gün Sonra Ödeme`}</p>
+                      <p className="pt-2">{abonelikSuresi} Aydır Abonesin</p>
+                      <p className="text-[11px] opacity-80 italic">Her ayın <span className="font-bold">{sub.payment_day}</span>. günü <br /> ödenir.</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })
-        )}
+              );
+            })
+          )}
+        </div>
       </div>
 
       <div className="flex gap-3 mb-10">
-        {[...Array(Math.max(0, validSubscriptions.length + 1))].map((_, i) => (
+        {[...Array(totalPages)].map((_, i) => (
           <button
             key={i}
             onClick={() => setActiveIndex(i)}
-            className={`h-2 transition-all duration-300 rounded-full ${
-              activeIndex === i ? 'w-8 bg-[#B9B9B9]' : 'w-2 bg-[#D9D9D9]'
-            }`}
+            className={`h-2 transition-all duration-300 rounded-full ${activeIndex === i ? 'w-8 bg-[#B9B9B9]' : 'w-2 bg-[#D9D9D9]'}`}
           />
         ))}
       </div>
 
       <div className="flex gap-10">
-        <Button 
-          variant="add" 
-          className="w-[160px] h-[35px] text-[12px] shadow-sm"
-          onClick={() => setIsAddOpen(true)}
-        >
-          + Abonelik Ekle
-        </Button>
-        <Button 
-          variant="delete" 
-          className="w-[160px] h-[35px] text-[12px] shadow-sm"
-          onClick={() => setIsDeleteOpen(true)}
-        >
+        <Button variant="delete" className="w-[160px] h-[35px] text-[12px] shadow-sm" onClick={() => setIsDeleteOpen(true)}>
           - Abonelik Sil
         </Button>
       </div>
 
-      {isAddOpen && (
-        <AbonelikEkleModal 
-          onClose={() => { setIsAddOpen(false); fetchSubscriptions(); }} 
-        />
-      )}
-      
+      {isAddOpen && <AbonelikEkleModal onClose={() => { setIsAddOpen(false); fetchSubscriptions(); }} />}
       {isEditOpen && selectedSubscription && (
         <AbonelikDuzenleModal 
           initialData={{
@@ -232,24 +210,11 @@ const Subscriptions = () => {
             startDate: selectedSubscription.start_date,
             isTrial: selectedSubscription.is_trial,
           }}
-          onClose={() => { 
-            setIsEditOpen(false); 
-            setSelectedSubscription(null); 
-            fetchSubscriptions(); 
-          }} 
-          onSuccess={() => {
-            fetchSubscriptions();
-            window.dispatchEvent(new Event('abonelikGuncellendi'));
-          }}
+          onClose={() => { setIsEditOpen(false); setSelectedSubscription(null); fetchSubscriptions(); }} 
+          onSuccess={() => { fetchSubscriptions(); window.dispatchEvent(new Event('abonelikGuncellendi')); }}
         />
       )}
-      
-      {isDeleteOpen && (
-        <AbonelikSilModal 
-          subscriptions={subscriptions}
-          onClose={() => { setIsDeleteOpen(false); fetchSubscriptions(); }} 
-        />
-      )}
+      {isDeleteOpen && <AbonelikSilModal subscriptions={subscriptions} onClose={() => { setIsDeleteOpen(false); fetchSubscriptions(); }} />}
     </div>
   );
 };
