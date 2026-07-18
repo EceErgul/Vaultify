@@ -22,10 +22,6 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ isOpen, onClose, onAs
   const [loading, setLoading] = useState<boolean>(false);
   const assetTypeOptions: AssetsType[] = ['Borsa', 'Döviz', 'Altın', 'Kripto', 'Teemmü'];
 
-  useEffect(() => {
-    setTotal(amount * price);
-  }, [amount, price]);
-
   if (!isOpen) return null;
 
   const resetForm = () => {
@@ -43,42 +39,52 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ isOpen, onClose, onAs
     if (value.length <= 10) setDate(value);
   };
 
-  const handleAdd = async () => {
-    if (!assetName.trim() || !date) {
-      alert("Lütfen varlık adını ve tarihi giriniz.");
-      return;
-    }
+const handleAdd = async () => {
+  //debugging: Log the values before sending the request
+  const finalTotal = amount * price;
 
-    const [day, month, year] = date.split('/');
-    const formattedDate = `${year}-${month}-${day}`;
+  console.log("Gönderilen Veri:", {
+    asset_name: assetName,
+    quantity: amount,
+    price: price,
+    finalTotal: finalTotal
+  });
 
-    try {
-      setLoading(true);
+  if (!assetName.trim() || !date) {
+    alert("Lütfen varlık adını ve tarihi giriniz.");
+    return;
+  }
 
-      const createdAsset = await apiRequest('/assets', {
-        method: 'POST',
-        body: {
-          asset_name: assetName,
-          asset_type: selectedType,
-          date: formattedDate,
-          total_quantity: amount,
-          total_cost: total
-        }
-      });
+  const [day, month, year] = date.split('/');
+  const formattedDate = `${year}-${month}-${day}`;
 
-      if (createdAsset) {
-        onAssetAdded?.(createdAsset);
+  try {
+    setLoading(true);
+
+    const createdAsset = await apiRequest('/assets', {
+      method: 'POST',
+      body: {
+        asset_name: assetName,
+        asset_type: selectedType,
+        date: formattedDate,
+        total_quantity: amount,
+        total_cost: finalTotal
       }
+    });
 
-      resetForm();
-      onClose(); 
-    } catch (error) {
-      console.error("Varlık eklenirken bir hata oluştu:", error);
-      alert("Varlık eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
-    } finally {
-      setLoading(false);
+    if (createdAsset) {
+      onAssetAdded?.(createdAsset);
     }
-  };
+
+    resetForm();
+    onClose(); 
+  } catch (error) {
+    console.error("Varlık eklenirken bir hata oluştu:", error);
+    alert("Varlık eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <BaseModal title="Varlık Ekle" onClose={onClose}>
@@ -96,7 +102,7 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ isOpen, onClose, onAs
 
         <label className="text-sm font-medium text-[#333D50]">Varlık:</label>
         <Input 
-          placeholder="Varlık adı (örn: Altın)" 
+          placeholder="Varlık adı (örn: Altın, Dolar, Bitcoin)"
           value={assetName}
           onChange={(e) => setAssetName(e.target.value)}
           disabled={loading}
@@ -104,17 +110,17 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ isOpen, onClose, onAs
 
         <label className="text-sm font-medium text-[#333D50]">Tür:</label>
         <Dropdown 
-          options={assetTypeOptions} 
-          onSelect={(v) => setSelectedType(v as AssetsType)} 
-          placeholder="Tür Seçiniz"
-        />
+          options={assetTypeOptions}
+          onSelect={(v) => setSelectedType(v as AssetsType)}
+          placeholder="Varlık Türünü Seçiniz" value={''}
+          />
 
         <label className="text-sm font-medium text-[#333D50]">Miktar:</label>
         <Input 
           type="number" 
           value={amount || ''}
           onChange={(e) => setAmount(Number(e.target.value))} 
-          placeholder="Alınan miktar" 
+          placeholder="Alınan miktar(gram, adet vb.)" 
           disabled={loading}
         />
 
@@ -123,20 +129,20 @@ const VarlikEkleModal: React.FC<VarlikEkleModalProps> = ({ isOpen, onClose, onAs
           type="number" 
           value={price || ''}
           onChange={(e) => setPrice(Number(e.target.value))} 
-          placeholder="Birim fiyat" 
+          placeholder="Varlığın BİRİM Fiyatı"
           disabled={loading}
         />
-      </div>
 
-      <div className="mt-12 flex justify-end pr-8"> 
+      <div className="mt-10 flex justify-end pr-6 pb-2 col-span-2">
          <Button 
            variant="add" 
            onClick={handleAdd}
-           className="w-[120px]"
+           className="w-[140px]"
            disabled={loading}
          >
            {loading ? 'Ekleniyor...' : '+ Ekle'}
          </Button>
+        </div>
       </div>
     </BaseModal>
   );

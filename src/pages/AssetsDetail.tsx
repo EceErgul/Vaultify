@@ -43,34 +43,35 @@ const AssetsDetail = () => {
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
 
   const fetchDetailData = async () => {
-    if (!id) return;
+  if (!id) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+  try {
+    setLoading(true);
+    setError(null);
 
-      const currentAsset = await apiRequest(`/assets/${id}`);
-      const txDataRaw = await apiRequest(`/assets/${id}/transactions`);
+    const response = await apiRequest(`/assets/${id}`);
+    const txResponse = await apiRequest(`/assets/${id}/transactions`);
+    const currentAsset = response.data || response; 
+    const txDataRaw = txResponse.data || txResponse;
 
-      console.log('=== 🎯 FRONTEND DEBBUGGING ===');
-      console.log('Gelen Varlık Verisi (Doğrudan):', currentAsset);
-      console.log('Gelen İşlem Geçmişi (Doğrudan):', txDataRaw);
+    console.log('=== 🎯 DÜZELTİLMİŞ DEBUGGING ===');
+    console.log('İşlenen Varlık Verisi:', currentAsset);
 
-      const txData = Array.isArray(txDataRaw) ? txDataRaw : [];
+    const txData = Array.isArray(txDataRaw) ? txDataRaw : [];
 
-      if (currentAsset) {
-        console.log("Canlı Fiyat Kontrol:", currentAsset.live_unit_price);
+    if (currentAsset) {
+      console.log("Canlı Fiyat:", currentAsset.live_unit_price);
 
-        setAssetInfo({
-          id: currentAsset.id,
-          assetName: currentAsset.asset_name,
-          assetType: currentAsset.asset_type,
-          totalQuantity: Number(currentAsset.total_quantity || 0),
-          totalCost: Number(currentAsset.total_cost || 0),
-          currentPrice: Number(currentAsset.live_unit_price || 0), 
-          lastUpdated: currentAsset.fetchedAt || new Date().toISOString()
-        });
-      }
+      setAssetInfo({
+        id: currentAsset.id,
+        assetName: currentAsset.asset_name,
+        assetType: currentAsset.asset_type,
+        totalQuantity: Number(currentAsset.total_quantity || 0),
+        totalCost: Number(currentAsset.total_cost || 0),
+        currentPrice: Number(currentAsset.live_unit_price || 0),
+        lastUpdated: currentAsset.fetchedAt || new Date().toISOString()
+      });
+    }
       
       const mappedTransactions = txData.map((tx: any) => ({
         id: tx.id,
@@ -99,6 +100,10 @@ const AssetsDetail = () => {
 
   useEffect(() => {
     if (!assetInfo?.lastUpdated) return;
+
+    console.log("--- GERÇEK VERİ YAPISI ---");
+    console.log("Object Keys:", Object.keys(assetInfo || {}));
+    console.log("Raw Data:", JSON.stringify(assetInfo || {}, null, 2));
 
     const updateTime = () => {
       const diffInMs = new Date().getTime() - new Date(assetInfo.lastUpdated).getTime();

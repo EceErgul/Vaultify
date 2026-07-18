@@ -1,9 +1,8 @@
 import axios from 'axios';
 
 const COLLECT_API_KEY = process.env.COLLECT_API_KEY || '';
-
 const cache: { [key: string]: { data: any; timestamp: number } } = {};
-const CACHE_DURATION = 5 * 60 * 1000; // 5 Dakika
+const CACHE_DURATION = 5 * 60 * 1000;
 
 const collectApi = axios.create({
   baseURL: 'https://api.collectapi.com',
@@ -31,11 +30,14 @@ const clearText = (str: string) => {
 };
 
 export const getLivePrice = async (assetType: string, assetName: string): Promise<number> => {
-  const type = clearText(assetType); 
-  let name = assetName.trim().toUpperCase();
+  const type = clearText(assetType);
+  let name = clearText(assetName).toUpperCase(); 
 
   if (name === 'DOLAR') name = 'USD';
   if (name === 'EURO') name = 'EUR';
+
+  // debugging: Log the type and name being queried
+  console.log(`🔎 Market Sorgusu: Type=${type}, Name=${name}`);
 
   try {
     if (type === 'doviz' || type === 'forex' || type === 'currency') {
@@ -66,15 +68,22 @@ export const getLivePrice = async (assetType: string, assetName: string): Promis
     if (type === 'altin' || type === 'gold' || type === 'metal') {
       const data = await getCachedData('/economy/goldPrice');
       const list = data?.result || [];
-      const found = list.find((g: any) => g.name?.toUpperCase().includes(name) || name.includes(g.name?.toUpperCase()));
-      if (found) return Number(String(found.selling || found.buying).replace(',', '.'));
+      const found = list.find((g: any) => {
+        const apiName = clearText(g.name || '').toUpperCase();
+        return apiName.includes(name) || name.includes(apiName);
+      });
+      
+      if (found) {
+        const price = Number(String(found.selling || found.buying).replace(',', '.'));
+        console.log(`✅ Fiyat bulundu: ${price}`);
+        return price;
+      }
     }
 
-    console.warn(`Canlı fiyat bulunamadı: Tür -> ${assetType}, İsim -> ${assetName}`);
+    console.warn(`❌ Canlı fiyat bulunamadı: Tür -> ${assetType}, İsim -> ${assetName}`);
     return 0;
-
   } catch (error) {
-    console.error(`Fiyat çekme servisinde hata: (${assetType} - ${assetName}):`, error);
+    console.error(`❌ Fiyat çekme servisinde hata:`, error);
     return 0;
   }
 };

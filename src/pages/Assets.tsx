@@ -118,6 +118,7 @@ const Assets: React.FC = () => {
               </tr>
             ) : (
               assets.map((item, index) => {
+                console.log("Varlık Verisi:", item);
                 const isEvenRow = (index + 1) % 2 === 0;
                 const bgColor = isEvenRow ? '#B1E5FF' : '#D8F2FF';
                 const cleanQuantity = Number(item.total_quantity).toString();

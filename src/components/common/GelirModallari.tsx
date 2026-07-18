@@ -76,10 +76,10 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }
         <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
         <div className="relative max-h-[200px] overflow-y-auto z-[999]"> 
           <Dropdown 
-            options={GELIR_KATEGORILERI} 
-            onSelect={(v) => setCategory(v as IncomeSource)} 
-            placeholder={category} 
-          />
+            options={GELIR_KATEGORILERI}
+            onSelect={(v) => setCategory(v as IncomeSource)}
+            placeholder={category} value={''}          
+            />
         </div>
 
         <label className="font-medium text-sm text-[#333D50]">Miktar:</label>
@@ -139,7 +139,7 @@ export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialD
 
         <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
         <div className="relative">
-          <Dropdown options={GELIR_KATEGORILERI} onSelect={(v) => setCategory(v as IncomeSource)} placeholder={category} />
+          <Dropdown options={GELIR_KATEGORILERI} onSelect={(v) => setCategory(v as IncomeSource)} placeholder={category} value={''} />
         </div>
 
         <label className="font-medium text-sm text-[#333D50]">Miktar:</label>

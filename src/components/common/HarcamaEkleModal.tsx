@@ -98,10 +98,10 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
         <label className="text-sm font-medium text-[#333D50]">Kategori:</label>
         <div className="relative z-20">
           <Dropdown 
-            options={KATEGORILER} 
-            onSelect={(v) => setCategory(v as ExpenseCategory)} 
-            placeholder={category || "Kategori Seçin"} 
-          />
+            options={KATEGORILER}
+            onSelect={(v) => setCategory(v as ExpenseCategory)}
+            placeholder={category || "Kategori Seçin"} value={''}          
+            />
         </div>
 
         <label className="text-sm font-medium text-[#333D50]">Harcama Adı:</label>
@@ -110,10 +110,10 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
         <label className="text-sm font-medium text-[#333D50]">Ödeme:</label>
         <div className="relative z-10">
           <Dropdown 
-            options={ODEME_YONTEMLERI} 
-            onSelect={(v) => setPaymentMethod(v as PaymentMethod)} 
-            placeholder={paymentMethod || "Ödeme Yöntemi Seçin"} 
-          />
+            options={ODEME_YONTEMLERI}
+            onSelect={(v) => setPaymentMethod(v as PaymentMethod)}
+            placeholder={paymentMethod || "Ödeme Yöntemi Seçin"} value={''}          
+            />
         </div>
 
         <label className="text-sm font-medium text-[#333D50]">Tutar:</label>

@@ -26,7 +26,10 @@ export const getAssetById = async (userId: string, assetId: string) => {
     const asset = result.rows[0];
     if (!asset) return null;
 
-    const liveUnitPrice = await getLivePrice(asset.asset_type, asset.asset_name);
+    const liveUnitPrice = await getLivePrice(asset.asset_type, asset.asset_name) || 0;
+    if (liveUnitPrice === 0) {
+      console.warn(`⚠️ Uyarı: ${asset.asset_name} için fiyat alınamadı!`);
+    }
 
     const totalQuantity = Number(asset.total_quantity || 0);
     const totalCost = Number(asset.total_cost || 0);

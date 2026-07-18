@@ -42,7 +42,7 @@ export const addTransaction = async (userId: string, assetId: string, transactio
     }
   }
 
-  const client = await pool.pool.connect();
+  const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
