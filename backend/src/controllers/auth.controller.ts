@@ -5,7 +5,7 @@ import { AuthRequest } from '../middlewares/auth.middleware';
 import { sendEmail } from '../utils/sendEmail';
 import crypto from 'crypto';
 import { sendNotificationIfEnabled } from '../services/notification.service';
-
+import axios from 'axios';
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { full_name, email, password } = req.body;
@@ -113,5 +113,71 @@ export const resetPasswordRequest = async (req: Request, res: Response) => {
     res.status(200).json({ success: true, message: "E-posta gönderildi." });
   } catch (error) {
     res.status(500).json({ success: false, message: "Sunucu hatası" });
+  }
+};
+
+export const googleRedirect = (req: Request, res: Response) => {
+  const clientId = process.env.GOOGLE_CLIENT_ID;
+  const redirectUri = 'http://127.0.0.1:5000/api/auth/google/callback';
+  const scope = encodeURIComponent('email profile');
+  const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
+  
+  res.redirect(googleAuthUrl);
+};
+
+export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ success: false, message: 'Google yetkilendirme kodu bulunamadı.' });
+    }
+
+    const tokenResponse = await axios.post('https://oauth2.googleapis.com/token', {
+      code,
+      client_id: process.env.GOOGLE_CLIENT_ID,
+      client_secret: process.env.GOOGLE_CLIENT_SECRET,
+      redirect_uri: 'http://127.0.0.1:5000/api/auth/google/callback',
+      grant_type: 'authorization_code',
+    });
+
+    const { access_token } = tokenResponse.data;
+
+    const userInfoResponse = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    const { email, name, picture } = userInfoResponse.data;
+
+    const result = await authService.googleAuthService({
+      email,
+      full_name: name,
+      profile_picture: picture,
+    });
+
+    if (result.isNew) {
+      const welcomeTemplate = getEmailTemplate('WELCOME', { name: result.user.full_name });
+      await sendNotificationIfEnabled(
+        result.user.id,
+        'email_notification',
+        welcomeTemplate.subject,
+        welcomeTemplate.html
+      );
+    } else {
+      const loginTemplate = getEmailTemplate('LOGIN_SUCCESS', { name: result.user.full_name });
+      await sendNotificationIfEnabled(
+        result.user.id,
+        'login_notifications',
+        loginTemplate.subject,
+        loginTemplate.html
+      );
+    }
+
+    res.redirect(`http://localhost:5173/dashboard?token=${result.token}`);
+  } catch (error) {
+    console.error("Google Callback Hatası:", error);
+    res.redirect('http://localhost:5173/login?error=google_failed');
   }
 };

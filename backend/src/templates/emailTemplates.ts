@@ -11,7 +11,8 @@ type TemplateType =
   | 'SECURITY_NEW_LOGIN'
   | 'PASSWORD_CHANGED'
   | 'LOGIN_SUCCESS'
-  | 'PASSWORD_RESET';
+  | 'PASSWORD_RESET'
+  | 'GOOGLE_AUTH';
 
 export const getEmailTemplate = (type: TemplateType, data: any) => {
   switch (type) {
@@ -93,6 +94,47 @@ export const getEmailTemplate = (type: TemplateType, data: any) => {
           <a href="${data.link}" target="_blank" style="display:inline-block; background-color: #333D50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 10px 0; font-weight: bold;">Şifremi Sıfırla</a>
           <p>Eğer bu talebi siz yapmadıysanız, lütfen bu e-postayı dikkate almayınız.</p>
         `
+      };
+
+    case 'GOOGLE_AUTH':
+      return {
+        subject: 'Vaultify\'a Google ile Başarıyla Giriş Yaptınız! 🚀',
+        html: `
+          <div style="font-family: 'Inter', Arial, sans-serif; background-color: #f7f9fc; padding: 40px 0; color: #333D50;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+              
+              <!-- Header -->
+              <div style="background-color: #333D50; padding: 24px; text-align: center;">
+                <h1 style="color: #ffffff; font-size: 24px; margin: 0; font-weight: 600;">Vaultify'a Hoş Geldiniz!</h1>
+              </div>
+
+              <!-- Content -->
+              <div style="padding: 32px 24px;">
+                <p style="font-size: 16px; margin-top: 0;">Merhaba <strong>${data.name || 'Kullanıcı'}</strong>,</p>
+                
+                <p style="font-size: 15px; line-height: 1.6; color: #4a5568;">
+                  Google hesabınız başarıyla doğrulandı ve Vaultify platformunda sizin için güvenli bir hesap oluşturuldu. Artık tek tıkla hızlıca giriş yapabilir ve finansal verilerinizi yönetmeye başlayabilirsiniz.
+                </p>
+
+                <div style="text-align: center; margin: 32px 0;">
+                  <a href="http://localhost:5173/dashboard" style="background-color: #333D50; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; font-size: 15px; display: inline-block;">
+                    Panele Git
+                  </a>
+                </div>
+
+                <p style="font-size: 14px; color: #718096; line-height: 1.5;">
+                  Eğer bu işlemi siz gerçekleştirmediyseniz, lütfen derhal bizimle iletişime geçin veya şifrenizi kontrol edin.
+                </p>
+              </div>
+
+              <!-- Footer -->
+              <div style="background-color: #f1f5f9; padding: 16px 24px; text-align: center; font-size: 12px; color: #94a3b8;">
+                &copy; 2026 Vaultify. Tüm hakları saklıdır.
+              </div>
+
+            </div>
+          </div>
+        `,
       };
 
     default:

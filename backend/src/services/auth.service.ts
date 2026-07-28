@@ -136,3 +136,35 @@ export const resetUserPassword = async (token: string, newPasswordSubmit: string
 
   return user;
 };
+
+export const googleAuthService = async (googleData: { email: string; full_name: string; profile_picture?: string }) => {
+  const { email, full_name, profile_picture } = googleData;
+
+  let userRes = await pool.query(
+    'SELECT id, full_name, email, profile_picture FROM users WHERE email = $1',
+    [email]
+  );
+
+  let user;
+  let isNew = false;
+
+  if (userRes.rows.length > 0) {
+    user = userRes.rows[0];
+  } else {
+    const newUserRes = await pool.query(
+      'INSERT INTO users (full_name, email, password_hash, profile_picture) VALUES ($1, $2, $3, $4) RETURNING id, full_name, email, profile_picture',
+      [full_name, email, 'GOOGLE_OAUTH_ACCOUNT', profile_picture || null]
+    );
+    user = newUserRes.rows[0];
+    isNew = true;
+
+    await pool.query(
+      'INSERT INTO settings (user_id) VALUES ($1)',
+      [user.id]
+    );
+  }
+
+  const token = generateToken(user.id);
+
+  return { user, token, isNew };
+};

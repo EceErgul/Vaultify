@@ -26,6 +26,12 @@ export const apiRequest = async (endpoint: string, options: RequestOptions = {})
 
   const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    window.location.href = '/';
+    return;
+  }
+
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`İstek başarısız (${response.status}): ${errorText}`);

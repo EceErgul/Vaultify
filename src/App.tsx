@@ -26,12 +26,22 @@ const ProtectedRoute = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 };
 
 function App() {
-  const [userStatus, setUserStatus] = useState<boolean>(!!localStorage.getItem('token'));
+  const [userStatus, setUserStatus] = useState<boolean>(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get('token');
+
+    if (token) {
+      localStorage.setItem('token', token);
+      window.history.replaceState({}, document.title, '/dashboard');
+      return true;
+    }
+    return !!localStorage.getItem('token');
+  });
+
   useEffect(() => {
     const handleAuthChange = () => {
       setUserStatus(!!localStorage.getItem('token'));
     };
-    
     window.addEventListener('storage', handleAuthChange);
     return () => window.removeEventListener('storage', handleAuthChange);
   }, []);
@@ -44,21 +54,23 @@ function App() {
           <Route path="/login" element={<LoginComponent setUserStatus={setUserStatus} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/new-password" element={<NewPassword />} />
-        
-        <Route element={<ProtectedRoute isLoggedIn={userStatus} />}>
-          <Route element={<MainLayout isLoggedIn={userStatus} />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/assets" element={<Assets />} />
-            <Route path="/assets/:id" element={<AssetsDetail />} />
-            <Route path="/expenses" element={<Expenses />} />
-            <Route path="/incomes" element={<Incomes />} />
-            <Route path="/subscriptions" element={<Subscriptions />} />
-            <Route path="/settings" element={<Settings />} />
+          <Route path="/new-password" element={<NewPassword />} />
+          
+          <Route element={<ProtectedRoute isLoggedIn={userStatus} />}>
+            <Route element={<MainLayout isLoggedIn={userStatus} />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/assets" element={<Assets />} />
+              <Route path="/assets/:id" element={<AssetsDetail />} />
+              <Route path="/expenses" element={<Expenses />} />
+              <Route path="/incomes" element={<Incomes />} />
+              <Route path="/subscriptions" element={<Subscriptions />} />
+              <Route path="/settings" element={<Settings />} />
+            </Route>
           </Route>
-        </Route>
-        <Route path="/" element={<Navigate to={userStatus ? "/dashboard" : "/landing"} replace />} />
-      </Routes>      
+
+          <Route path="/" element={<Navigate to={userStatus ? "/dashboard" : "/landing"} replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>       
       </UserProvider>
     </Router>
   );

@@ -41,6 +41,10 @@ const Login = ({ setUserStatus }: LoginProps) => {
       setLoading(false);
     }
   };
+  
+  const handleGoogleLogin = () => {
+    window.location.href = 'http://127.0.0.1:5000/api/auth/google';
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter">
@@ -58,20 +62,20 @@ const Login = ({ setUserStatus }: LoginProps) => {
         </div>
 
         <h2 className="text-2xl font-semibold text-black mb-2">Tekrar hoş geldiniz.</h2>
-        <p className="text-sm text-gray-600 mb-8 font-regular">
+        <p className="text-sm text-gray-600 mb-6 font-regular">
           Hesabınız yok mu? <Link to="/register" className="text-blue-500 underline">Kaydol.</Link>
         </p>
 
         <button 
-          onClick={() => {}}
+          onClick={handleGoogleLogin}
           type="button"
-          className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-10 bg-white"
+          className="w-full max-w-md h-[45px] flex items-center justify-center gap-3 border border-[#CDCDCD] rounded-[6px] hover:bg-gray-50 transition-colors mb-6 bg-white cursor-pointer shadow-sm"
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-          <span className="text-sm font-medium text-gray-700">Google İle Giriş Yap.</span>
+          <span className="text-sm font-medium text-[#333D50]">Google İle Giriş Yap</span>
         </button>
 
-        <div className="w-full flex items-center gap-4 mb-10 px-10">
+        <div className="w-full max-w-md flex items-center gap-4 mb-6">
           <div className="flex-1 h-[1px] bg-gray-300"></div>
           <span className="text-sm text-gray-400 font-regular">Veya</span>
           <div className="flex-1 h-[1px] bg-gray-300"></div>

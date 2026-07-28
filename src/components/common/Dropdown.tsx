@@ -27,7 +27,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder, val
       </div>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 min-w-full border border-[#CDCDCD] bg-white shadow-lg">
+        <div className="absolute z-50 mt-2 w-full max-h-[120px] overflow-y-auto border border-[#CDCDCD] bg-white shadow-lg">
           {options.map((opt) => (
             <div
               key={opt}

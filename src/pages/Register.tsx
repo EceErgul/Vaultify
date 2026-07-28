@@ -18,11 +18,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   const handleGoogleRegister = () => {
-    const width = 500;
-    const height = 600;
-    const left = window.screen.width / 2 - width / 2;
-    const top = window.screen.height / 2 - height / 2;
-    window.open("https://accounts.google.com/gsi/select", "google-register", `width=${width},height=${height},left=${left},top=${top}`);
+    window.location.href = 'http://127.0.0.1:5000/api/auth/google';
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -41,11 +37,10 @@ const Register = () => {
     setLoading(true);
 
     try {
-      // Backend şemasına ve DB kolonlarına uyum sağlamak için payload ayarlanıyor
       const response = await apiRequest('/auth/register', {
         method: 'POST',
         body: {
-          full_name: formData.fullName, // DB / Backend beklentisine göre map edildi
+          full_name: formData.fullName,
           email: formData.email,
           password: formData.password
         },
@@ -59,7 +54,6 @@ const Register = () => {
       }
     } catch (err: any) {
       console.error('Kayıt hatası:', err);
-      // Eğer doğrudan ağ hatası ise kullanıcıya daha açıklayıcı bir mesaj gösterelim
       if (err?.message === 'Failed to fetch') {
         setError('Sunucuya bağlanılamadı. Lütfen backend sunucunuzun çalıştığından ve internet bağlantınızdan emin olun.');
       } else {
@@ -72,11 +66,13 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter text-[#333D50]">
-      <div className="bg-white w-full max-w-[800px] min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-10 pb-10 px-10">
+      <div className="bg-white w-full max-w-[800px] min-h-[600px] border border-gray-300 
+      shadow-sm relative flex flex-col items-center pt-10 pb-10 px-10">
         
         <Link 
           to="/landing" 
-          className="absolute top-6 left-6 flex items-center gap-2 bg-[#CDCDCD] px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
+          className="absolute top-6 left-6 flex items-center gap-2 bg-[#CDCDCD] px-3 py-1.5 
+          rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
         >
           <span>←</span> Geri Dön
         </Link>
@@ -94,13 +90,14 @@ const Register = () => {
           onClick={handleGoogleRegister}
           type="button"
           disabled={loading}
-          className="flex items-center gap-3 px-8 py-2 border border-gray-400 rounded-sm hover:bg-gray-50 transition-colors mb-8 disabled:opacity-50"
+          className="w-full max-w-md h-[45px] flex items-center justify-center gap-3 border border-[#CDCDCD] rounded-[6px] 
+          hover:bg-gray-50 transition-colors mb-6 bg-white cursor-pointer shadow-sm disabled:opacity-50"
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-          <span className="text-sm font-medium text-gray-700">Google İle Kaydol.</span>
+          <span className="text-sm font-medium text-[#333D50]">Google İle Kaydol</span>
         </button>
 
-        <div className="w-full flex items-center gap-4 mb-8 px-10">
+        <div className="w-full max-w-md flex items-center gap-4 mb-6">
           <div className="flex-1 h-[1px] bg-gray-300"></div>
           <span className="text-sm text-gray-400 font-regular">Veya</span>
           <div className="flex-1 h-[1px] bg-gray-300"></div>
@@ -119,7 +116,8 @@ const Register = () => {
                 type={field.type}
                 value={field.value}
                 onChange={(e) => setFormData({...formData, [field.key]: e.target.value})}
-                className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                className="w-64 h-8 border border-gray-300 rounded-full px-4 text-sm focus:outline-none 
+                focus:border-gray-500"
                 disabled={loading}
                 required
               />
@@ -138,7 +136,8 @@ const Register = () => {
             <Button 
               type="submit"
               disabled={loading}
-              className="w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all border-none disabled:opacity-50"
+              className="w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] 
+              transition-all border-none disabled:opacity-50"
             >
               {loading ? 'Kaydediliyor...' : 'Kaydol'}
             </Button>
