@@ -1,15 +1,19 @@
 import { Router } from 'express';
-import { register, login, getMe, forgotPassword, resetPasswordSubmit, resetPasswordRequest, googleRedirect, googleCallback} from '../controllers/auth.controller';
+import * as authController from '../controllers/auth.controller';
 import { protect } from '../middlewares/auth.middleware';
 
 const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
-router.get('/google', googleRedirect); 
-router.get('/google/callback', googleCallback);
-router.get('/me', protect, getMe);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPasswordSubmit);
-router.post('/reset-password-request', resetPasswordRequest);
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.post('/forgot-password', authController.forgotPassword);
+router.post('/reset-password', authController.resetPasswordSubmit);
+router.post('/reset-password-request', authController.resetPasswordRequest);
+
+router.get('/google', authController.googleRedirect); 
+router.get('/google/callback', authController.googleCallback);
+router.get('/me', protect, authController.getMe);
+
+router.delete('/delete-account', protect, authController.deleteAccount);
+
 export default router;

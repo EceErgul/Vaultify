@@ -181,3 +181,17 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
     res.redirect('http://localhost:5173/login?error=google_failed');
   }
 };
+
+export const deleteAccount = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.userId!;
+    await authService.deleteUserAccount(userId);
+
+    res.status(200).json({ 
+      success: true, 
+      message: 'Hesabınız ve tüm verileriniz kalıcı olarak silindi.' 
+    });
+  } catch (error) {
+    next(error);
+  }
+};

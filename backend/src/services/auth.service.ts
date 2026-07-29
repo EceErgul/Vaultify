@@ -168,3 +168,30 @@ export const googleAuthService = async (googleData: { email: string; full_name: 
 
   return { user, token, isNew };
 };
+
+export const deleteUserAccount = async (userId: string) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+
+    await client.query('DELETE FROM settings WHERE user_id = $1', [userId]);
+    await client.query('DELETE FROM assets WHERE user_id = $1', [userId]);
+    await client.query('DELETE FROM expenses WHERE user_id = $1', [userId]);
+    await client.query('DELETE FROM incomes WHERE user_id = $1', [userId]);
+    await client.query('DELETE FROM subscriptions WHERE user_id = $1', [userId]);
+
+    const result = await client.query('DELETE FROM users WHERE id = $1 RETURNING id', [userId]);
+
+    if (result.rowCount === 0) {
+      throw new Error('Kullanıcı bulunamadı.');
+    }
+
+    await client.query('COMMIT');
+    return { success: true };
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
+};

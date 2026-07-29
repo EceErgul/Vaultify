@@ -4,6 +4,7 @@ import Button from '../components/common/Button';
 import Dropdown from '../components/common/Dropdown';
 import { apiRequest } from '../utils/api';
 import { useUser } from '../context/UserContext';
+import axios from 'axios';
 
 interface ISettings {
   id: string;
@@ -219,6 +220,34 @@ const Settings = () => {
     </div>
   );
 
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      "Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir!"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+
+      await axios.delete('http://127.0.0.1:5000/api/auth/delete-account', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      localStorage.removeItem('token');
+      alert('Hesabınız başarıyla silindi.');
+      navigate('/landing', { replace: true });
+    } catch (error) {
+      console.error("Hesap silme hatası:", error);
+      alert('Hesap silinirken bir hata oluştu.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (loading) return <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-[#1A202C] text-white' : 'bg-white text-black'}`}>Ayarlar Yükleniyor...</div>;
 
   return (
@@ -349,6 +378,22 @@ const Settings = () => {
                   onSelect={(v) => updateSetting('defaultLanguage', v === 'Türkçe' ? 'TR' : 'EN')} 
                 />
               </div>
+            </div>
+
+            <div className="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm space-y-4">
+              <div>
+                <h2 className="text-lg font-semibold text-red-700">Tehlikeli Bölge</h2>
+                <p className="text-sm text-red-600 mt-1">
+                  Hesabınızı sildiğinizde varlıklarınız, gelir-gider kayıtlarınız ve tüm geçmiş verileriniz kalıcı olarak yok edilir. Bu işlemin geri dönüşü yoktur.
+                </p>
+              </div>
+              <button
+                onClick={handleDeleteAccount}
+                disabled={loading}
+                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+              >
+                {loading ? 'Siliniyor...' : 'Hesabımı Kalıcı Olarak Sil'}
+              </button>
             </div>
           </div>
         </section>
