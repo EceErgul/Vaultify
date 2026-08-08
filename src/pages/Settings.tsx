@@ -380,21 +380,23 @@ const Settings = () => {
               </div>
             </div>
 
-            <div className="bg-red-50 p-6 rounded-xl border border-red-200 shadow-sm space-y-4">
-              <div>
-                <h2 className="text-lg font-semibold text-red-700">Tehlikeli Bölge</h2>
-                <p className="text-sm text-red-600 mt-1">
-                  Hesabınızı sildiğinizde varlıklarınız, gelir-gider kayıtlarınız ve tüm geçmiş verileriniz kalıcı olarak yok edilir. Bu işlemin geri dönüşü yoktur.
-                </p>
-              </div>
-              <button
-                onClick={handleDeleteAccount}
-                disabled={loading}
-                className="px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition disabled:opacity-50"
-              >
-                {loading ? 'Siliniyor...' : 'Hesabımı Kalıcı Olarak Sil'}
-              </button>
+           <div className="p-6 rounded-xl border shadow-sm space-y-4 bg-[var(--danger-bg)] border-[var(--danger-border)] transition-colors duration-300">
+            <div>
+              <h2 className="text-lg font-semibold text-[var(--danger-title)]">
+                Tehlikeli Bölge
+              </h2>
+              <p className="text-sm mt-1 text-[var(--danger-text)]">
+                Hesabınızı sildiğinizde varlıklarınız, gelir-gider kayıtlarınız ve tüm geçmiş verileriniz kalıcı olarak yok edilir. Bu işlemin geri dönüşü yoktur.
+              </p>
             </div>
+            <button
+              onClick={handleDeleteAccount}
+              disabled={loading}
+              className="px-4 py-2 font-medium rounded-lg text-[var(--danger-btn-text)] bg-[var(--danger-btn-bg)] hover:bg-[var(--danger-btn-hover)] transition disabled:opacity-50"
+            >
+              {loading ? 'Siliniyor...' : 'Hesabımı Kalıcı Olarak Sil'}
+            </button>
+          </div>
           </div>
         </section>
       </div>
