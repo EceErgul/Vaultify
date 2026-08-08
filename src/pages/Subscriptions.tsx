@@ -19,10 +19,34 @@ const Subscriptions = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
-
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
+
+  const getItemsPerPage = () => {
+    if (window.innerWidth < 500) return 1;
+    if (window.innerWidth < 900) return 2;
+    return 3;
+  };
+
+  const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setItemsPerPage(getItemsPerPage());
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const listWithAdd = [...(Array.isArray(subscriptions) ? subscriptions : []), { id: 'add-card' } as any];
+  const totalPages = Math.ceil(listWithAdd.length / itemsPerPage);
+
+  useEffect(() => {
+    if (activeIndex >= totalPages && totalPages > 0) {
+      setActiveIndex(totalPages - 1);
+    }
+  }, [itemsPerPage, totalPages]);
 
   const fetchSubscriptions = async () => {
     try {
@@ -85,10 +109,7 @@ const Subscriptions = () => {
     return a.subscription_name.localeCompare(b.subscription_name);
   });
   
-  const listWithAdd = [...sortedSubs, { id: 'add-card' } as any];
-  const itemsPerPage = 3;
-  const totalPages = Math.ceil(listWithAdd.length / itemsPerPage);
-
+  const sortedListWithAdd = [...sortedSubs, { id: 'add-card' } as any];
   const validSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
   const aylikToplam = validSubscriptions.reduce((acc, curr) => acc + Number(curr.cost), 0);
   
@@ -96,17 +117,20 @@ const Subscriptions = () => {
   ? [...validSubscriptions].sort((a, b) => getKalanGun(a.payment_day) - getKalanGun(b.payment_day))[0] 
   : null;
 
+  const sliderMaxWidthClass = itemsPerPage === 1 ? 'max-w-[240px]' : itemsPerPage === 2 ? 'max-w-[480px]' : 'max-w-[720px]';
+  const cardWidthClass = itemsPerPage === 1 ? 'min-w-full' : itemsPerPage === 2 ? 'min-w-[50%]' : 'min-w-[33.333%]';
+
   return (
-    <div className="p-8 font-inter max-w-6xl mx-auto flex flex-col items-center">
+    <div className="p-4 sm:p-8 font-inter w-full max-w-6xl mx-auto flex flex-col items-center overflow-x-hidden box-border">
       
-      <div className="flex gap-10 mb-16">
-        <div className="w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4">
+      <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mb-10 sm:mb-16 w-full justify-center items-center">
+        <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
           <h3 className="text-xl font-medium mb-4">Aylık Toplam</h3>
           <p className="text-sm leading-relaxed">
             Bu ay toplam {aylikToplam.toLocaleString('tr-TR')} ₺<br/>abonelik ödemeniz var.
           </p>
         </div>
-        <div className="w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4">
+        <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
           <h3 className="text-xl font-medium mb-4">Sıradaki Ödeme</h3>
           {siradakiOdeme ? (
             <p className="text-sm leading-relaxed">
@@ -119,22 +143,22 @@ const Subscriptions = () => {
         </div>
       </div>
 
-      <h2 className="text-2xl font-semibold mb-8 tracking-wider">ABONELİKLERİM</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 tracking-wider text-center">ABONELİKLERİM</h2>
 
-      <div className="w-[660px] overflow-hidden mb-6 min-h-[320px]">
+      <div className={`w-full ${sliderMaxWidthClass} overflow-hidden mb-6 min-h-[320px] transition-all duration-300 box-border`}>
         <div 
           className="flex transition-transform duration-500 ease-in-out"
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
           {loading ? (
-            <div className="w-[660px] flex items-center justify-center text-sm text-gray-400">
+            <div className="w-full flex items-center justify-center text-sm text-gray-400 min-h-[300px]">
               Yükleniyor...
             </div>
           ) : (
-            listWithAdd.map((item) => {
+            sortedListWithAdd.map((item) => {
               if (item.id === 'add-card') {
                 return (
-                  <div key="add-card" className="min-w-[220px] p-2">
+                  <div key="add-card" className={`${cardWidthClass} p-2 flex-shrink-0 box-border`}>
                     <div 
                       onClick={() => setIsAddOpen(true)}
                       className="w-full h-[300px] bg-[#B9B9B9] rounded-2xl shadow-lg border border-black/5 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
@@ -150,10 +174,10 @@ const Subscriptions = () => {
               const abonelikSuresi = getAbonelikSuresi(sub.start_date);
 
               return (
-                <div key={sub.id} className="min-w-[220px] p-2">
+                <div key={sub.id} className={`${cardWidthClass} p-2 flex-shrink-0 box-border`}>
                   <div 
                     style={{ backgroundColor: getCardColor(sub.payment_day, sub.is_trial) }}
-                    className="w-full h-[300px] rounded-2xl shadow-lg p-5 flex flex-col relative border border-black/5 transition-transform hover:scale-[1.02]"
+                    className="w-full h-[300px] rounded-2xl shadow-lg p-5 flex flex-col relative border border-black/5 transition-transform hover:scale-[1.02] box-border"
                   >
                     <div className="flex justify-between items-start mb-6">
                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border border-black/10">
@@ -167,7 +191,7 @@ const Subscriptions = () => {
                       <button onClick={() => { setSelectedSubscription(sub); setIsEditOpen(true); }} className="text-[12px] font-regular hover:underline">Düzenle</button>
                     </div>
 
-                    <h4 className="text-[15px] font-semibold mb-3">{sub.subscription_name}</h4>
+                    <h4 className="text-[15px] font-semibold mb-3 truncate">{sub.subscription_name}</h4>
                     
                     <div className="space-y-2 text-[12px] font-regular">
                       <p>{Number(sub.cost).toLocaleString('tr-TR')} ₺ /ay</p>
