@@ -18,24 +18,23 @@ const Incomes = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false); // Onay modalı state'i
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedIncome, setSelectedIncome] = useState<IncomeItem | null>(null);
   const [gelirler, setGelirler] = useState<IncomeItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchIncomes = async () => {
-  try {
-    setLoading(true);
-    const data = await apiRequest('/incomes');
-
-    setGelirler(Array.isArray(data) ? data : (data.incomes || data.data || []));
-  } catch (error) {
-    console.error(error);
-    setGelirler([]);
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      const data = await apiRequest('/incomes');
+      setGelirler(Array.isArray(data) ? data : (data.incomes || data.data || []));
+    } catch (error) {
+      console.error(error);
+      setGelirler([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchIncomes();
@@ -47,7 +46,7 @@ const Incomes = () => {
     );
   };
 
-  const handleRowDoubleClick = (item: IncomeItem) => {
+  const handleRowEdit = (item: IncomeItem) => {
     if (isDeleteMode) return;
     setSelectedIncome(item);
     setIsEditModalOpen(true);
@@ -74,11 +73,6 @@ const Incomes = () => {
       <div className="flex justify-between items-start mb-6">
         <div>
           <h2 className="text-3xl font-semibold text-black">Gelirler</h2>
-          {!isDeleteMode && (
-            <p className="text-xs text-gray-400 mt-1 italic">
-              Düzenlemek istediğiniz gelirin üzerine <span className="font-semibold text-gray-600">çift tıklayabilirsiniz.</span>
-            </p>
-          )}
         </div>
         <div className="flex flex-col gap-2">
           <Button 
@@ -117,7 +111,7 @@ const Incomes = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
-              {isDeleteMode && <th className="w-12 border-r border-black"></th>}
+              <th className="w-12 border-r border-black"></th>
               <th className="border-r border-black p-2 font-regular">Tarih</th>
               <th className="border-r border-black p-2 font-regular">Gelir Adı</th>
               <th className="border-r border-black p-2 font-regular">Kategori</th>
@@ -127,7 +121,7 @@ const Incomes = () => {
           <tbody>
             {loading ? (
               <tr className="h-12 bg-white">
-                <td colSpan={isDeleteMode ? 5 : 4} className="text-center text-xs">
+                <td colSpan={5} className="text-center text-xs">
                   Gelirler yükleniyor...
                 </td>
               </tr>
@@ -140,34 +134,44 @@ const Incomes = () => {
                 <tr 
                   key={item.id} 
                   style={{ backgroundColor: bgColor }}
-                  onDoubleClick={() => handleRowDoubleClick(item)} 
-                  className={`h-12 border-b border-black last:border-0 text-sm text-black transition-all select-none ${
-                    !isDeleteMode ? 'cursor-pointer hover:opacity-85' : ''
-                  }`}
+                  className="h-12 border-b border-black last:border-0 text-sm text-black transition-all"
                 >
-                  {isDeleteMode && (
-                    <td 
-                      className="text-center border-r border-black/20"
-                      onClick={(e) => e.stopPropagation()} 
-                    >
-                      <div className="flex justify-center items-center h-full">
+                  <td className="text-center border-r border-black/20">
+                    <div className="flex justify-center items-center h-full">
+                      {isDeleteMode ? (
                         <GeneralDeleteCheckbox 
                           checked={selectedIds.includes(item.id)} 
                           onChange={() => toggleSelect(item.id)} 
                         />
-                      </div>
-                    </td>
-                  )}
-                  <td className="border-r border-black px-4 text-center font-regular">{formattedDate}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.income_name}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.income_category}</td>
-                  <td className="text-center font-regular px-4">{Number(item.income_amount).toLocaleString('tr-TR')} ₺</td>
+                      ) : (
+                        <button
+                          onClick={() => handleRowEdit(item)}
+                          className="text-xs bg-black/10 hover:bg-black/20 text-black px-2 py-1 rounded transition-all"
+                          title="Düzenle"
+                        >
+                          ✏️
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td className="border-r border-black px-4 text-center font-regular">
+                    {formattedDate}
+                  </td>
+                  <td className="border-r border-black px-4 text-center font-regular">
+                    {item.income_name}
+                  </td>
+                  <td className="border-r border-black px-4 text-center font-regular">
+                    {item.income_category}
+                  </td>
+                  <td className="text-center font-regular px-4">
+                    {Number(item.income_amount).toLocaleString('tr-TR')} ₺
+                  </td>
                 </tr>
               );
             })}
             {!loading && gelirler.length === 0 && (
               <tr className="h-12 bg-white">
-                <td colSpan={isDeleteMode ? 5 : 4} className="text-center text-gray-400 italic text-xs">
+                <td colSpan={5} className="text-center text-gray-400 italic text-xs">
                   Henüz gelir kaydı bulunmuyor.
                 </td>
               </tr>
@@ -211,8 +215,8 @@ const Incomes = () => {
           onClose={() => {
             setIsEditModalOpen(false);
             setSelectedIncome(null);
-            fetchIncomes();
           }}
+          onSuccess={fetchIncomes}
           initialData={{
             id: selectedIncome.id,
             date: selectedIncome.date,
