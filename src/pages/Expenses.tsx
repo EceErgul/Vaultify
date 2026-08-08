@@ -108,9 +108,13 @@ const Expenses = () => {
       const amountB = Number(b.expenses_amount);
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-      if (currentFilters.amountSort) return currentFilters.amountSort === 'asc' ? amountA - amountB : amountB - amountA;
+
+      if (currentFilters.amountSort && currentFilters.amountSort !== initialFilterValues.amountSort) {
+        return currentFilters.amountSort === 'asc' ? amountA - amountB : amountB - amountA;
+      }
       return currentFilters.dateSort === 'asc' ? dateA - dateB : dateB - dateA;
     });
+
     return result;
   }, [harcamalar, currentFilters]);
 
@@ -177,7 +181,7 @@ const Expenses = () => {
           <tbody>
             {loading ? (
               <tr className="h-12 bg-white"><td colSpan={6} className="text-center text-xs">Harcamalar yükleniyor...</td></tr>
-            ) : (Array.isArray(harcamalar) ? harcamalar : []).map((item, index) => {
+            ) : (Array.isArray(filteredHarcamalar) ? filteredHarcamalar : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');

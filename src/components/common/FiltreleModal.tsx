@@ -64,8 +64,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
   const handleCalendarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (value) {
-      const [year, month, day] = value.split('-');
-      setTextDate(`${day}/${month}/${year}`);
+      setTextDate(value);
     }
   };
 
