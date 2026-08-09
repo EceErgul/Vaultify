@@ -90,41 +90,41 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
 
   return (
     <BaseModal title={isEditMode ? "Harcamayı Düzenle" : "Harcama Ekle"} onClose={onClose}>
-      <div className="grid grid-cols-[120px_1fr] items-center gap-y-5 font-inter pr-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-5 gap-x-2 font-inter pr-1 sm:pr-4">
         
-        <label className="text-sm font-medium text-[#333D50]">Tarih:</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Tarih:</label>
         <Input type="text" placeholder="GG/AA/YYYY" value={date} onChange={handleDateChange} maxLength={10} disabled={loading} />
 
-        <label className="text-sm font-medium text-[#333D50]">Kategori:</label>
-        <div className="relative z-20">
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Kategori:</label>
+        <div className="relative z-20 w-full">
           <Dropdown 
             options={KATEGORILER}
             onSelect={(v) => setCategory(v as ExpenseCategory)}
             placeholder={category || "Kategori Seçin"} value={''}          
-            />
+          />
         </div>
 
-        <label className="text-sm font-medium text-[#333D50]">Harcama Adı:</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Harcama Adı:</label>
         <Input placeholder="Buraya Yazılacak" value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
 
-        <label className="text-sm font-medium text-[#333D50]">Ödeme:</label>
-        <div className="relative z-10">
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Ödeme:</label>
+        <div className="relative z-10 w-full">
           <Dropdown 
             options={ODEME_YONTEMLERI}
             onSelect={(v) => setPaymentMethod(v as PaymentMethod)}
             placeholder={paymentMethod || "Ödeme Yöntemi Seçin"} value={''}          
-            />
+          />
         </div>
 
-        <label className="text-sm font-medium text-[#333D50]">Tutar:</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Tutar:</label>
         <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} placeholder="0.00" disabled={loading} />
       </div>
 
-      <div className="mt-10 flex justify-end pr-6 pb-2">
+      <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">
         <Button 
           variant={isEditMode ? "apply" : "add"}
           onClick={handleSave} 
-          className="w-[140px]" 
+          className="w-full sm:w-[140px] text-xs sm:text-sm" 
           disabled={loading}
         >
           {loading ? 'İşleniyor...' : (isEditMode ? 'Onayla' : '+ Ekle')}

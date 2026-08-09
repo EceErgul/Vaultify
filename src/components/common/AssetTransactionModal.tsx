@@ -60,13 +60,13 @@ const AssetTransactionModal: React.FC<AssetTransactionModalProps> = ({ assetId, 
 
   return (
     <BaseModal title="İşlem Ekle" onClose={onClose}>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 font-inter">
         <div>
-          <label className="font-medium text-sm text-[#333D50]">İşlem Türü</label>
+          <label className="font-medium text-xs sm:text-sm text-[#333D50]">İşlem Türü</label>
           <select
             value={transactionType}
             onChange={(event) => setTransactionType(event.target.value as TransactionType)}
-            className="w-full h-[45px] px-4 rounded-[6px] bg-white border border-[#CDCDCD] text-sm text-[#333D50] focus:border-gray-400"
+            className="w-full h-[40px] sm:h-[45px] px-3 sm:px-4 rounded-[6px] bg-white border border-[#CDCDCD] text-xs sm:text-sm text-[#333D50] focus:border-gray-400 mt-1"
           >
             {transactionTypes.map((type) => (
               <option key={type} value={type}>{type}</option>
@@ -75,46 +75,54 @@ const AssetTransactionModal: React.FC<AssetTransactionModalProps> = ({ assetId, 
         </div>
 
         <div>
-          <label className="font-medium text-sm text-[#333D50]">Tarih</label>
-          <Input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
+          <label className="font-medium text-xs sm:text-sm text-[#333D50]">Tarih</label>
+          <div className="mt-1">
+            <Input type="date" value={date} onChange={(event) => setDate(event.target.value)} />
+          </div>
         </div>
 
         <div>
-          <label className="font-medium text-sm text-[#333D50]">Miktar</label>
-          <Input
-            type="number"
-            min="0"
-            step="any"
-            value={quantity}
-            onChange={(event) => setQuantity(event.target.value)}
-            placeholder="Örn: 1.25"
-          />
+          <label className="font-medium text-xs sm:text-sm text-[#333D50]">Miktar</label>
+          <div className="mt-1">
+            <Input
+              type="number"
+              min="0"
+              step="any"
+              value={quantity}
+              onChange={(event) => setQuantity(event.target.value)}
+              placeholder="Örn: 1.25"
+            />
+          </div>
         </div>
 
         <div>
-          <label className="font-medium text-sm text-[#333D50]">Birim Fiyat</label>
-          <Input
-            type="number"
-            min="0"
-            step="any"
-            value={price}
-            onChange={(event) => setPrice(event.target.value)}
-            placeholder="Örn: 1234.56"
-          />
+          <label className="font-medium text-xs sm:text-sm text-[#333D50]">Birim Fiyat</label>
+          <div className="mt-1">
+            <Input
+              type="number"
+              min="0"
+              step="any"
+              value={price}
+              onChange={(event) => setPrice(event.target.value)}
+              placeholder="Örn: 1234.56"
+            />
+          </div>
         </div>
 
         <div>
-          <label className="font-medium text-sm text-[#333D50]">Toplam Tutar</label>
-          <Input value={totalValue} readOnly isTotal />
+          <label className="font-medium text-xs sm:text-sm text-[#333D50]">Toplam Tutar</label>
+          <div className="mt-1">
+            <Input value={totalValue} readOnly isTotal />
+          </div>
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-xs sm:text-sm text-red-600">{error}</p>}
 
-        <div className="flex justify-end gap-3 pt-2">
-          <Button type="button" variant="delete" className="px-5" onClick={onClose}>
-            İptal
+        <div className="flex justify-end gap-2 sm:gap-3 pt-2">
+          <Button type="button" variant="delete" className="px-4 sm:px-5 h-[36px] sm:h-[40px] text-xs sm:text-sm" onClick={onClose}>
+            İşlem İptal
           </Button>
-          <Button type="submit" variant="add" className="px-5" disabled={loading || !quantity || !price}>
+          <Button type="submit" variant="add" className="px-4 sm:px-5 h-[36px] sm:h-[40px] text-xs sm:text-sm" disabled={loading || !quantity || !price}>
             {loading ? 'Kaydediliyor...' : 'Kaydet'}
           </Button>
         </div>

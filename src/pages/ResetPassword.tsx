@@ -33,29 +33,29 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter">
-      <div className="bg-white w-full max-w-[800px] min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-12 px-10">
+      <div className="bg-white w-full max-w-[800px] min-h-[550px] sm:min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-14 pb-8 px-4 sm:px-10 rounded-xl sm:rounded-none">
         
         <Link 
           to="/login" 
-          className="absolute top-6 left-6 flex items-center gap-2 bg-[#CDCDCD] px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-1.5 sm:gap-2 bg-[#CDCDCD] px-2.5 sm:px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
         >
-          <span>←</span> Giriş Ekranına Dön
+          <span>←</span> <span>Giriş Ekranına Dön</span>
         </Link>
 
-        <div className="w-24 h-24 mb-6 opacity-90">
+        <div className="w-20 h-20 sm:w-24 sm:h-24 mb-4 sm:mb-6 opacity-90">
           <img src={Logo} alt="Vaultify" className="w-full h-full object-contain" />
         </div>
 
         {!submitted ? (
           <>
-            <h2 className="text-2xl font-semibold text-black mb-2">Şifrenizi mi unuttunuz?</h2>
-            <p className="text-sm text-gray-500 mb-10 text-center max-w-sm font-regular">
+            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">Şifrenizi mi unuttunuz?</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-10 text-center max-w-sm font-regular px-2">
               Endişelenmeyin! Kayıtlı e-posta adresinizi girin, size şifrenizi sıfırlamanız için bir bağlantı gönderelim.
             </p>
 
-            <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
-              <div className="flex items-center justify-center gap-4">
-                <label className="text-sm font-medium text-[#333D50] w-32 text-right whitespace-nowrap">
+            <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 sm:space-y-6 flex flex-col items-center">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
+                <label className="text-xs sm:text-sm font-medium text-[#333D50] sm:w-32 sm:text-right whitespace-nowrap">
                   E-posta adresiniz:
                 </label>
                 <input 
@@ -63,25 +63,27 @@ const ResetPassword = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="ornek@mail.com"
-                  className="w-64 h-9 border border-gray-300 rounded-full px-4 text-sm focus:outline-none focus:border-gray-500 transition-all"
+                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500 transition-all"
                   disabled={loading}
                   required
                 />
               </div>
 
-              {error && (
-                <div className="text-center">
-                  <p className="text-[11px] text-red-600 font-medium italic animate-fade-in">
-                    {error}
-                  </p>
-                </div>
-              )}
+              <div className="min-h-[24px] flex items-center justify-center w-full">
+                {error && (
+                  <div className="text-center px-2">
+                    <p className="text-[11px] text-red-600 font-medium italic animate-fade-in">
+                      {error}
+                    </p>
+                  </div>
+                )}
+              </div>
 
-              <div className="flex justify-center mt-8">
+              <div className="flex justify-center mt-2 sm:mt-8 w-full">
                 <Button 
                   type="submit"
                   disabled={loading}
-                  className="w-auto px-8 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all whitespace-nowrap border-none outline-none disabled:opacity-50"
+                  className="w-full sm:w-auto px-8 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all whitespace-nowrap border-none outline-none disabled:opacity-50 cursor-pointer flex items-center justify-center"
                 >
                   {loading ? 'İstek Gönderiliyor...' : 'Sıfırlama Linki Gönder'}
                 </Button>
@@ -89,18 +91,18 @@ const ResetPassword = () => {
             </form>
           </>
         ) : (
-          <div className="flex flex-col items-center text-center mt-10">
-            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="flex flex-col items-center text-center mt-6 sm:mt-10 px-2">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl font-semibold text-black mb-2">E-posta Gönderildi!</h2>
-            <p className="text-sm text-gray-500 mb-8 max-w-sm font-regular">
+            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2">E-posta Gönderildi!</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 max-w-sm font-regular">
               <span className="font-bold text-gray-700">{email}</span> adresini kontrol edin. Şifre sıfırlama talimatlarını içeren bir e-posta gönderdik.
             </p>
             <Link to="/login">
-              <button className="text-sm text-[#333D50] font-medium hover:underline">
+              <button className="text-xs sm:text-sm text-[#333D50] font-medium hover:underline cursor-pointer">
                 Giriş sayfasına geri dön
               </button>
             </Link>

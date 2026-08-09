@@ -84,25 +84,29 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuc
 
   return (
     <BaseModal title="Abonelik Ekle" onClose={onClose}>
-      <div className="grid grid-cols-[160px_1fr] items-center gap-y-4 font-inter pr-4 mt-2">
-        <label className="font-medium text-lg">Abonelik Adı:</label>
+      <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-4 px-2 sm:pr-4 mt-2">
+        <label className="font-medium text-base sm:text-lg">Abonelik Adı:</label>
         <Input placeholder="netflix, amazon prime vb." value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-lg">Ödeme Günü:</label>
+        <label className="font-medium text-base sm:text-lg">Ödeme Günü:</label>
         <Input placeholder="ayın kaçında ödeniyor?" value={payDay} onChange={(e) => setPayDay(e.target.value)} />
 
-        <label className="font-medium text-lg">Fiyat:</label>
+        <label className="font-medium text-base sm:text-lg">Fiyat:</label>
         <Input placeholder="Abonelik fiyatı" value={price} onChange={(e) => setPrice(e.target.value)} />
 
-        <label className="font-medium text-lg leading-tight">Abonelik<br />Başlangıcı:</label>
+        <label className="font-medium text-base sm:text-lg leading-tight">
+          Abonelik<br className="hidden sm:block" /> Başlangıcı:
+        </label>
         <Input placeholder="GG/AA/YYYY" value={startDate} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-lg leading-tight">Deneme<br />Sürümü:</label>
+        <label className="font-medium text-base sm:text-lg leading-tight">
+          Deneme<br className="hidden sm:block" /> Sürümü:
+        </label>
         <TrialCheckbox active={isTrial} onClick={() => setIsTrial(!isTrial)} />
       </div>
 
-      <div className="mt-8 flex justify-end pr-8 pb-4">
-        <Button variant="add" className="w-[160px] h-[45px] shadow-md" onClick={handleAdd} disabled={loading}>
+      <div className="mt-6 flex justify-end px-2 sm:pr-8 pb-2">
+        <Button variant="add" className="w-full sm:w-[160px] h-[45px] shadow-md" onClick={handleAdd} disabled={loading}>
           {loading ? 'Ekleniyor...' : '+ Ekle'}
         </Button>
       </div>
@@ -158,25 +162,29 @@ export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, in
 
   return (
     <BaseModal title="Abonelik Düzenle" onClose={onClose}>
-      <div className="grid grid-cols-[160px_1fr] items-center gap-y-4 font-inter pr-4 mt-2">
-        <label className="font-medium text-lg">Abonelik Adı:</label>
+      <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-4 px-2 sm:pr-4 mt-2">
+        <label className="font-medium text-base sm:text-lg">Abonelik Adı:</label>
         <Input value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-lg">Ödeme Günü:</label>
+        <label className="font-medium text-base sm:text-lg">Ödeme Günü:</label>
         <Input value={payDay} onChange={(e) => setPayDay(e.target.value)} />
 
-        <label className="font-medium text-lg">Fiyat:</label>
+        <label className="font-medium text-base sm:text-lg">Fiyat:</label>
         <Input value={price} onChange={(e) => setPrice(e.target.value)} />
 
-        <label className="font-medium text-lg leading-tight">Abonelik<br />Başlangıcı:</label>
+        <label className="font-medium text-base sm:text-lg leading-tight">
+          Abonelik<br className="hidden sm:block" /> Başlangıcı:
+        </label>
         <Input value={startDate} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-lg leading-tight">Deneme<br />Sürümü:</label>
+        <label className="font-medium text-base sm:text-lg leading-tight">
+          Deneme<br className="hidden sm:block" /> Sürümü:
+        </label>
         <TrialCheckbox active={isTrial} onClick={() => setIsTrial(!isTrial)} />
       </div>
 
-      <div className="mt-8 flex justify-end pr-8 pb-4">
-        <Button variant="apply" className="w-[160px] h-[45px] shadow-md" onClick={handleUpdate} disabled={loading}>
+      <div className="mt-6 flex justify-end px-2 sm:pr-8 pb-2">
+        <Button variant="apply" className="w-full sm:w-[160px] h-[45px] shadow-md" onClick={handleUpdate} disabled={loading}>
           {loading ? 'Güncelleniyor...' : 'Uygula'}
         </Button>
       </div>

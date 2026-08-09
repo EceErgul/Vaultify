@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { apiRequest } from '../utils/api';
 
 interface UserInfo {
   fullName: string;
@@ -9,15 +10,58 @@ interface UserInfo {
 interface UserContextType {
   userInfo: UserInfo;
   setUserInfo: React.Dispatch<React.SetStateAction<UserInfo>>;
+  dashboardData: any;
+  loading: boolean;
+  error: string | null;
+  refreshData: () => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [userInfo, setUserInfo] = useState<UserInfo>({ fullName: '', email: '', profileImage: null });
-  
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await apiRequest('/dashboard');
+      const result = response?.data || response;
+
+      if (result) {
+        setDashboardData(result);
+        if (result.user) {
+          setUserInfo({
+            fullName: result.user.full_name || '',
+            email: result.user.email || '',
+            profileImage: result.user.profile_picture || null,
+          });
+        }
+      }
+    } catch (err: any) {
+      console.error("Global veri çekme hatası:", err);
+      setError(err.message || 'Veriler yüklenemedi.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   return (
-    <UserContext.Provider value={{ userInfo, setUserInfo }}>
+    <UserContext.Provider value={{ userInfo, setUserInfo, dashboardData, loading, error, refreshData: fetchData }}>
       {children}
     </UserContext.Provider>
   );

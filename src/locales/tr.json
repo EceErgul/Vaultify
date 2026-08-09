@@ -1,0 +1,19 @@
+{
+  "nav_dashboard": "Dashboard",
+  "nav_assets": "Varlıklarım",
+  "nav_expenses": "Giderler",
+  "nav_incomes": "Gelirler",
+  "nav_subscriptions": "Abonelikler",
+  "nav_settings": "Ayarlar",
+  
+  "dashboard_title": "Net Varlık Özeti",
+  "income_distribution": "Gelir Dağılımı",
+  "expense_distribution": "Gider Dağılımı",
+  "loading_dashboard": "Panel verileri yükleniyor...",
+  "invisible_mode_title": "Görünmezlik Modu Aktif",
+  "invisible_mode_desc": "Finansal verilerinizin güvenliği için Dashboard paneli geçici olarak gizlenmiştir. Ayarlar sayfasından bu modu kapatabilirsiniz.",
+
+  "settings_title": "Ayarlar",
+  "language_section": "Dil Seçimi",
+  "save_success": "Değişiklikler başarıyla kaydedildi"
+}

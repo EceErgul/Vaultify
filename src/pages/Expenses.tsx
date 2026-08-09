@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
-import HarcamaEkleModal from '../components/common/HarcamaEkleModal';
+import HarcamaEkleModal from '../components/common/HarcamaModallari';
 import FiltreleModal, { FilterState } from '../components/common/FiltreleModal';
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
+import Slider from '../components/common/Slider';
 
 interface Expense {
   id: string;
@@ -166,21 +167,28 @@ const Expenses = () => {
       )}
 
       <div className="border border-black overflow-hidden rounded-sm shadow-sm">
-        <table className="w-full border-collapse">
+        <Slider>
+        <table className="w-full border-collapse custom-expense-table">
           <thead>
             <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
               {isDeleteMode && <th className="w-12 border-r border-black"></th>}
               <th className="border-r border-black p-2 font-regular">Tarih</th>
-              <th className="border-r border-black p-2 font-regular">Harcama Adı</th>
-              <th className="border-r border-black p-2 font-regular">Kategori</th>
-              <th className="border-r border-black p-2 font-regular">Ödeme Yöntemi</th>
-              <th className="border-r border-black p-2 font-regular">Tutar</th>
-              {!isDeleteMode && <th className="p-2 font-regular">İşlem</th>}
+              <th className="desktop-only border-r border-black p-2 font-regular">Harcama Adı</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">Kategori</th>
+              <th className="mobile-only border-r border-black p-2 font-regular">Harcama Adı / Kategori</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">Ödeme Yöntemi</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">Tutar</th>
+              <th className="mobile-only border-r border-black p-2 font-regular">Ödeme Yöntemi / Tutar</th>
+
+              {!isDeleteMode && <th className="p-2 font-regular w-24">İşlem</th>}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className="h-12 bg-white"><td colSpan={6} className="text-center text-xs">Harcamalar yükleniyor...</td></tr>
+              <tr className="h-12 bg-white">
+                <td colSpan={isDeleteMode ? 7 : 6} className="desktop-only text-center text-xs">Harcamalar yükleniyor...</td>
+                <td colSpan={isDeleteMode ? 5 : 4} className="mobile-only text-center text-xs">Harcamalar yükleniyor...</td>
+              </tr>
             ) : (Array.isArray(filteredHarcamalar) ? filteredHarcamalar : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
               const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
@@ -189,15 +197,28 @@ const Expenses = () => {
               return (
                 <tr key={item.id} style={{ backgroundColor: bgColor }} className="h-12 border-b border-black last:border-0 text-sm text-black">
                   {isDeleteMode && (
-                    <td className="text-center border-r border-black/20">
+                    <td className="text-center border-r border-black/25">
                       <GeneralDeleteCheckbox checked={selectedIds.includes(item.id)} onChange={() => toggleSelect(item.id)} />
                     </td>
                   )}
                   <td className="border-r border-black px-4 text-center font-regular">{formattedDate}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.expense_name}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.expense_category}</td>
-                  <td className="border-r border-black px-4 text-center font-regular">{item.payment_method}</td>
-                  <td className="border-r border-black text-center font-regular px-4">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</td>
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.expense_name}</td>
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.expense_category}</td>
+                  <td className="mobile-only border-r border-black px-4 font-regular">
+                    <div className="combined-cell-content">
+                      <span className="main-text">{item.expense_name}</span>
+                      <span className="sub-text">{item.expense_category}</span>
+                    </div>
+                  </td>
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.payment_method}</td>
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</td>
+                  <td className="mobile-only border-r border-black px-4 font-regular">
+                    <div className="combined-cell-content">
+                      <span className="main-text">{item.payment_method}</span>
+                      <span className="sub-text">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</span>
+                    </div>
+                  </td>
+
                   {!isDeleteMode && (
                     <td className="text-center">
                       <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-900 hover:text-black">Düzenle</button>
@@ -208,6 +229,7 @@ const Expenses = () => {
             })}
           </tbody>
         </table>
+        </Slider>
       </div>
 
       {isDeleteMode && selectedIds.length > 0 && (

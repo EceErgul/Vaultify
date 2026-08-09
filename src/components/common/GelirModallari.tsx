@@ -66,28 +66,28 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }
 
   return (
     <BaseModal title="Gelir Ekle" onClose={onClose}>
-      <div className="grid grid-cols-[120px_1fr] items-center gap-y-5 font-inter pr-4">
-        <label className="font-medium text-sm text-[#333D50]">Tarih:</label>
+      <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-start sm:items-center gap-x-2 gap-y-3 sm:gap-y-5 font-inter pr-1 sm:pr-4">
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Tarih:</label>
         <Input placeholder="GG/AA/YYYY" value={date} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-sm text-[#333D50]">Gelir Adı:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Gelir Adı:</label>
         <Input placeholder="Gelir adı" value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
-        <div className="relative max-h-[200px] overflow-y-auto z-[999]"> 
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Kategori:</label>
+        <div className="relative w-full z-[999]">
           <Dropdown 
             options={GELIR_KATEGORILERI}
             onSelect={(v) => setCategory(v as IncomeSource)}
             placeholder={category} value={''}          
-            />
+          />
         </div>
 
-        <label className="font-medium text-sm text-[#333D50]">Miktar:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Miktar:</label>
         <Input type="number" placeholder="Gelir Miktarı" value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} />
       </div>
 
-      <div className="mt-10 flex justify-end pr-10 pb-2">
-        <Button variant="add" className="w-[140px]" onClick={handleAdd} disabled={loading}>
+      <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">
+        <Button variant="add" className="w-full sm:w-[140px] text-xs sm:text-sm" onClick={handleAdd} disabled={loading}>
           {loading ? 'Ekleniyor...' : '+ Ekle'}
         </Button>
       </div>
@@ -130,24 +130,24 @@ export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialD
 
   return (
     <BaseModal title="Gelir Düzenle" onClose={onClose}>
-      <div className="grid grid-cols-[120px_1fr] items-center gap-y-5 font-inter pr-4">
-        <label className="font-medium text-sm text-[#333D50]">Tarih:</label>
+      <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-start sm:items-center gap-x-2 gap-y-3 sm:gap-y-5 font-inter pr-1 sm:pr-4">
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Tarih:</label>
         <Input placeholder="GG/AA/YYYY" value={date} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-sm text-[#333D50]">Gelir Adı:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Gelir Adı:</label>
         <Input value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-sm text-[#333D50]">Kategori:</label>
-        <div className="relative">
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Kategori:</label>
+        <div className="relative w-full z-[999]">
           <Dropdown options={GELIR_KATEGORILERI} onSelect={(v) => setCategory(v as IncomeSource)} placeholder={category} value={''} />
         </div>
 
-        <label className="font-medium text-sm text-[#333D50]">Miktar:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Miktar:</label>
         <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
       </div>
 
-      <div className="mt-10 flex justify-end pr-10 pb-2">
-        <Button variant="apply" className="w-[140px]" onClick={handleUpdate} disabled={loading}>
+      <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">
+        <Button variant="apply" className="w-full sm:w-[140px] text-xs sm:text-sm" onClick={handleUpdate} disabled={loading}>
           {loading ? 'Güncelleniyor...' : 'Uygula'}
         </Button>
       </div>

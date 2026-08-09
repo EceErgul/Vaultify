@@ -36,9 +36,6 @@ export const getLivePrice = async (assetType: string, assetName: string): Promis
   if (name === 'DOLAR') name = 'USD';
   if (name === 'EURO') name = 'EUR';
 
-  // debugging: Log the type and name being queried
-  console.log(`🔎 Market Sorgusu: Type=${type}, Name=${name}`);
-
   try {
     if (type === 'doviz' || type === 'forex' || type === 'currency') {
       const data = await getCachedData('/economy/allCurrency');

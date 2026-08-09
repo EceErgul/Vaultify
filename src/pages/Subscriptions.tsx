@@ -207,12 +207,12 @@ const Subscriptions = () => {
         </div>
       </div>
 
-      <div className="flex gap-3 mb-10">
+      <div className="flex gap-3 mb-10 items-center">
         {[...Array(totalPages)].map((_, i) => (
           <button
             key={i}
             onClick={() => setActiveIndex(i)}
-            className={`h-2 transition-all duration-300 rounded-full ${activeIndex === i ? 'w-8 bg-[#B9B9B9]' : 'w-2 bg-[#D9D9D9]'}`}
+            className={`h-2 flex-shrink-0 transition-all duration-300 rounded-full ${activeIndex === i ? 'w-8 bg-[#B9B9B9]' : 'w-2 bg-[#D9D9D9]'}`}
           />
         ))}
       </div>

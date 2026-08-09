@@ -1,19 +1,31 @@
 import pool from '../config/db';
-import { getLivePrice } from './market.service';
 import * as settingService from '../services/setting.service';
 
 export const getAssets = async (userId: string) => {
   const isInvisible = await settingService.checkInvisibleMode(userId);
-
-  if (isInvisible) {
-    return [];
-  }
+  if (isInvisible) return [];
 
   const result = await pool.query(
     'SELECT * FROM assets WHERE user_id = $1 ORDER BY asset_name ASC',
     [userId]
   );
-  return result.rows;
+  
+  return result.rows.map(asset => {
+    const liveUnitPrice = Number(asset.live_unit_price || 0);
+    const totalQuantity = Number(asset.total_quantity || 0);
+    const totalCost = Number(asset.total_cost || 0);
+    const currentTotalValue = totalQuantity * liveUnitPrice;
+    const netProfitLoss = currentTotalValue - totalCost;
+    const profitLossPercentage = totalCost > 0 ? (netProfitLoss / totalCost) * 100 : 0;
+
+    return {
+      ...asset,
+      current_price: liveUnitPrice,
+      current_total_value: currentTotalValue,
+      net_profit_loss: netProfitLoss,
+      profit_loss_percentage: profitLossPercentage
+    };
+  });
 };
 
 export const getAssetById = async (userId: string, assetId: string) => {
@@ -26,35 +38,24 @@ export const getAssetById = async (userId: string, assetId: string) => {
     const asset = result.rows[0];
     if (!asset) return null;
 
-    const liveUnitPrice = await getLivePrice(asset.asset_type, asset.asset_name) || 0;
-    if (liveUnitPrice === 0) {
-      console.warn(`⚠️ Uyarı: ${asset.asset_name} için fiyat alınamadı!`);
-    }
-
+    const liveUnitPrice = Number(asset.live_unit_price || 0);
     const totalQuantity = Number(asset.total_quantity || 0);
     const totalCost = Number(asset.total_cost || 0);
-    
     const currentTotalValue = totalQuantity * liveUnitPrice;
     const netProfitLoss = currentTotalValue - totalCost;
     const profitLossPercentage = totalCost > 0 ? (netProfitLoss / totalCost) * 100 : 0;
-
-    console.log(`\n=== 🔎 VAULTIFY DETAY TETİKLENDİ ===`);
-    console.log(`Varlık Adı/Türü: ${asset.asset_name} [${asset.asset_type}]`);
-    console.log(`API'den Dönen Canlı Fiyat: ${liveUnitPrice} ₺`);
-    console.log(`Hesaplanan Güncel Değer: ${currentTotalValue} ₺`);
-    console.log(`====================================\n`);
 
     return {
       id: asset.id,
       asset_name: asset.asset_name,
       asset_type: asset.asset_type,
-      total_quantity: totalQuantity,
-      total_cost: totalCost,
-      live_unit_price: liveUnitPrice,
+      totalQuantity: totalQuantity,
+      totalCost: totalCost,
+      currentPrice: liveUnitPrice,
+      lastUpdated: asset.fetched_at || new Date().toISOString(),
       current_total_value: currentTotalValue,
       net_profit_loss: netProfitLoss,
-      profit_loss_percentage: profitLossPercentage,
-      fetchedAt: new Date().toISOString()
+      profit_loss_percentage: profitLossPercentage
     };
   } catch (error: any) {
     console.error("❌ getAssetById fonksiyonunda hata oluştu:", error.message);

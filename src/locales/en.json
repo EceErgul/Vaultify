@@ -1,0 +1,8 @@
+{
+  "dashboard": "Dashboard",
+  "netAssetSummary": "Net Asset Summary",
+  "incomeDistribution": "Income Distribution",
+  "expenseDistribution": "Expense Distribution",
+  "loading": "Loading dashboard data...",
+  "invisibleMode": "Invisible Mode Active"
+}

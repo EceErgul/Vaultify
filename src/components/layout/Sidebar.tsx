@@ -1,7 +1,12 @@
 import { LayoutDashboard, Wallet, Receipt, HandCoins, CalendarClock, Settings } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
-const Sidebar = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { name: 'Varlıklarım', path: '/assets', icon: Wallet },
@@ -12,18 +17,23 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-64 bg-[var(--bg-sidebar)] text-[var(--sidebar-text)] flex flex-col md:flex border-r border-black/10">
-      <div className="py-10">
-        <div className="mb-8 px-8">
-        </div>
-        
+    <aside 
+      className={`
+        app-sidebar fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-[var(--bg-sidebar)] text-[var(--sidebar-text)] 
+        flex flex-col border-r border-black/10 z-50 transition-transform duration-300 ease-in-out
+        ${isOpen ? 'open' : ''}
+      `}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="py-6 overflow-y-auto">
         <nav className="flex flex-col">
           {menuItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center space-x-4 px-8 py-5 transition-all duration-200 border-l-4 ${
+                `flex items-center space-x-4 px-8 py-4 transition-all duration-200 border-l-4 ${
                   isActive 
                   ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-accent)] border-[var(--sidebar-accent)]' 
                   : 'text-[var(--sidebar-text)] border-transparent hover:text-[var(--sidebar-accent)] hover:bg-[var(--sidebar-hover)]'

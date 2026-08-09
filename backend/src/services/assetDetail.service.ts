@@ -7,13 +7,12 @@ export const getAssetTransactions = async (userId: string, assetId: string) => {
   if (isInvisible) {
     return [];
   }
-
+  
   const result = await pool.query(
     `SELECT at.*
      FROM asset_transactions at
-     JOIN assets a ON LOWER(a.id::text) = LOWER(at.asset_id::text) -- 🚀 Büyük/küçük harf ve tip riskini sıfırlıyoruz
-     WHERE LOWER(at.asset_id::text) = LOWER($1::text) 
-       AND LOWER(a.user_id::text) = LOWER($2::text)
+     JOIN assets a ON a.id = at.asset_id
+     WHERE at.asset_id = $1 AND a.user_id = $2
      ORDER BY at.date DESC`,
     [assetId, userId]
   );

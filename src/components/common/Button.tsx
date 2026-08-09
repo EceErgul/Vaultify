@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({ variant = 'add', children, className = 
     cancel: 'bg-[#EAEAEA] text-black',
   };
 
-  const baseStyles = "px-6 py-2 rounded-lg border border-black shadow-sm font-medium transition-all duration-150 flex items-center justify-center gap-2";
+  const baseStyles = "h-[26px] sm:h-[35px] px-3 sm:px-6 text-xs sm:text-sm rounded-lg border border-black shadow-sm font-medium transition-all duration-150 flex items-center justify-center gap-2 flex-shrink-0";
 
   return (
     <button 

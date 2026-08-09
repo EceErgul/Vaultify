@@ -153,13 +153,29 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
             </div>
           )}
           {activeTab === 'kategori' && (
-            <div className="grid grid-cols-2 gap-2">
-              {kategoriler.map(kat => <button key={kat} onClick={() => setSelectedCategory(selectedCategory === kat ? null : kat)} className={`text-xs p-2 rounded ${selectedCategory === kat ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100'}`}>{kat}</button>)}
+            <div className="grid grid-cols-2 gap-2 items-stretch">
+              {kategoriler.map(kat => (
+                <button 
+                  key={kat} 
+                  onClick={() => setSelectedCategory(selectedCategory === kat ? null : kat)} 
+                  className={`text-xs px-3 py-2.5 rounded h-auto min-h-[42px] flex items-center justify-center text-center leading-tight ${selectedCategory === kat ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
+                >
+                  {kat}
+                </button>
+              ))}
             </div>
           )}
           {activeTab === 'odeme' && (
              <div className="flex flex-col gap-2">
-                {odemeYontemleri.map(y => <button key={y} onClick={() => setSelectedPayment(selectedPayment === y ? null : y)} className={`text-xs p-2 rounded ${selectedPayment === y ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100'}`}>{y}</button>)}
+                {odemeYontemleri.map(y => (
+                  <button 
+                    key={y} 
+                    onClick={() => setSelectedPayment(selectedPayment === y ? null : y)} 
+                    className={`text-xs p-2 rounded ${selectedPayment === y ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
+                  >
+                    {y}
+                  </button>
+                ))}
              </div>
           )}
           {activeTab === 'tutar' && (

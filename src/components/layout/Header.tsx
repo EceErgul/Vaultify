@@ -1,42 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { CircleUser, LogOut } from 'lucide-react';
+import React from 'react';
+import { CircleUser, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LogoImg from '../../assets/vaultify_logo_nobackground.png';
-import { apiRequest } from '../../utils/api';
+import { useUser } from '../../context/UserContext';
 
 const BACKEND_URL = 'http://localhost:5000';
 
-const Header = ({ isLoggedIn = true }: { isLoggedIn?: boolean }) => {
+interface HeaderProps {
+  onToggleSidebar?: () => void;
+}
+
+const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
-  const [profileImage, setProfileImage] = useState<string | null>(null);
-
-  const fetchProfileImage = async () => {
-    try {
-      const data = await apiRequest('/users/profile');
-      console.log("Gelen veri:", data);
-      
-      if (data && data.profile_picture) {
-        setProfileImage(data.profile_picture);
-      }
-    } catch (error) {
-      console.error("Header profil resmi yüklenemedi:", error);
-    }
-  };
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      fetchProfileImage();
-    }
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    const handleProfileUpdate = () => {
-      fetchProfileImage();
-    };
-
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-    return () => window.removeEventListener('profileUpdated', handleProfileUpdate);
-  }, []);
+  const { userInfo } = useUser();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -46,40 +22,49 @@ const Header = ({ isLoggedIn = true }: { isLoggedIn?: boolean }) => {
 
   return (
     <header 
-      className="w-full h-16 border-b border-[var(--border-color)] flex items-center justify-between px-6 shadow-sm"
+      className="w-full h-16 border-b border-[var(--border-color)] flex items-center justify-between px-3 sm:px-6 shadow-sm fixed top-0 left-0 z-50"
       style={{ backgroundColor: 'var(--bg-sidebar)' }}
     >
-      <div className="flex items-center gap-2">
-        <img src={LogoImg} alt="Vaultify Logo" className="w-8 h-8 object-contain" />
-        <span className="font-bold text-lg tracking-tight text-[var(--sidebar-text)]">Vaultify</span>
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+        <button 
+          type="button"
+          onClick={onToggleSidebar}
+          className="inline-flex items-center justify-center min-[836px]:hidden p-1.5 sm:p-2 text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] rounded-lg transition-colors focus:outline-none cursor-pointer shrink-0"
+          aria-label="Menüyü Aç/Kapat"
+        >
+          <Menu size={22} className="sm:w-6 sm:h-6" />
+        </button>
+
+        <div 
+          className="flex items-center gap-1.5 sm:gap-2 min-w-0 cursor-pointer"
+          onClick={() => navigate('/dashboard')}
+        >
+          <img src={LogoImg} alt="Vaultify Logo" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0" />
+          <span className="font-bold text-base sm:text-lg tracking-tight text-[var(--sidebar-text)] truncate">Vaultify</span>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-[var(--border-color)]">
-            {profileImage ? (
-              <img 
-                src={`${BACKEND_URL}${profileImage}?t=${new Date().getTime()}`} 
-                alt="Profil" 
-                className="w-full h-full object-cover"
-                onError={() => {
-                  console.warn("Profil resmi sunucuda bulunamadı, varsayılan ikona dönülüyor.");
-                  setProfileImage(null);
-                }}
-              />
-            ) : (
-              <CircleUser size={22} className="text-[var(--sidebar-text)]" />
-            )}
-          </div>
-          
-          <button 
-            onClick={handleLogout}
-            className="flex items-center gap-1 text-sm font-medium text-[var(--sidebar-text)] hover:text-red-500 transition-colors"
-          >
-            <LogOut size={16} />
-            <span>Çıkış</span>
-          </button>
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-[var(--border-color)] shrink-0">
+          {userInfo.profileImage ? (
+            <img 
+              src={`${BACKEND_URL}${userInfo.profileImage}?t=${new Date().getTime()}`} 
+              alt="Profil" 
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <CircleUser size={20} className="sm:w-[22px] sm:h-[22px] text-[var(--sidebar-text)]" />
+          )}
         </div>
+        
+        <button 
+          onClick={handleLogout}
+          className="flex items-center gap-1 text-xs sm:text-sm font-medium text-[var(--sidebar-text)] hover:text-red-500 transition-colors cursor-pointer shrink-0"
+          aria-label="Çıkış Yap"
+        >
+          <LogOut size={15} className="sm:w-4 sm:h-4" />
+          <span className="hidden sm:inline">Çıkış</span>
+        </button>
       </div>
     </header>
   );

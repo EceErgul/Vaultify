@@ -30,7 +30,7 @@ function App() {
     const queryParams = new URLSearchParams(window.location.search);
     const token = queryParams.get('token');
 
-    if (token) {
+    if (token && window.location.pathname !== '/new-password') {
       localStorage.setItem('token', token);
       window.history.replaceState({}, document.title, '/dashboard');
       return true;

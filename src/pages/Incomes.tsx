@@ -4,6 +4,7 @@ import Button from '../components/common/Button';
 import { GelirEkleModal, GelirDuzenleModal } from '../components/common/GelirModallari';
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
+import Slider from '../components/common/Slider';
 
 interface IncomeItem {
   id: string;
@@ -108,22 +109,24 @@ const Incomes = () => {
       )}
 
       <div className="border border-black overflow-hidden rounded-sm shadow-sm">
-        <table className="w-full border-collapse">
+        <Slider>
+        <table className="w-full border-collapse custom-income-table">
           <thead>
             <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
               <th className="w-12 border-r border-black"></th>
               <th className="border-r border-black p-2 font-regular">Tarih</th>
-              <th className="border-r border-black p-2 font-regular">Gelir Adı</th>
-              <th className="border-r border-black p-2 font-regular">Kategori</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">Gelir Adı</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">Kategori</th>
+              <th className="mobile-only border-r border-black p-2 font-regular">Gelir Adı / Kategori</th>
+
               <th className="p-2 font-regular">Miktar</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr className="h-12 bg-white">
-                <td colSpan={5} className="text-center text-xs">
-                  Gelirler yükleniyor...
-                </td>
+                <td colSpan={5} className="desktop-only text-center text-xs">Gelirler yükleniyor...</td>
+                <td colSpan={4} className="mobile-only text-center text-xs">Gelirler yükleniyor...</td>
               </tr>
             ) : (Array.isArray(gelirler) ? gelirler : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
@@ -157,12 +160,19 @@ const Incomes = () => {
                   <td className="border-r border-black px-4 text-center font-regular">
                     {formattedDate}
                   </td>
-                  <td className="border-r border-black px-4 text-center font-regular">
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">
                     {item.income_name}
                   </td>
-                  <td className="border-r border-black px-4 text-center font-regular">
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">
                     {item.income_category}
                   </td>
+                  <td className="mobile-only border-r border-black px-4 font-regular">
+                    <div className="combined-cell-content">
+                      <span className="main-text">{item.income_name}</span>
+                      <span className="sub-text">{item.income_category}</span>
+                    </div>
+                  </td>
+
                   <td className="text-center font-regular px-4">
                     {Number(item.income_amount).toLocaleString('tr-TR')} ₺
                   </td>
@@ -171,13 +181,17 @@ const Incomes = () => {
             })}
             {!loading && gelirler.length === 0 && (
               <tr className="h-12 bg-white">
-                <td colSpan={5} className="text-center text-gray-400 italic text-xs">
+                <td colSpan={5} className="desktop-only text-center text-gray-400 italic text-xs">
+                  Henüz gelir kaydı bulunmuyor.
+                </td>
+                <td colSpan={4} className="mobile-only text-center text-gray-400 italic text-xs">
                   Henüz gelir kaydı bulunmuyor.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        </Slider>
       </div>
 
       {isDeleteMode && selectedIds.length > 0 && (

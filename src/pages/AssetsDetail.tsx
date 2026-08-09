@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Button from '../components/common/Button';
 import AssetTransactionModal from '../components/common/AssetTransactionModal';
-import VarlikAyrintisiDuzenle from '../components/common/VarlikAyrintisiDuzenleModal';
+import VarlikModallari from '../components/common/VarlikModallari';
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
+import Slider from '../components/common/Slider';
 
 interface Transaction {
   id: string;
@@ -30,7 +31,8 @@ const AssetsDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAssetEditModalOpen, setIsAssetEditModalOpen] = useState(false);
+  const [isTransactionEditModalOpen, setIsTransactionEditModalOpen] = useState(false);
   const [isAddTransactionOpen, setIsAddTransactionOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -49,19 +51,16 @@ const AssetsDetail = () => {
     setLoading(true);
     setError(null);
 
-    const response = await apiRequest(`/assets/${id}`);
-    const txResponse = await apiRequest(`/assets/${id}/transactions`);
+    const [response, txResponse] = await Promise.all([
+      apiRequest(`/assets/${id}`),
+      apiRequest(`/assets/${id}/transactions`)
+    ]);
+
     const currentAsset = response.data || response; 
     const txDataRaw = txResponse.data || txResponse;
-
-    console.log('=== 🎯 DÜZELTİLMİŞ DEBUGGING ===');
-    console.log('İşlenen Varlık Verisi:', currentAsset);
-
     const txData = Array.isArray(txDataRaw) ? txDataRaw : [];
 
     if (currentAsset) {
-      console.log("Canlı Fiyat:", currentAsset.live_unit_price);
-
       setAssetInfo({
         id: currentAsset.id,
         assetName: currentAsset.asset_name,
@@ -73,24 +72,24 @@ const AssetsDetail = () => {
       });
     }
       
-      const mappedTransactions = txData.map((tx: any) => ({
-        id: tx.id,
-        assetId: tx.asset_id,
-        transactionType: tx.transaction_type,
-        date: tx.date,
-        totalQuantity: Number(tx.total_quantity || 0),
-        pricePerUnit: Number(tx.price_per_unit || 0),
-        totalValue: Number(tx.total_value || 0)
-      }));
+    const mappedTransactions = txData.map((tx: any) => ({
+      id: tx.id,
+      assetId: tx.asset_id,
+      transactionType: tx.transaction_type,
+      date: tx.date,
+      totalQuantity: Number(tx.total_quantity || 0),
+      pricePerUnit: Number(tx.price_per_unit || 0),
+      totalValue: Number(tx.total_value || 0)
+    }));
 
-      setTransactions(mappedTransactions);
-    } catch (error: any) {
-      console.error('Varlık detayları yüklenirken hata oluştu:', error);
-      setError(error?.message || 'Veri çekilirken bir hata oluştu.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setTransactions(mappedTransactions);
+  } catch (error: any) {
+    console.error('Varlık detayları yüklenirken hata oluştu:', error);
+    setError(error?.message || 'Veri çekilirken bir hata oluştu.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     if (id) {
@@ -100,10 +99,6 @@ const AssetsDetail = () => {
 
   useEffect(() => {
     if (!assetInfo?.lastUpdated) return;
-
-    console.log("--- GERÇEK VERİ YAPISI ---");
-    console.log("Object Keys:", Object.keys(assetInfo || {}));
-    console.log("Raw Data:", JSON.stringify(assetInfo || {}, null, 2));
 
     const updateTime = () => {
       const diffInMs = new Date().getTime() - new Date(assetInfo.lastUpdated).getTime();
@@ -126,7 +121,6 @@ const AssetsDetail = () => {
   }, [assetInfo?.lastUpdated]);
 
   const handleDeleteClick = (txId: string) => {
-    console.log(" [SİLME ADIM 1] İkona tıklandı. Hedef TX ID:", txId);
     setTxToDelete(txId);
     setIsConfirmDeleteOpen(true);
   };
@@ -134,27 +128,63 @@ const AssetsDetail = () => {
   const confirmDelete = async (e: React.MouseEvent) => {
     e.preventDefault();
 
-    console.log(" [SİLME ADIM 2] 'Evet, Sil' tıklandı. Hafızadaki ID:", txToDelete);
-
     if (!txToDelete) {
       alert("Hata: Silinecek işlem ID'si hafızada bulunamadı!");
       return;
     }
 
     try {
-      console.log(` [SİLME ADIM 3] İstek atılıyor -> DELETE /transactions/${txToDelete}`);
-      
       await apiRequest(`/assets/transactions/${txToDelete}`, { method: 'DELETE' });
-      
-      console.log(" [SİLME ADIM 4] Başarılı! Tablo verisi yeniden çekiliyor...");
       await fetchDetailData();
-
     } catch (error: any) {
-      console.error(" [SİLME ADIMında HATA]:", error);
-      alert("Sunucu silme işlemini reddetti!\nSebep: " + (error?.message || "Bilinmeyen API hatası (F12 Konsola bak)"));
+      console.error("Silme işleminde hata:", error);
+      alert("Sunucu silme işlemini reddetti!\nSebep: " + (error?.message || "Bilinmeyen API hatası"));
     } finally {
       setIsConfirmDeleteOpen(false);
       setTxToDelete(null);
+    }
+  };
+
+  const handleUpdateAsset = async (formData: any) => {
+    if (!id) return;
+    try {
+      await apiRequest(`/assets/${id}`, {
+        method: 'PUT',
+        body: {
+          asset_name: formData.asset_name,
+          asset_type: formData.asset_type,
+          date: formData.date,
+          total_quantity: formData.amount,
+          total_cost: Number(formData.amount) * Number(formData.price)
+        }
+      });
+      await fetchDetailData();
+      setIsAssetEditModalOpen(false);
+    } catch (error) {
+      console.error("Varlık güncellenirken bir hata oluştu:", error);
+      alert("Varlık güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
+    }
+  };
+
+  const handleUpdateTransaction = async (formData: any) => {
+    if (!editingTx) return;
+    try {
+      await apiRequest(`/assets/transactions/${editingTx.id}`, { 
+        method: 'PUT', 
+        body: {
+          transactionType: editingTx.transactionType,
+          date: formData.date,
+          totalQuantity: parseFloat(formData.amount),
+          pricePerUnit: parseFloat(formData.price),
+          totalValue: parseFloat(formData.amount) * parseFloat(formData.price)
+        }
+      });
+      await fetchDetailData();
+      setIsTransactionEditModalOpen(false);
+      setEditingTx(null);
+    } catch (err) {
+      console.error("İşlem güncellenirken hata:", err);
+      alert("Düzenleme başarısız oldu!");
     }
   };
 
@@ -190,7 +220,7 @@ const AssetsDetail = () => {
   return (
     <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen">
       <div className="flex flex-col gap-4 mb-4">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-medium text-black uppercase tracking-tight">
               {assetInfo.assetName} Detayları
@@ -198,20 +228,20 @@ const AssetsDetail = () => {
             <p className="mt-2 text-sm text-gray-600">Son güncelleme: {liveRelativeTime}</p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button 
-              variant="add" 
-              className="w-[130px] h-[35px] text-sm shadow-md"
-              onClick={() => setIsAddTransactionOpen(true)}
-            >
-              + İşlem Ekle
-            </Button>
+          <div className="flex flex-col gap-2 items-end">
             <Button 
               variant="filter" 
               className="w-[130px] h-[35px] text-sm shadow-md"
               onClick={() => navigate(-1)}
             >
               ← Geri Dön
+            </Button>
+            <Button 
+              variant="add" 
+              className="w-[130px] h-[35px] text-sm shadow-md"
+              onClick={() => setIsAddTransactionOpen(true)}
+            >
+              + İşlem Ekle
             </Button>
           </div>
         </div>
@@ -223,7 +253,7 @@ const AssetsDetail = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mb-12">
+      <div className="asset-detail-grid">
         {[
           { label: "Toplam Miktar", value: `${totalQty.toLocaleString('tr-TR')}`, bg: "#FFF5D9" },
           { label: "Ortalama Maliyet", value: `${avgCost.toFixed(2)} ₺`, bg: "#FFF5D9" },
@@ -247,14 +277,17 @@ const AssetsDetail = () => {
       </div>
 
       <div className="border border-black overflow-hidden rounded-md shadow-lg">
-        <table className="w-full border-collapse">
+        <Slider>
+        <table className="w-full border-collapse custom-asset-detail-table">
           <thead>
             <tr className="bg-[#FFEF79] h-12 border-b border-black text-black text-sm">
               <th className="border-r border-black p-2 font-bold uppercase">Tarih</th>
-              <th className="border-r border-black p-2 font-bold uppercase">Tür</th>
-              <th className="border-r border-black p-2 font-bold uppercase">Miktar</th>
-              <th className="border-r border-black p-2 font-bold uppercase">Birim Fiyat</th>
-              <th className="border-r border-black p-2 font-bold uppercase">Toplam Tutar</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Tür</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Miktar</th>
+              <th className="mobile-only border-r border-black p-2 font-bold uppercase">Tür / Miktar</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Birim Fiyat</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Toplam Tutar</th>
+              <th className="mobile-only border-r border-black p-2 font-bold uppercase">Birim Fiyat / Toplam Tutar</th>
               <th className="p-2 font-bold uppercase">İşlem</th>
             </tr>
           </thead>
@@ -276,18 +309,30 @@ const AssetsDetail = () => {
                     className="h-14 border-b border-black last:border-0 text-sm text-black hover:brightness-95 transition-all"
                   >
                     <td className="border-r border-black text-center">{formattedDate}</td>
-                    <td className="border-r border-black text-center font-medium">{row.transactionType}</td>
-                    <td className="border-r border-black text-center">{row.totalQuantity}</td>
-                    <td className="border-r border-black text-center">{row.pricePerUnit.toFixed(2)} ₺</td>
-                    <td className="border-r border-black text-center font-semibold">{row.totalValue.toFixed(2)} ₺</td>
-
+                    
+                    <td className="desktop-only border-r border-black text-center font-medium">{row.transactionType}</td>
+                    <td className="desktop-only border-r border-black text-center">{row.totalQuantity}</td>
+                    <td className="mobile-only border-r border-black px-4">
+                      <div className="combined-cell-content">
+                        <span className="main-text font-medium">{row.transactionType}</span>
+                        <span className="sub-text">{row.totalQuantity}</span>
+                      </div>
+                    </td>
+                    <td className="desktop-only border-r border-black text-center">{row.pricePerUnit.toFixed(2)} ₺</td>
+                    <td className="desktop-only border-r border-black text-center font-semibold">{row.totalValue.toFixed(2)} ₺</td>
+                    <td className="mobile-only border-r border-black px-4">
+                      <div className="combined-cell-content">
+                        <span className="main-text">{row.pricePerUnit.toFixed(2)} ₺</span>
+                        <span className="sub-text font-semibold">{row.totalValue.toFixed(2)} ₺</span>
+                      </div>
+                    </td>
                     <td className="text-center">
                       <div className="flex justify-center items-center gap-4">
                         <button 
                           type="button"
                           onClick={() => {
                             setEditingTx(row);
-                            setIsEditModalOpen(true);
+                            setIsTransactionEditModalOpen(true);
                           }} 
                           className="hover:scale-125 transition-transform text-xl"
                           title="Düzenle"
@@ -311,6 +356,7 @@ const AssetsDetail = () => {
             )}
           </tbody>
         </table>
+        </Slider>
       </div>
 
       <AssetTransactionModal
@@ -320,52 +366,51 @@ const AssetsDetail = () => {
         onCreated={fetchDetailData}
       />
 
-      <VarlikAyrintisiDuzenle 
-        isOpen={isEditModalOpen} 
+      <VarlikModallari 
+        isOpen={isAssetEditModalOpen} 
+        onClose={() => setIsAssetEditModalOpen(false)} 
+        mode="edit"
+        initialData={assetInfo ? {
+          date: '',
+          assetName: assetInfo.assetName,
+          assetType: assetInfo.assetType as any,
+          amount: assetInfo.totalQuantity,
+          price: avgCost
+        } : undefined}
+        onSave={handleUpdateAsset} 
+      />
+
+      <VarlikModallari 
+        isOpen={isTransactionEditModalOpen} 
         onClose={() => { 
-          setIsEditModalOpen(false); 
+          setIsTransactionEditModalOpen(false); 
           setEditingTx(null); 
         }}
-        onSave={async (data) => {
-          if (!editingTx) return;
-          try {
-            await apiRequest(`/assets/transactions/${editingTx.id}`, { 
-              method: 'PUT', 
-              body: {
-                transactionType: editingTx.transactionType,
-                date: data.date,
-                totalQuantity: parseFloat(data.amount),
-                pricePerUnit: parseFloat(data.price),
-                totalValue: parseFloat(data.amount) * parseFloat(data.price)
-              }
-            });
-            await fetchDetailData();
-          } catch (err) {
-            alert("Düzenleme başarısız oldu!");
-          }
-        }}
+        mode="edit"
         initialData={editingTx ? {
-          date: editingTx.date.split('T')[0].split('-').reverse().join('/'),
-          amount: editingTx.totalQuantity.toString(),
-          price: editingTx.pricePerUnit.toString()
+          date: editingTx.date.split('T')[0],
+          amount: editingTx.totalQuantity,
+          price: editingTx.pricePerUnit,
+          assetType: editingTx.transactionType as any
         } : undefined}
+        onSave={handleUpdateTransaction}
       />
 
       {isConfirmDeleteOpen && (
         <BaseModal title="İşlemi Sil" onClose={() => setIsConfirmDeleteOpen(false)}>
           <div className="p-6 text-center font-inter">
             <p className="mb-6 text-black text-lg font-medium">Bu işlem kaydını silmek istediğinize emin misiniz?</p>
-            <div className="flex justify-center items-center gap-4">
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
               <Button 
                 variant="cancel" 
-                className="w-[120px] h-[40px] shadow-sm" 
+                className="w-full sm:w-[120px] h-[40px] shadow-sm" 
                 onClick={() => setIsConfirmDeleteOpen(false)}
               >
                 Vazgeç
               </Button>
               <Button 
                 variant="apply" 
-                className="w-[120px] h-[40px] !bg-red-600 !text-white shadow-sm hover:!bg-red-700" 
+                className="w-full sm:w-[120px] h-[40px] !bg-red-600 !text-white shadow-sm hover:!bg-red-700" 
                 onClick={confirmDelete}
               >
                 Evet, Sil
@@ -374,7 +419,6 @@ const AssetsDetail = () => {
           </div>
         </BaseModal>
       )}
-
     </div>
   );
 };

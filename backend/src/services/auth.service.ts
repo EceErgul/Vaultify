@@ -50,15 +50,6 @@ export const loginUser = async (credentials: any) => {
     throw new Error('Database password field is missing or undefined');
   }
 
-  console.log("--- LOGIN DEBUG ---");
-  console.log("Gelen Şifre:", password);
-  console.log("Şifre Türü:", typeof password);
-  console.log("DB Hash:", dbPasswordHash);
-  console.log("Hash Türü:", typeof dbPasswordHash);
-
-  const sanityCheck = await bcrypt.compare('123456', dbPasswordHash);
-  console.log("Sanity Check (123456 ile karşılaştırılıyor):", sanityCheck);
-
   const isMatch = await bcrypt.compare(password, dbPasswordHash);
   
   if (!isMatch) {

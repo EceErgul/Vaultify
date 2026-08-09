@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../utils/api';
 import Button from '../components/common/Button';
 import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
-import VarlikModal from '../components/common/VarlikModal';
+import VarlikModallari from '../components/common/VarlikModallari';
 import BaseModal from '../components/common/Modal';
+import Slider from '../components/common/Slider';
 
 const Assets: React.FC = () => {
   const navigate = useNavigate();
@@ -33,8 +34,26 @@ const Assets: React.FC = () => {
     fetchAssets();
   }, []);
 
-  const handleAssetAdded = () => {
-    fetchAssets();
+  const handleSaveAsset = async (formData: any) => {
+    try {
+      const createdAsset = await apiRequest('/assets', {
+        method: 'POST',
+        body: {
+          asset_name: formData.asset_name,
+          asset_type: formData.asset_type,
+          date: formData.date,
+          total_quantity: formData.amount,
+          total_cost: Number(formData.amount) * Number(formData.price)
+        }
+      });
+
+      if (createdAsset) {
+        fetchAssets();
+      }
+    } catch (error) {
+      console.error("Varlık eklenirken bir hata oluştu:", error);
+      alert("Varlık eklenirken bir hata oluştu. Lütfen tekrar deneyin.");
+    }
   };
 
   const handleSelectAll = () => {
@@ -74,10 +93,10 @@ const Assets: React.FC = () => {
   }
 
   return (
-    <div className="p-8 font-inter max-w-7xl mx-auto">
-      <div className="flex justify-between items-end mb-4">
-        <h2 className="text-2xl font-semibold tracking-tight text-black">Toplam Varlıklarım</h2>
-        <div className="flex flex-col gap-2">
+    <div className="p-4 sm:p-8 font-inter max-w-7xl mx-auto">
+      <div className="flex justify-between items-start mb-6">
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-black">Toplam Varlıklarım</h2>
+        <div className="flex flex-col gap-2 items-end">
           <Button variant="add" className="w-[120px] h-[30px] text-[10px]" onClick={() => setIsModalOpen(true)}>+ Varlık Ekle</Button>
 
           {!isDeleteMode && (
@@ -98,15 +117,18 @@ const Assets: React.FC = () => {
       )}
 
       <div className="border border-black overflow-hidden rounded-sm bg-white">
-        <table className="w-full border-collapse">
-             <thead>
-            <tr className="bg-[#7ECCF4] h-10 border-b border-black">
+        <Slider>
+        <table className="w-full border-collapse custom-asset-table">
+          <thead>
+            <tr className="bg-[#7ECCF4] h-10 border-b border-black text-black text-sm">
               {isDeleteMode && <th className="w-12 border-r border-black"></th>}
-              <th className="border-r border-black p-2 font-medium text-black text-left pl-4">Varlık</th>
-              <th className="border-r border-black p-2 font-medium text-black">Tür</th>
-              <th className="border-r border-black p-2 font-medium text-black">Miktar</th>
-              <th className="border-r border-black p-2 font-medium text-black">Maliyet</th>
-              <th className="p-2 font-medium text-black">Detay</th>
+              <th className="desktop-only border-r border-black p-2 font-medium text-left pl-4">Varlık</th>
+              <th className="desktop-only border-r border-black p-2 font-medium">Tür</th>
+              <th className="mobile-only border-r border-black p-2 font-medium">Varlık / Tür</th>
+              <th className="desktop-only border-r border-black p-2 font-medium">Miktar</th>
+              <th className="desktop-only border-r border-black p-2 font-medium">Maliyet</th>
+              <th className="mobile-only border-r border-black p-2 font-medium">Miktar / Maliyet</th>
+              <th className="p-2 font-medium">Detay</th>
             </tr>
           </thead>
           <tbody>
@@ -118,7 +140,6 @@ const Assets: React.FC = () => {
               </tr>
             ) : (
               assets.map((item, index) => {
-                console.log("Varlık Verisi:", item);
                 const isEvenRow = (index + 1) % 2 === 0;
                 const bgColor = isEvenRow ? '#B1E5FF' : '#D8F2FF';
                 const cleanQuantity = Number(item.total_quantity).toString();
@@ -138,13 +159,24 @@ const Assets: React.FC = () => {
                         />
                       </td>
                     )}
-
-                    <td className="border-r border-black px-4 font-medium">
+                    <td className="desktop-only border-r border-black px-4 font-medium">
                       {item.asset_name}
                     </td>
-                    <td className="border-r border-black text-center">{item.asset_type}</td>
-                    <td className="border-r border-black text-center">{cleanQuantity}</td>
-                    <td className="border-r border-black text-center">{cleanCost} ₺</td>
+                    <td className="desktop-only border-r border-black text-center">{item.asset_type}</td>
+                    <td className="mobile-only border-r border-black px-4 font-regular">
+                      <div className="combined-cell-content">
+                        <span className="main-text font-medium">{item.asset_name}</span>
+                        <span className="sub-text">{item.asset_type}</span>
+                      </div>
+                    </td>
+                    <td className="desktop-only border-r border-black text-center">{cleanQuantity}</td>
+                    <td className="desktop-only border-r border-black text-center">{cleanCost} ₺</td>
+                    <td className="mobile-only border-r border-black px-4 font-regular">
+                      <div className="combined-cell-content">
+                        <span className="main-text">{cleanQuantity}</span>
+                        <span className="sub-text">{cleanCost} ₺</span>
+                      </div>
+                    </td>
                     <td className="text-center font-bold">
                       <button 
                         onClick={() => navigate(`/assets/${item.id}`)}
@@ -159,6 +191,7 @@ const Assets: React.FC = () => {
             )}
           </tbody>
         </table>
+        </Slider>
       </div>
 
       {isDeleteMode && selectedIds.length > 0 && (
@@ -181,7 +214,12 @@ const Assets: React.FC = () => {
         </BaseModal>
       )}
 
-      <VarlikModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onAssetAdded={handleAssetAdded} />
+      <VarlikModallari 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        mode="add"
+        onSave={handleSaveAsset} 
+      />
     </div>
   );
 };
