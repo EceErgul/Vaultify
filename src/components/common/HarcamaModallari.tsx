@@ -6,6 +6,7 @@ import Button from './Button';
 import { ExpenseCategory, PaymentMethod } from '../../types/index';
 import { apiRequest } from '../../utils/api';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface HarcamaEkleModalProps {
   onClose: () => void;
@@ -16,6 +17,16 @@ interface HarcamaEkleModalProps {
 
 const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseAdded, initialData, isEditMode = false }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [loading, setLoading] = useState<boolean>(false);
   const [name, setName] = useState(initialData?.name || '');
   const [amount, setAmount] = useState<number | ''>(initialData?.amount || '');
@@ -134,7 +145,10 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
         </div>
 
         <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('exp_label_amount')}</label>
-        <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} placeholder={t('exp_amount_placeholder')} disabled={loading} />
+        <div className="relative w-full">
+          <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} placeholder={t('exp_amount_placeholder')} disabled={loading} />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+        </div>
       </div>
 
       <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">

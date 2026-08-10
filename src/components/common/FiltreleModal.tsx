@@ -6,6 +6,7 @@ import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExpenseCategory, PaymentMethod } from '../../types/index';
 import { getSuggestions } from '../../utils/filterUtils';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 export interface FilterState {
   searchTerm: string;
@@ -35,6 +36,16 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
   onApplyFilters 
 }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [searchTerm, setSearchTerm] = useState<string>(initialFilters.searchTerm);
   const [textDate, setTextDate] = useState<string>(initialFilters.date);
   const [activeTab, setActiveTab] = useState<FilterTab>(null);
@@ -209,8 +220,14 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
           )}
           {activeTab === 'tutar' && (
              <div className="flex flex-col gap-2">
-                <Input placeholder={t('filter_min_placeholder')} value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
-                <Input placeholder={t('filter_max_placeholder')} value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} />
+                <div className="relative w-full">
+                  <Input placeholder={t('filter_min_placeholder')} value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+                </div>
+                <div className="relative w-full">
+                  <Input placeholder={t('filter_max_placeholder')} value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+                </div>
              </div>
           )}
         </div>

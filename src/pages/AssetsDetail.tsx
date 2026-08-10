@@ -7,6 +7,7 @@ import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface Transaction {
   id: string;
@@ -32,6 +33,15 @@ const AssetsDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
 
   const [isAssetEditModalOpen, setIsAssetEditModalOpen] = useState(false);
   const [isTransactionEditModalOpen, setIsTransactionEditModalOpen] = useState(false);
@@ -258,11 +268,11 @@ const AssetsDetail = () => {
       <div className="asset-detail-grid">
         {[
           { label: t('card_total_qty'), value: `${totalQty.toLocaleString('tr-TR')}`, bg: "#FFF5D9" },
-          { label: t('card_avg_cost'), value: `${avgCost.toFixed(2)} ₺`, bg: "#FFF5D9" },
-          { label: t('card_total_value'), value: `${totalValue.toFixed(2)} ₺`, bg: "#E3F2FD" },
+          { label: t('card_avg_cost'), value: `${avgCost.toFixed(2)} ${currencySymbol}`, bg: "#FFF5D9" },
+          { label: t('card_total_value'), value: `${totalValue.toFixed(2)} ${currencySymbol}`, bg: "#E3F2FD" },
           { 
             label: t('card_profit_loss'), 
-            value: `${netProfitLoss >= 0 ? '+' : ''}${netProfitLoss.toFixed(2)} ₺ (${profitLossPercentage.toFixed(2)}%)`,
+            value: `${netProfitLoss >= 0 ? '+' : ''}${netProfitLoss.toFixed(2)} ${currencySymbol} (${profitLossPercentage.toFixed(2)}%)`,
             bg: netProfitLoss >= 0 ? "#E8F5E9" : "#FFEBEE",
             textColor: netProfitLoss >= 0 ? "text-green-700" : "text-red-700"
           }
@@ -320,12 +330,12 @@ const AssetsDetail = () => {
                         <span className="sub-text">{row.totalQuantity}</span>
                       </div>
                     </td>
-                    <td className="desktop-only border-r border-black text-center">{row.pricePerUnit.toFixed(2)} ₺</td>
-                    <td className="desktop-only border-r border-black text-center font-semibold">{row.totalValue.toFixed(2)} ₺</td>
+                    <td className="desktop-only border-r border-black text-center">{row.pricePerUnit.toFixed(2)} {currencySymbol}</td>
+                    <td className="desktop-only border-r border-black text-center font-semibold">{row.totalValue.toFixed(2)} {currencySymbol}</td>
                     <td className="mobile-only border-r border-black px-4">
                       <div className="combined-cell-content">
-                        <span className="main-text">{row.pricePerUnit.toFixed(2)} ₺</span>
-                        <span className="sub-text font-semibold">{row.totalValue.toFixed(2)} ₺</span>
+                        <span className="main-text">{row.pricePerUnit.toFixed(2)} {currencySymbol}</span>
+                        <span className="sub-text font-semibold">{row.totalValue.toFixed(2)} {currencySymbol}</span>
                       </div>
                     </td>
                     <td className="text-center">

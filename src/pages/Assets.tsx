@@ -7,6 +7,7 @@ import VarlikModallari from '../components/common/VarlikModallari';
 import BaseModal from '../components/common/Modal';
 import Slider from '../components/common/Slider';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const Assets: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,15 @@ const Assets: React.FC = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
 
   const fetchAssets = async () => {
     try {
@@ -172,11 +182,11 @@ const Assets: React.FC = () => {
                       </div>
                     </td>
                     <td className="desktop-only border-r border-black text-center">{cleanQuantity}</td>
-                    <td className="desktop-only border-r border-black text-center">{cleanCost} ₺</td>
+                    <td className="desktop-only border-r border-black text-center">{cleanCost} {currencySymbol}</td>
                     <td className="mobile-only border-r border-black px-4 font-regular">
                       <div className="combined-cell-content">
                         <span className="main-text">{cleanQuantity}</span>
-                        <span className="sub-text">{cleanCost} ₺</span>
+                        <span className="sub-text">{cleanCost} {currencySymbol}</span>
                       </div>
                     </td>
                     <td className="text-center font-bold">

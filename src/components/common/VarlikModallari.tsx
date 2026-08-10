@@ -5,6 +5,7 @@ import Dropdown from './Dropdown';
 import Button from './Button';
 import { AssetsType } from '../../types/index';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface VarlikModalProps {
   isOpen: boolean;
@@ -28,6 +29,16 @@ const VarlikModallari: React.FC<VarlikModalProps> = ({
   onSave 
 }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [assetName, setAssetName] = useState<string>('');
   const [selectedType, setSelectedType] = useState<string>('');
   const [date, setDate] = useState<string>('');
@@ -148,13 +159,16 @@ const VarlikModallari: React.FC<VarlikModalProps> = ({
         />
 
         <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('asset_label_price')}</label>
-        <Input 
-          type="number" 
-          value={price}
-          onChange={(e) => setPrice(e.target.value)} 
-          placeholder={t('asset_price_placeholder')}
-          disabled={loading}
-        />
+        <div className="relative w-full">
+          <Input 
+            type="number" 
+            value={price}
+            onChange={(e) => setPrice(e.target.value)} 
+            placeholder={t('asset_price_placeholder')}
+            disabled={loading}
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+        </div>
 
         <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2 col-span-2">
            <Button 

@@ -6,6 +6,7 @@ import Button from './Button';
 import { IncomeSource } from '../../types/index';
 import { apiRequest } from '../../utils/api';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface GelirModalProps {
   onClose: () => void;
@@ -30,6 +31,16 @@ const formatToDisplayDate = (isoDate?: string) => {
 
 export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [date, setDate] = useState('');
   const [name, setName] = useState('');
   const [category, setCategory] = useState<string>('');
@@ -93,7 +104,10 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }
         </div>
 
         <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_amount')}</label>
-        <Input type="number" placeholder={t('income_amount_placeholder')} value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} />
+        <div className="relative w-full">
+          <Input type="number" placeholder={t('income_amount_placeholder')} value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+        </div>
       </div>
 
       <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">
@@ -107,6 +121,16 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }
 
 export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialData, onSuccess }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [date, setDate] = useState(formatToDisplayDate(initialData?.date));
   const [name, setName] = useState(initialData?.name || '');
   const [category, setCategory] = useState<string>(initialData?.category || '');
@@ -170,7 +194,10 @@ export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialD
         </div>
 
         <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_amount')}</label>
-        <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
+        <div className="relative w-full">
+          <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+        </div>
       </div>
 
       <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">

@@ -6,6 +6,7 @@ import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface IncomeItem {
   id: string;
@@ -17,6 +18,16 @@ interface IncomeItem {
 
 const Incomes = () => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -176,7 +187,7 @@ const Incomes = () => {
                   </td>
 
                   <td className="text-center font-regular px-4">
-                    {Number(item.income_amount).toLocaleString('tr-TR')} ₺
+                    {Number(item.income_amount).toLocaleString('tr-TR')} {currencySymbol}
                   </td>
                 </tr>
               );

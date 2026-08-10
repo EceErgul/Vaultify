@@ -5,16 +5,26 @@ import { Income } from '../types/index';
 import { getCategoryColorVar } from '../utils/colourHelpers';
 import { useUser } from '../context/UserContext';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
 
 const Dashboard: React.FC = () => {
   const { dashboardData, loading } = useUser();
   const { t } = useTranslation();
+  const { currency } = useCurrency();
   const [isMounted, setIsMounted] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
 
   useEffect(() => {
     setIsMounted(true);
@@ -39,8 +49,9 @@ const Dashboard: React.FC = () => {
   const subscriptions = isInvisibleMode ? [] : (Array.isArray(dashboardData?.subscriptions) ? dashboardData.subscriptions : []);
 
   const resolveCssColor = (cssVarName: string) => {
+    if (!cssVarName) return '#3b82f6'; // Varsayılan mavi
     const cleanVarName = cssVarName.replace('var(', '').replace(')', '').trim();
-    return `var(${cleanVarName})`;
+    return `var(${cleanVarName}, #3b82f6)`;
   };
 
   const sections = useMemo(() => {
@@ -75,7 +86,7 @@ const Dashboard: React.FC = () => {
           { name: t('dash_item_income'), value: totalIncome, fill: resolveCssColor('--color-maas') },
           { name: t('dash_item_expense'), value: totalExpense, fill: resolveCssColor('--color-ev') },
           { name: t('dash_item_subscriptions'), value: totalSubscriptions, fill: resolveCssColor('--color-abonelik') },
-          { name: t('dash_item_savings'), value: totalAssets, fill: resolveCssColor('--color-varliklarim') },
+          { name: t('dash_item_savings'), value: totalAssets, fill: resolveCssColor('--color-varlarim') },
         ] 
       },
       { title: t('dash_section_income_dist'), amount: totalIncome, data: incomeChartData },
@@ -122,7 +133,7 @@ const Dashboard: React.FC = () => {
               </div>
               <div className="text-right">
                 <span className="dashboard-amount text-base sm:text-2xl font-black text-[var(--sidebar-accent)]">
-                  {section.amount.toLocaleString('tr-TR')} ₺
+                  {section.amount.toLocaleString('tr-TR')} {currencySymbol}
                 </span>
               </div>
              </div>
@@ -157,7 +168,7 @@ const Dashboard: React.FC = () => {
                       color: 'var(--text-main)', 
                       fontWeight: 'bold' 
                     }}
-                    formatter={(value: any) => `${Number(value).toLocaleString()} ₺`}
+                    formatter={(value: any) => `${Number(value).toLocaleString()} ${currencySymbol}`}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -170,7 +181,7 @@ const Dashboard: React.FC = () => {
                   <div className="flex flex-col min-w-0">
                     <span className="text-xs sm:text-sm font-bold truncate">{item.name}</span>
                     <span className="text-[11px] sm:text-xs text-[var(--text-muted)] font-medium">
-                      {item.value.toLocaleString('tr-TR')} ₺
+                      {item.value.toLocaleString('tr-TR')} {currencySymbol}
                     </span>
                   </div>
                 </div>

@@ -3,6 +3,7 @@ import BaseModal from './Modal';
 import Button from './Button';
 import { apiRequest } from '../../utils/api';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface Subscription {
   id: string;
@@ -21,6 +22,16 @@ interface AbonelikSilModalProps {
 
 const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscriptions }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isConfirming, setIsConfirming] = useState(false);
@@ -134,7 +145,7 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                           </td>
                           <td className="p-2 border-r border-black/10 font-medium">{sub.subscription_name}</td>
                           <td className="p-2 border-r border-black/10 text-center">{calculateKalanGun(sub.payment_day)}</td>
-                          <td className="p-2 border-r border-black/10 text-center font-semibold">{Number(sub.cost).toLocaleString('tr-TR')} ₺</td>
+                          <td className="p-2 border-r border-black/10 text-center font-semibold">{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}</td>
                           <td className="p-2 text-center">{calculateSure(sub.start_date)} {t('sub_duration_months')}</td>
                         </tr>
                       );

@@ -4,6 +4,7 @@ import { AbonelikEkleModal, AbonelikDuzenleModal } from '../components/common/Ab
 import AbonelikSilModal from '../components/common/AbonelikSilModal';
 import { apiRequest } from '../utils/api';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface Subscription {
   id: string;
@@ -17,6 +18,16 @@ interface Subscription {
 
 const Subscriptions = () => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -129,7 +140,7 @@ const Subscriptions = () => {
         <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
           <h3 className="text-xl font-medium mb-4">{t('subs_monthly_total')}</h3>
           <p className="text-sm leading-relaxed">
-            {t('subs_monthly_text_part1')}{aylikToplam.toLocaleString('tr-TR')} ₺<br/>{t('subs_monthly_text_part2')}
+            {t('subs_monthly_text_part1')}{aylikToplam.toLocaleString('tr-TR')} {currencySymbol}<br/>{t('subs_monthly_text_part2')}
           </p>
         </div>
         <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
@@ -137,7 +148,7 @@ const Subscriptions = () => {
           {siradakiOdeme ? (
             <p className="text-sm leading-relaxed">
               {siradakiOdeme.subscription_name}<br/>
-              {getKalanGun(siradakiOdeme.payment_day) === 0 ? t('subs_today') : `${getKalanGun(siradakiOdeme.payment_day)}${t('subs_days_later_suffix')}`} ({Number(siradakiOdeme.cost).toLocaleString('tr-TR')} ₺)
+              {getKalanGun(siradakiOdeme.payment_day) === 0 ? t('subs_today') : `${getKalanGun(siradakiOdeme.payment_day)}${t('subs_days_later_suffix')}`} ({Number(siradakiOdeme.cost).toLocaleString('tr-TR')} {currencySymbol})
             </p>
           ) : (
             <p className="text-sm text-gray-400 italic">{t('subs_empty')}</p>
@@ -196,7 +207,7 @@ const Subscriptions = () => {
                     <h4 className="text-[15px] font-semibold mb-3 truncate">{sub.subscription_name}</h4>
                     
                     <div className="space-y-2 text-[12px] font-regular">
-                      <p>{Number(sub.cost).toLocaleString('tr-TR')}{t('subs_per_month')}</p>
+                      <p>{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}{t('subs_per_month')}</p>
                       <p className="font-medium">{kalanGun === 0 ? t('subs_today_payment') : `${kalanGun}${t('subs_days_later_payment_suffix')}`}</p>
                       <p className="pt-2">{abonelikSuresi}{t('subs_months_subscribed_suffix')}</p>
                       <p className="text-[11px] opacity-80 italic whitespace-pre-line">{t('subs_payment_day_p1')}<span className="font-bold">{sub.payment_day}</span>{t('subs_payment_day_p2')}</p>

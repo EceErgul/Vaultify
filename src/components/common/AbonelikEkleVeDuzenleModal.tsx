@@ -4,6 +4,7 @@ import Input from './Input';
 import Button from './Button';
 import { apiRequest } from '../../utils/api';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface AbonelikModalProps {
   onClose: () => void;
@@ -45,6 +46,16 @@ const TrialCheckbox = ({ active, onClick }: { active: boolean, onClick: () => vo
 
 export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuccess }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [name, setName] = useState('');
   const [payDay, setPayDay] = useState('');
   const [price, setPrice] = useState('');
@@ -94,7 +105,10 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuc
         <Input placeholder={t('sub_payday_placeholder')} value={payDay} onChange={(e) => setPayDay(e.target.value)} />
 
         <label className="font-medium text-base sm:text-lg">{t('sub_price_label')}</label>
-        <Input placeholder={t('sub_price_placeholder')} value={price} onChange={(e) => setPrice(e.target.value)} />
+        <div className="relative w-full">
+          <Input placeholder={t('sub_price_placeholder')} value={price} onChange={(e) => setPrice(e.target.value)} />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm select-none pointer-events-none">{currencySymbol}</span>
+        </div>
 
         <label className="font-medium text-base sm:text-lg leading-tight whitespace-pre-line">
           {t('sub_start_date_label')}
@@ -118,6 +132,16 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuc
 
 export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, initialData, onSuccess }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [name, setName] = useState(initialData?.name || '');
   const [payDay, setPayDay] = useState(initialData?.payDay || '');
   const [price, setPrice] = useState(initialData?.price || '');
@@ -173,7 +197,10 @@ export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, in
         <Input value={payDay} onChange={(e) => setPayDay(e.target.value)} />
 
         <label className="font-medium text-base sm:text-lg">{t('sub_price_label')}</label>
-        <Input value={price} onChange={(e) => setPrice(e.target.value)} />
+        <div className="relative w-full">
+          <Input value={price} onChange={(e) => setPrice(e.target.value)} />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm select-none pointer-events-none">{currencySymbol}</span>
+        </div>
 
         <label className="font-medium text-base sm:text-lg leading-tight whitespace-pre-line">
           {t('sub_start_date_label')}

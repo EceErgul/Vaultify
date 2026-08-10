@@ -419,5 +419,10 @@
   "asset_type_currency": "Currency",
   "asset_type_gold": "Gold",
   "asset_type_crypto": "Crypto",
-  "asset_type_other": "Other"
+  "asset_type_other": "Other",
+
+  "currency_tl": "Turkish Lira (₺)",
+  "currency_usd": "US Dollar ($)",
+  "currency_eur": "Euro (€)",
+  "currency_gbp": "British Pound (£)"
 }

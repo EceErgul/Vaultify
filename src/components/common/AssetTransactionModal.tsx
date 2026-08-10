@@ -4,6 +4,7 @@ import Input from './Input';
 import Button from './Button';
 import { apiRequest } from '../../utils/api';
 import { useTranslation } from '../../context/LanguageContext';
+import { useCurrency } from '../../context/CurrencyContext';
 
 interface AssetTransactionModalProps {
   assetId: string;
@@ -16,6 +17,16 @@ type TransactionType = 'Alış' | 'Satış';
 
 const AssetTransactionModal: React.FC<AssetTransactionModalProps> = ({ assetId, isOpen, onClose, onCreated }) => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [transactionType, setTransactionType] = useState<TransactionType>('Alış');
   const [date, setDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [quantity, setQuantity] = useState('');
@@ -96,7 +107,7 @@ const AssetTransactionModal: React.FC<AssetTransactionModalProps> = ({ assetId, 
 
         <div>
           <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('asset_trans_unit_price')}</label>
-          <div className="mt-1">
+          <div className="mt-1 relative w-full">
             <Input
               type="number"
               min="0"
@@ -105,13 +116,15 @@ const AssetTransactionModal: React.FC<AssetTransactionModalProps> = ({ assetId, 
               onChange={(event) => setPrice(event.target.value)}
               placeholder={t('asset_trans_price_placeholder')}
             />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
           </div>
         </div>
 
         <div>
           <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('asset_trans_total_value')}</label>
-          <div className="mt-1">
+          <div className="mt-1 relative w-full">
             <Input value={totalValue} readOnly isTotal />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
           </div>
         </div>
 

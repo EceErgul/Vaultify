@@ -419,5 +419,10 @@
   "asset_type_currency": "Döviz",
   "asset_type_gold": "Altın",
   "asset_type_crypto": "Kripto",
-  "asset_type_other": "Diğer"
+  "asset_type_other": "Diğer",
+
+  "currency_tl": "Türk Lirası (₺)",
+  "currency_usd": "Amerikan Doları ($)",
+  "currency_eur": "Euro (€)",
+  "currency_gbp": "İngiliz Sterlini (£)"
 }

@@ -7,6 +7,7 @@ import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 interface Expense {
   id: string;
@@ -31,6 +32,16 @@ const initialFilterValues: FilterState = {
 
 const Expenses = () => {
   const { t } = useTranslation();
+  const { currency } = useCurrency();
+
+  const currencySymbols: Record<string, string> = {
+    TL: '₺',
+    USD: '$',
+    EUR: '€',
+    GBP: '£'
+  };
+  const currencySymbol = currencySymbols[currency] || '₺';
+
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -213,11 +224,11 @@ const Expenses = () => {
                     </div>
                   </td>
                   <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.payment_method}</td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</td>
+                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</td>
                   <td className="mobile-only border-r border-black px-4 font-regular">
                     <div className="combined-cell-content">
                       <span className="main-text">{item.payment_method}</span>
-                      <span className="sub-text">{Number(item.expenses_amount).toLocaleString('tr-TR')} ₺</span>
+                      <span className="sub-text">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</span>
                     </div>
                   </td>
 

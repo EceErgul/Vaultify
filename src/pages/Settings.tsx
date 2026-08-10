@@ -5,13 +5,14 @@ import Dropdown from '../components/common/Dropdown';
 import { apiRequest } from '../utils/api';
 import { useUser } from '../context/UserContext';
 import { useTranslation } from '../context/LanguageContext';
+import { useCurrency, CurrencyType } from '../context/CurrencyContext';
 
 interface ISettings {
   id: string;
   userId: string;
   autoArchive: boolean;
   autoArchiveMonths: string[];
-  defaultCurrency: 'TL' | 'EUR' | 'USD' | 'GBP';
+  defaultCurrency: CurrencyType;
   assetIntegrationActive: boolean;
   emailNotification: boolean;
   trialExpirationNotification: boolean;
@@ -49,6 +50,7 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean,
 const Settings = () => {
   const navigate = useNavigate();
   const { language, setLanguage, t } = useTranslation();
+  const { setCurrency } = useCurrency();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -71,12 +73,14 @@ const Settings = () => {
 
         if (settingsData) {
           const data = settingsData.data || settingsData;
+          const fetchedCurrency = data.default_currency ?? 'TL';
+          
           setSettings({
             id: data.id || '',
             userId: data.user_id || '',
             autoArchive: data.auto_archive ?? false, 
             autoArchiveMonths: data.auto_archive_months ?? ['12'],
-            defaultCurrency: data.default_currency ?? 'TL',
+            defaultCurrency: fetchedCurrency,
             assetIntegrationActive: data.asset_integration_active ?? false,
             emailNotification: data.email_notification ?? true,
             trialExpirationNotification: data.trial_expiration_notification ?? true,
@@ -85,6 +89,8 @@ const Settings = () => {
             defaultLanguage: data.default_language ?? 'TR',
             theme: data.theme ?? 'light',
           });
+
+          setCurrency(fetchedCurrency);
         }
       } catch (error) {
         console.error('Ayarlar yüklenirken hata oluştu:', error);
@@ -94,7 +100,7 @@ const Settings = () => {
     };
 
     fetchSettings();
-  }, []);
+  }, [setCurrency]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
@@ -102,6 +108,11 @@ const Settings = () => {
 
   const updateSetting = async (key: keyof ISettings, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+
+    if (key === 'defaultCurrency') {
+      setCurrency(value);
+    }
+
     const dbKeys: Record<string, string> = {
       autoArchive: 'auto_archive', autoArchiveMonths: 'auto_archive_months',
       defaultCurrency: 'default_currency', assetIntegrationActive: 'asset_integration_active',
@@ -252,7 +263,7 @@ const Settings = () => {
                     settings.defaultCurrency === 'USD' ? t('set_currency_usd') : t('set_currency_gbp')
                   } 
                   onSelect={(v) => { 
-                    const mapped: any = v.includes('TL') || v.includes('Lira') ? 'TL' : v.includes('EUR') || v.includes('Euro') ? 'EUR' : v.includes('USD') || v.includes('Dollar') ? 'USD' : 'GBP'; 
+                    const mapped: CurrencyType = v.includes('TL') || v.includes('Lira') ? 'TL' : v.includes('EUR') || v.includes('Euro') ? 'EUR' : v.includes('USD') || v.includes('Dollar') ? 'USD' : 'GBP'; 
                     updateSetting('defaultCurrency', mapped); 
                   }} 
                 />
