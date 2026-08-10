@@ -5,6 +5,7 @@ import { GelirEkleModal, GelirDuzenleModal } from '../components/common/GelirMod
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
+import { useTranslation } from '../context/LanguageContext';
 
 interface IncomeItem {
   id: string;
@@ -15,6 +16,7 @@ interface IncomeItem {
 }
 
 const Incomes = () => {
+  const { t } = useTranslation();
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -73,7 +75,7 @@ const Incomes = () => {
     <div className="p-8 font-inter max-w-6xl mx-auto">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-3xl font-semibold text-black">Gelirler</h2>
+          <h2 className="text-3xl font-semibold text-black">{t('inc_title')}</h2>
         </div>
         <div className="flex flex-col gap-2">
           <Button 
@@ -81,11 +83,11 @@ const Incomes = () => {
             className="w-[140px] h-[32px] text-[11px] shadow-sm"
             onClick={() => setIsAddModalOpen(true)}
           >
-            + Gelir Ekle
+            {t('inc_add_btn')}
           </Button>
           
           <GeneralDeleteComponent
-            label={isDeleteMode ? "Vazgeç" : "Gelir Sil"} 
+            label={isDeleteMode ? t('inc_cancel_btn') : t('inc_delete_btn')} 
             className="w-[140px] h-[32px] text-[11px]" 
             onDelete={() => {
               setIsDeleteMode(!isDeleteMode);
@@ -104,7 +106,7 @@ const Incomes = () => {
               else setSelectedIds(gelirler.map(g => g.id));
             }} 
           />
-          <span className="text-sm font-regular">Hepsini Seç</span>
+          <span className="text-sm font-regular">{t('inc_select_all')}</span>
         </div>
       )}
 
@@ -114,19 +116,19 @@ const Incomes = () => {
           <thead>
             <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
               <th className="w-12 border-r border-black"></th>
-              <th className="border-r border-black p-2 font-regular">Tarih</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">Gelir Adı</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">Kategori</th>
-              <th className="mobile-only border-r border-black p-2 font-regular">Gelir Adı / Kategori</th>
+              <th className="border-r border-black p-2 font-regular">{t('inc_th_date')}</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">{t('inc_th_name')}</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">{t('inc_th_category')}</th>
+              <th className="mobile-only border-r border-black p-2 font-regular">{t('inc_th_name_cat')}</th>
 
-              <th className="p-2 font-regular">Miktar</th>
+              <th className="p-2 font-regular">{t('inc_th_amount')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr className="h-12 bg-white">
-                <td colSpan={5} className="desktop-only text-center text-xs">Gelirler yükleniyor...</td>
-                <td colSpan={4} className="mobile-only text-center text-xs">Gelirler yükleniyor...</td>
+                <td colSpan={5} className="desktop-only text-center text-xs">{t('inc_loading')}</td>
+                <td colSpan={4} className="mobile-only text-center text-xs">{t('inc_loading')}</td>
               </tr>
             ) : (Array.isArray(gelirler) ? gelirler : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
@@ -182,10 +184,10 @@ const Incomes = () => {
             {!loading && gelirler.length === 0 && (
               <tr className="h-12 bg-white">
                 <td colSpan={5} className="desktop-only text-center text-gray-400 italic text-xs">
-                  Henüz gelir kaydı bulunmuyor.
+                  {t('inc_empty')}
                 </td>
                 <td colSpan={4} className="mobile-only text-center text-gray-400 italic text-xs">
-                  Henüz gelir kaydı bulunmuyor.
+                  {t('inc_empty')}
                 </td>
               </tr>
             )}
@@ -201,20 +203,20 @@ const Incomes = () => {
             className="w-[110px] h-[32px] text-sm shadow-md"
             onClick={() => setIsConfirmModalOpen(true)}
           >
-            Onayla
+            {t('inc_confirm_btn')}
           </Button>
         </div>
       )}
 
       {isConfirmModalOpen && (
-        <BaseModal title="Silme Onayı" onClose={() => setIsConfirmModalOpen(false)}>
+        <BaseModal title={t('inc_modal_del_title')} onClose={() => setIsConfirmModalOpen(false)}>
           <div className="p-4 text-center font-inter">
             <p className="mb-6 text-sm text-[#333D50]">
-              Seçili <span className="font-bold">{selectedIds.length}</span> geliri silmek istediğinize emin misiniz? Bu işlem geri alınamaz.
+              {t('inc_modal_del_text_part1')}<span className="font-bold">{selectedIds.length}</span>{t('inc_modal_del_text_part2')}
             </p>
             <div className="flex justify-center gap-4">
-              <Button variant="add" onClick={() => setIsConfirmModalOpen(false)} className="w-[100px]">Vazgeç</Button>
-              <Button variant="applyDelete" onClick={handleConfirmDelete} className="w-[100px]">Evet, Sil</Button>
+              <Button variant="add" onClick={() => setIsConfirmModalOpen(false)} className="w-[100px]">{t('inc_modal_cancel')}</Button>
+              <Button variant="applyDelete" onClick={handleConfirmDelete} className="w-[100px]">{t('inc_modal_confirm')}</Button>
             </div>
           </div>
         </BaseModal>

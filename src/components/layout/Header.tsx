@@ -3,6 +3,7 @@ import { CircleUser, LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LogoImg from '../../assets/vaultify_logo_nobackground.png';
 import { useUser } from '../../context/UserContext';
+import { useTranslation } from '../../context/LanguageContext';
 
 const BACKEND_URL = 'http://localhost:5000';
 
@@ -13,6 +14,7 @@ interface HeaderProps {
 const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const { userInfo } = useUser();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -30,7 +32,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
           type="button"
           onClick={onToggleSidebar}
           className="inline-flex items-center justify-center min-[836px]:hidden p-1.5 sm:p-2 text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] rounded-lg transition-colors focus:outline-none cursor-pointer shrink-0"
-          aria-label="Menüyü Aç/Kapat"
+          aria-label={t('header_toggle_menu')}
         >
           <Menu size={22} className="sm:w-6 sm:h-6" />
         </button>
@@ -39,7 +41,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
           className="flex items-center gap-1.5 sm:gap-2 min-w-0 cursor-pointer"
           onClick={() => navigate('/dashboard')}
         >
-          <img src={LogoImg} alt="Vaultify Logo" className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0" />
+          <img src={LogoImg} alt={t('header_logo_alt')} className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0" />
           <span className="font-bold text-base sm:text-lg tracking-tight text-[var(--sidebar-text)] truncate">Vaultify</span>
         </div>
       </div>
@@ -49,7 +51,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
           {userInfo.profileImage ? (
             <img 
               src={`${BACKEND_URL}${userInfo.profileImage}?t=${new Date().getTime()}`} 
-              alt="Profil" 
+              alt={t('header_profile_alt')} 
               className="w-full h-full object-cover"
             />
           ) : (
@@ -60,10 +62,10 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
         <button 
           onClick={handleLogout}
           className="flex items-center gap-1 text-xs sm:text-sm font-medium text-[var(--sidebar-text)] hover:text-red-500 transition-colors cursor-pointer shrink-0"
-          aria-label="Çıkış Yap"
+          aria-label={t('header_logout_aria')}
         >
           <LogOut size={15} className="sm:w-4 sm:h-4" />
-          <span className="hidden sm:inline">Çıkış</span>
+          <span className="hidden sm:inline">{t('header_logout')}</span>
         </button>
       </div>
     </header>

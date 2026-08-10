@@ -6,6 +6,7 @@ import VarlikModallari from '../components/common/VarlikModallari';
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
+import { useTranslation } from '../context/LanguageContext';
 
 interface Transaction {
   id: string;
@@ -30,6 +31,7 @@ interface AssetSummary {
 const AssetsDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [isAssetEditModalOpen, setIsAssetEditModalOpen] = useState(false);
   const [isTransactionEditModalOpen, setIsTransactionEditModalOpen] = useState(false);
@@ -45,51 +47,51 @@ const AssetsDetail = () => {
   const [editingTx, setEditingTx] = useState<Transaction | null>(null);
 
   const fetchDetailData = async () => {
-  if (!id) return;
+    if (!id) return;
 
-  try {
-    setLoading(true);
-    setError(null);
+    try {
+      setLoading(true);
+      setError(null);
 
-    const [response, txResponse] = await Promise.all([
-      apiRequest(`/assets/${id}`),
-      apiRequest(`/assets/${id}/transactions`)
-    ]);
+      const [response, txResponse] = await Promise.all([
+        apiRequest(`/assets/${id}`),
+        apiRequest(`/assets/${id}/transactions`)
+      ]);
 
-    const currentAsset = response.data || response; 
-    const txDataRaw = txResponse.data || txResponse;
-    const txData = Array.isArray(txDataRaw) ? txDataRaw : [];
+      const currentAsset = response.data || response; 
+      const txDataRaw = txResponse.data || txResponse;
+      const txData = Array.isArray(txDataRaw) ? txDataRaw : [];
 
-    if (currentAsset) {
-      setAssetInfo({
-        id: currentAsset.id,
-        assetName: currentAsset.asset_name,
-        assetType: currentAsset.asset_type,
-        totalQuantity: Number(currentAsset.total_quantity || 0),
-        totalCost: Number(currentAsset.total_cost || 0),
-        currentPrice: Number(currentAsset.live_unit_price || 0),
-        lastUpdated: currentAsset.fetchedAt || new Date().toISOString()
-      });
+      if (currentAsset) {
+        setAssetInfo({
+          id: currentAsset.id,
+          assetName: currentAsset.asset_name,
+          assetType: currentAsset.asset_type,
+          totalQuantity: Number(currentAsset.total_quantity || 0),
+          totalCost: Number(currentAsset.total_cost || 0),
+          currentPrice: Number(currentAsset.live_unit_price || 0),
+          lastUpdated: currentAsset.fetchedAt || new Date().toISOString()
+        });
+      }
+        
+      const mappedTransactions = txData.map((tx: any) => ({
+        id: tx.id,
+        assetId: tx.asset_id,
+        transactionType: tx.transaction_type,
+        date: tx.date,
+        totalQuantity: Number(tx.total_quantity || 0),
+        pricePerUnit: Number(tx.price_per_unit || 0),
+        totalValue: Number(tx.total_value || 0)
+      }));
+
+      setTransactions(mappedTransactions);
+    } catch (error: any) {
+      console.error('Varlık detayları yüklenirken hata oluştu:', error);
+      setError(error?.message || 'Veri çekilirken bir hata oluştu.');
+    } finally {
+      setLoading(false);
     }
-      
-    const mappedTransactions = txData.map((tx: any) => ({
-      id: tx.id,
-      assetId: tx.asset_id,
-      transactionType: tx.transaction_type,
-      date: tx.date,
-      totalQuantity: Number(tx.total_quantity || 0),
-      pricePerUnit: Number(tx.price_per_unit || 0),
-      totalValue: Number(tx.total_value || 0)
-    }));
-
-    setTransactions(mappedTransactions);
-  } catch (error: any) {
-    console.error('Varlık detayları yüklenirken hata oluştu:', error);
-    setError(error?.message || 'Veri çekilirken bir hata oluştu.');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     if (id) {
@@ -106,11 +108,11 @@ const AssetsDetail = () => {
       const diffInMins = Math.floor(diffInSecs / 60);
 
       if (diffInSecs < 15) {
-        setLiveRelativeTime('şimdi');
+        setLiveRelativeTime(t('time_now'));
       } else if (diffInSecs < 60) {
-        setLiveRelativeTime(`${diffInSecs}sn önce`);
+        setLiveRelativeTime(t('time_sec_ago').replace('{count}', String(diffInSecs)));
       } else {
-        setLiveRelativeTime(`${diffInMins}dk önce`);
+        setLiveRelativeTime(t('time_min_ago').replace('{count}', String(diffInMins)));
       }
     };
 
@@ -118,7 +120,7 @@ const AssetsDetail = () => {
     const interval = setInterval(updateTime, 15000);
 
     return () => clearInterval(interval);
-  }, [assetInfo?.lastUpdated]);
+  }, [assetInfo?.lastUpdated, t]);
 
   const handleDeleteClick = (txId: string) => {
     setTxToDelete(txId);
@@ -129,7 +131,7 @@ const AssetsDetail = () => {
     e.preventDefault();
 
     if (!txToDelete) {
-      alert("Hata: Silinecek işlem ID'si hafızada bulunamadı!");
+      alert(t('detail_err_tx_id'));
       return;
     }
 
@@ -138,7 +140,7 @@ const AssetsDetail = () => {
       await fetchDetailData();
     } catch (error: any) {
       console.error("Silme işleminde hata:", error);
-      alert("Sunucu silme işlemini reddetti!\nSebep: " + (error?.message || "Bilinmeyen API hatası"));
+      alert(t('detail_err_server_delete') + (error?.message || "Bilinmeyen API hatası"));
     } finally {
       setIsConfirmDeleteOpen(false);
       setTxToDelete(null);
@@ -162,7 +164,7 @@ const AssetsDetail = () => {
       setIsAssetEditModalOpen(false);
     } catch (error) {
       console.error("Varlık güncellenirken bir hata oluştu:", error);
-      alert("Varlık güncellenirken bir hata oluştu. Lütfen tekrar deneyin.");
+      alert(t('detail_err_asset_update'));
     }
   };
 
@@ -184,14 +186,14 @@ const AssetsDetail = () => {
       setEditingTx(null);
     } catch (err) {
       console.error("İşlem güncellenirken hata:", err);
-      alert("Düzenleme başarısız oldu!");
+      alert(t('detail_err_tx_update'));
     }
   };
 
   if (loading) {
     return (
       <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen flex items-center justify-center">
-        <span className="text-lg font-medium">Veriler yükleniyor...</span>
+        <span className="text-lg font-medium">{t('detail_loading')}</span>
       </div>
     );
   }
@@ -200,9 +202,9 @@ const AssetsDetail = () => {
     return (
       <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen">
         <div className="rounded-xl border border-red-300 bg-red-50 p-6 text-red-700">
-          <h2 className="text-lg font-semibold mb-2">Varlık bilgi katmanı çözülemedi.</h2>
-          <p>Aynı sayfayı yenileyin veya farklı bir varlık seçin.</p>
-          {error && <p className="mt-3 font-medium">Hata: {error}</p>}
+          <h2 className="text-lg font-semibold mb-2">{t('detail_err_layer')}</h2>
+          <p>{t('detail_err_hint')}</p>
+          {error && <p className="mt-3 font-medium">{t('detail_err_prefix')}{error}</p>}
         </div>
       </div>
     );
@@ -223,9 +225,9 @@ const AssetsDetail = () => {
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-medium text-black uppercase tracking-tight">
-              {assetInfo.assetName} Detayları
+              {assetInfo.assetName}{t('detail_title_suffix')}
             </h1>
-            <p className="mt-2 text-sm text-gray-600">Son güncelleme: {liveRelativeTime}</p>
+            <p className="mt-2 text-sm text-gray-600">{t('detail_last_update')}{liveRelativeTime}</p>
           </div>
 
           <div className="flex flex-col gap-2 items-end">
@@ -234,32 +236,32 @@ const AssetsDetail = () => {
               className="w-[130px] h-[35px] text-sm shadow-md"
               onClick={() => navigate(-1)}
             >
-              ← Geri Dön
+              {t('detail_back_btn')}
             </Button>
             <Button 
               variant="add" 
               className="w-[130px] h-[35px] text-sm shadow-md"
               onClick={() => setIsAddTransactionOpen(true)}
             >
-              + İşlem Ekle
+              {t('detail_add_tx_btn')}
             </Button>
           </div>
         </div>
 
         {error && (
           <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-red-700">
-            <p className="font-medium">Hata: {error}</p>
+            <p className="font-medium">{t('detail_err_prefix')}{error}</p>
           </div>
         )}
       </div>
 
       <div className="asset-detail-grid">
         {[
-          { label: "Toplam Miktar", value: `${totalQty.toLocaleString('tr-TR')}`, bg: "#FFF5D9" },
-          { label: "Ortalama Maliyet", value: `${avgCost.toFixed(2)} ₺`, bg: "#FFF5D9" },
-          { label: "Anlık Toplam Değer", value: `${totalValue.toFixed(2)} ₺`, bg: "#E3F2FD" },
+          { label: t('card_total_qty'), value: `${totalQty.toLocaleString('tr-TR')}`, bg: "#FFF5D9" },
+          { label: t('card_avg_cost'), value: `${avgCost.toFixed(2)} ₺`, bg: "#FFF5D9" },
+          { label: t('card_total_value'), value: `${totalValue.toFixed(2)} ₺`, bg: "#E3F2FD" },
           { 
-            label: "Kâr / Zarar Durumu", 
+            label: t('card_profit_loss'), 
             value: `${netProfitLoss >= 0 ? '+' : ''}${netProfitLoss.toFixed(2)} ₺ (${profitLossPercentage.toFixed(2)}%)`,
             bg: netProfitLoss >= 0 ? "#E8F5E9" : "#FFEBEE",
             textColor: netProfitLoss >= 0 ? "text-green-700" : "text-red-700"
@@ -281,20 +283,20 @@ const AssetsDetail = () => {
         <table className="w-full border-collapse custom-asset-detail-table">
           <thead>
             <tr className="bg-[#FFEF79] h-12 border-b border-black text-black text-sm">
-              <th className="border-r border-black p-2 font-bold uppercase">Tarih</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Tür</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Miktar</th>
-              <th className="mobile-only border-r border-black p-2 font-bold uppercase">Tür / Miktar</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Birim Fiyat</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">Toplam Tutar</th>
-              <th className="mobile-only border-r border-black p-2 font-bold uppercase">Birim Fiyat / Toplam Tutar</th>
-              <th className="p-2 font-bold uppercase">İşlem</th>
+              <th className="border-r border-black p-2 font-bold uppercase">{t('detail_th_date')}</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_type')}</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_quantity')}</th>
+              <th className="mobile-only border-r border-black p-2 font-bold uppercase">{t('detail_th_type_quantity')}</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_price_per_unit')}</th>
+              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_total_amount')}</th>
+              <th className="mobile-only border-r border-black p-2 font-bold uppercase">{t('detail_th_price_amount')}</th>
+              <th className="p-2 font-bold uppercase">{t('detail_th_action')}</th>
             </tr>
           </thead>
           <tbody>
             {transactions.length === 0 ? (
               <tr className="h-14 bg-[#FFF5D9]">
-                <td colSpan={6} className="text-center text-sm font-medium">Henüz işlem geçmişi bulunmuyor.</td>
+                <td colSpan={6} className="text-center text-sm font-medium">{t('detail_empty_transactions')}</td>
               </tr>
             ) : (
               transactions.map((row, index) => {
@@ -335,7 +337,7 @@ const AssetsDetail = () => {
                             setIsTransactionEditModalOpen(true);
                           }} 
                           className="hover:scale-125 transition-transform text-xl"
-                          title="Düzenle"
+                          title={t('detail_edit_title')}
                         >
                           📝
                         </button>
@@ -344,7 +346,7 @@ const AssetsDetail = () => {
                           type="button"
                           onClick={() => handleDeleteClick(row.id)} 
                           className="hover:scale-125 transition-transform text-xl"
-                          title="Sil"
+                          title={t('detail_delete_title')}
                         >
                           🗑️
                         </button>
@@ -397,23 +399,23 @@ const AssetsDetail = () => {
       />
 
       {isConfirmDeleteOpen && (
-        <BaseModal title="İşlemi Sil" onClose={() => setIsConfirmDeleteOpen(false)}>
+        <BaseModal title={t('detail_modal_delete_title')} onClose={() => setIsConfirmDeleteOpen(false)}>
           <div className="p-6 text-center font-inter">
-            <p className="mb-6 text-black text-lg font-medium">Bu işlem kaydını silmek istediğinize emin misiniz?</p>
+            <p className="mb-6 text-black text-lg font-medium">{t('detail_modal_delete_text')}</p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
               <Button 
                 variant="cancel" 
                 className="w-full sm:w-[120px] h-[40px] shadow-sm" 
                 onClick={() => setIsConfirmDeleteOpen(false)}
               >
-                Vazgeç
+                {t('detail_modal_cancel')}
               </Button>
               <Button 
                 variant="apply" 
                 className="w-full sm:w-[120px] h-[40px] !bg-red-600 !text-white shadow-sm hover:!bg-red-700" 
                 onClick={confirmDelete}
               >
-                Evet, Sil
+                {t('detail_modal_confirm')}
               </Button>
             </div>
           </div>

@@ -4,7 +4,7 @@ import Button from '../components/common/Button';
 import Dropdown from '../components/common/Dropdown';
 import { apiRequest } from '../utils/api';
 import { useUser } from '../context/UserContext';
-import axios from 'axios';
+import { useTranslation } from '../context/LanguageContext';
 
 interface ISettings {
   id: string;
@@ -21,25 +21,25 @@ interface ISettings {
   theme: 'light' | 'dark';
 }
 
-const BACKEND_URL = 'http://localhost:5000';
-
 const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClose: () => void, onConfirm: (pwd: string) => void }) => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
+  
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
       <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-lg shadow-xl w-[92%] max-w-xs text-black dark:text-white">
-        <h3 className="font-semibold mb-3 sm:mb-4 text-sm">Şifrenizi Doğrulayın</h3>
+        <h3 className="font-semibold mb-3 sm:mb-4 text-sm">{t('set_pwd_verify_title')}</h3>
         <input
           type="password"
           className="border rounded w-full p-2 mb-4 text-sm bg-transparent border-gray-300 dark:border-gray-600"
-          placeholder="Mevcut şifreniz"
+          placeholder={t('set_current_pwd_placeholder')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <div className="flex gap-2 justify-end">
-          <button onClick={onClose} className="px-3 py-1.5 text-xs border rounded">İptal</button>
-          <button onClick={() => { onConfirm(password); setPassword(''); }} className="px-3 py-1.5 text-xs bg-black dark:bg-gray-600 text-white rounded">Onayla</button>
+          <button onClick={onClose} className="px-3 py-1.5 text-xs border rounded">{t('btn_cancel')}</button>
+          <button onClick={() => { onConfirm(password); setPassword(''); }} className="px-3 py-1.5 text-xs bg-black dark:bg-gray-600 text-white rounded">{t('btn_confirm')}</button>
         </div>
       </div>
     </div>
@@ -48,9 +48,9 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean,
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { language, setLanguage, t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
-  const [protectedRecordsCount, setProtectedRecordsCount] = useState<number>(0);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const { userInfo, setUserInfo } = useUser();
 
@@ -126,26 +126,18 @@ const Settings = () => {
         method: 'PUT',
         body: { fullName: userInfo.fullName, email: userInfo.email, password }
       });
-      alert("Profil bilgileri güncellendi.");
+      alert(t('set_profile_updated'));
       setIsPasswordModalOpen(false);
     } catch (error) {
-      alert("Profil güncellenemedi, lütfen şifrenizi kontrol edin.");
+      alert(t('set_profile_update_failed'));
     }
   };
 
-  const updateProfileInfo = async (field: keyof typeof userInfo, value: string | null) => {
-    setUserInfo(prev => ({ ...prev, [field]: value }));
-    const dbField = field === 'profileImage' ? 'profile_image' : field;
-    try {
-      await apiRequest('/users/profile', { method: 'PUT', body: { [dbField]: value } });
-    } catch (error) { console.error(`Profil alanı (${field}) güncellenirken hata oluştu:`, error); }
-  };
-
   const handleClearAllRecords = async () => {
-    if (window.confirm("Tüm kayıtları temizlemek istediğinize emin misiniz?")) {
+    if (window.confirm(t('set_confirm_clear'))) {
       try {
         await apiRequest('/subscriptions/clear-all', { method: 'DELETE' });
-        alert("Tüm kayıtlar başarıyla temizlendi.");
+        alert(t('set_success_clear'));
       } catch (error) { console.error("Kayıtlar silinemedi:", error); }
     }
   };
@@ -153,38 +145,38 @@ const Settings = () => {
   const handlePasswordReset = async () => {
     try {
       await apiRequest('/auth/reset-password-request', { method: 'POST' });
-      alert("Şifre sıfırlama bağlantısı gönderildi!");
+      alert(t('set_password_reset_sent'));
       navigate('/reset-password');
     } catch (error) { 
       console.error("Şifre sıfırlama isteği başarısız:", error);
-      alert("Şifre sıfırlama isteği gönderilemedi.");
+      alert(t('set_password_reset_failed'));
     }
   };
 
   const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append('profileImage', file);
+    const formData = new FormData();
+    formData.append('profileImage', file);
 
-  try {
-    const response: any = await apiRequest('/users/profile/upload', {
-      method: 'POST',
-      body: formData,
-    });
+    try {
+      const response: any = await apiRequest('/users/profile/upload', {
+        method: 'POST',
+        body: formData,
+      });
 
-    if (response && response.profileImage) {
-      setUserInfo(prev => ({ ...prev, profileImage: response.profileImage }));
+      if (response && response.profileImage) {
+        setUserInfo(prev => ({ ...prev, profileImage: response.profileImage }));
+      }
+
+      window.dispatchEvent(new Event('profileUpdated'));
+      alert(t('set_photo_updated'));
+    } catch (error) {
+      console.error("Yükleme hatası:", error);
+      alert(t('set_photo_upload_failed'));
     }
-
-    window.dispatchEvent(new Event('profileUpdated'));
-    alert("Profil fotoğrafı güncellendi!");
-  } catch (error) {
-    console.error("Yükleme hatası:", error);
-    alert("Fotoğraf yüklenemedi.");
-  }
-};
+  };
 
   const Toggle = ({ 
     active, 
@@ -208,26 +200,24 @@ const Settings = () => {
   );
 
   const handleDeleteAccount = async () => {
-  const confirmDelete = window.confirm(
-    "Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz ve tüm verileriniz kalıcı olarak silinecektir!"
-  );
+    const confirmDelete = window.confirm(t('set_confirm_delete_account'));
 
-  if (!confirmDelete) return;
+    if (!confirmDelete) return;
 
-  try {
-    setLoading(true);
-    await apiRequest('/auth/delete-account', { method: 'DELETE' });
+    try {
+      setLoading(true);
+      await apiRequest('/auth/delete-account', { method: 'DELETE' });
 
-    localStorage.removeItem('token');
-    alert('Hesabınız başarıyla silindi.');
-    navigate('/landing', { replace: true });
-  } catch (error) {
-    console.error("Hesap silme hatası:", error);
-    alert('Hesap silinirken bir hata oluştu.');
-  } finally {
-    setLoading(false);
-  }
-};
+      localStorage.removeItem('token');
+      alert(t('set_account_deleted'));
+      navigate('/landing', { replace: true });
+    } catch (error) {
+      console.error("Hesap silme hatası:", error);
+      alert(t('set_account_delete_failed'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className={`p-3 sm:p-6 md:p-10 font-inter min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#1A202C] text-[#E2E8F0]' : 'bg-white text-[#333D50]'}`}>
@@ -235,91 +225,91 @@ const Settings = () => {
         <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
 
         <section className="space-y-3 sm:space-y-4">
-          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">Veri Ayarları</h2>
+          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">{t('set_section_data')}</h2>
           <div className="space-y-4 sm:ml-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Otomatik Arşivleme / Silme:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_auto_archive')}</span>
               <Toggle active={settings.autoArchive} onToggle={() => updateSetting('autoArchive', !settings.autoArchive)} />
             </div>
             <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4 pt-1 sm:pt-2">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Tüm Kayıtları Temizle:</span>
-              <Button variant="delete" className="h-7 text-[10px] px-6 w-auto" onClick={handleClearAllRecords}>Temizle</Button>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_clear_all_records')}</span>
+              <Button variant="delete" className="h-7 text-[10px] px-6 w-auto" onClick={handleClearAllRecords}>{t('btn_clear')}</Button>
             </div>
           </div>
         </section>
 
         <section className="space-y-3 sm:space-y-4">
-          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">Finansal Ayarlar</h2>
+          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">{t('set_section_financial')}</h2>
           <div className="space-y-4 sm:ml-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Varsayılan Para Birimi:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_default_currency')}</span>
               <div className="w-full sm:w-64 text-black">
                 <Dropdown 
-                  options={['Türk Lirası(TL)', 'Euro(EUR)', 'Amerikan Doları(USD)', 'İngiliz Sterlini(GBP)']}
+                  options={[t('set_currency_tl'), t('set_currency_eur'), t('set_currency_usd'), t('set_currency_gbp')]}
                   value={
-                    settings.defaultCurrency === 'TL' ? 'Türk Lirası(TL)' :
-                    settings.defaultCurrency === 'EUR' ? 'Euro(EUR)' :
-                    settings.defaultCurrency === 'USD' ? 'Amerikan Doları(USD)' : 'İngiliz Sterlini(GBP)'
+                    settings.defaultCurrency === 'TL' ? t('set_currency_tl') :
+                    settings.defaultCurrency === 'EUR' ? t('set_currency_eur') :
+                    settings.defaultCurrency === 'USD' ? t('set_currency_usd') : t('set_currency_gbp')
                   } 
                   onSelect={(v) => { 
-                    const mapped: any = v.includes('TL') ? 'TL' : v.includes('EUR') ? 'EUR' : v.includes('USD') ? 'USD' : 'GBP'; 
+                    const mapped: any = v.includes('TL') || v.includes('Lira') ? 'TL' : v.includes('EUR') || v.includes('Euro') ? 'EUR' : v.includes('USD') || v.includes('Dollar') ? 'USD' : 'GBP'; 
                     updateSetting('defaultCurrency', mapped); 
                   }} 
                 />
               </div>
             </div>
             <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Banka Entegrasyonu:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_bank_integration')}</span>
               <Button variant="add" className="h-7 text-[10px] px-4 w-auto" onClick={() => updateSetting('assetIntegrationActive', !settings.assetIntegrationActive)}>
-                {settings.assetIntegrationActive ? 'Bağlantıyı Kopar' : '+ Banka Bağla'}
+                {settings.assetIntegrationActive ? t('set_disconnect_bank') : t('set_connect_bank')}
               </Button>
             </div>
           </div>
         </section>
 
         <section className="space-y-3 sm:space-y-4">
-          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">Bildirim ve Hatırlatıcılar</h2>
+          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">{t('set_section_notifications')}</h2>
           <div className="space-y-4 sm:space-y-6 sm:ml-2">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">E-Posta Bildirimleri:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_email_notifications')}</span>
               <Toggle active={settings.emailNotification} onToggle={() => updateSetting('emailNotification', !settings.emailNotification)} />
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Deneme Sürümü Uyarıları:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_trial_warnings')}</span>
               <Toggle active={settings.trialExpirationNotification} onToggle={() => updateSetting('trialExpirationNotification', !settings.trialExpirationNotification)} />
             </div>
           </div>
         </section>
 
         <section className="space-y-3 sm:space-y-4">
-          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">Güvenlik ve Gizlilik</h2>
+          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">{t('set_section_security')}</h2>
           <div className="space-y-4 sm:ml-2">
             <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Şifre Değiştirme:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_change_password_label')}</span>
               <button type="button" onClick={handlePasswordReset} className={`text-[10px] px-4 py-2 sm:py-1 rounded border w-auto text-center ${isDark ? 'bg-[#2D3748] text-white border-[#4A5568]' : 'bg-[#D9D9D9] text-black border-gray-400'}`}>
-                Şifre Değiştir
+                {t('btn_change_password')}
               </button>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Görünmezlik Modu:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_invisible_mode')}</span>
               <Toggle active={settings.invisibleMode} onToggle={() => updateSetting('invisibleMode', !settings.invisibleMode)} />
             </div>
           </div>
         </section>
 
         <section className="space-y-3 sm:space-y-4">
-          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">Profil ve Görünüm</h2>
+          <h2 className="text-lg sm:text-xl font-semibold border-b pb-2 dark:border-gray-700">{t('set_section_profile')}</h2>
           <div className="space-y-4 sm:ml-2">
             <div className="flex flex-col gap-2">
               <div className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4">
-                <span className="font-medium text-sm sm:text-base sm:min-w-[200px] pt-1">Kullanıcı Bilgileri:</span>
+                <span className="font-medium text-sm sm:text-base sm:min-w-[200px] pt-1">{t('set_user_info_label')}</span>
                 <div className="space-y-2 w-full sm:w-auto">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="w-16 shrink-0 font-regular">Ad-Soyad:</span>
+                    <span className="w-16 shrink-0 font-regular">{t('set_fullname_label')}</span>
                     <input className="border rounded px-2 py-1.5 sm:py-1 w-full sm:w-48 font-regular bg-transparent text-black dark:text-white" value={userInfo.fullName} onChange={(e) => setUserInfo(p => ({...p, fullName: e.target.value}))} />
                   </div>
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="w-16 shrink-0 font-regular">Email:</span>
+                    <span className="w-16 shrink-0 font-regular">{t('set_email_label')}</span>
                     <input className="border rounded px-2 py-1.5 sm:py-1 w-full sm:w-48 font-regular bg-transparent text-black dark:text-white" value={userInfo.email} onChange={(e) => setUserInfo(p => ({...p, email: e.target.value}))} />
                   </div>
                   <Button 
@@ -327,14 +317,14 @@ const Settings = () => {
                     className="mt-2 h-7 text-[10px] px-6 w-auto" 
                     onClick={() => setIsPasswordModalOpen(true)}
                   >
-                    Kaydet
+                    {t('btn_save')}
                   </Button>
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4 pt-2">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Profil Fotoğrafı:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_profile_photo_label')}</span>
               <button type="button" onClick={() => fileInputRef.current?.click()} className={`w-10 h-10 sm:w-8 sm:h-8 border rounded flex items-center justify-center font-regular ${isDark ? 'border-[#4A5568]' : 'border-[#CDCDCD]'}`}>
                 {userInfo.profileImage ? (
                   <img 
@@ -347,7 +337,7 @@ const Settings = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Tema Seçimi:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_theme_selection')}</span>
               <Toggle 
                 active={settings.theme === 'dark'} 
                 onToggle={() => updateSetting('theme', settings.theme === 'dark' ? 'light' : 'dark')} 
@@ -356,12 +346,16 @@ const Settings = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4">
-              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">Dil Seçeneği:</span>
+              <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_language_option')}</span>
               <div className="w-full sm:w-48 text-black">
                 <Dropdown 
                   options={['Türkçe', 'English']} 
-                  value={settings.defaultLanguage === 'TR' ? 'Türkçe' : 'English'}
-                  onSelect={(v) => updateSetting('defaultLanguage', v === 'Türkçe' ? 'TR' : 'EN')} 
+                  value={language === 'tr' ? 'Türkçe' : 'English'}
+                  onSelect={(v) => {
+                    const langKey = v === 'Türkçe' ? 'tr' : 'en';
+                    setLanguage(langKey);
+                    updateSetting('defaultLanguage', v === 'Türkçe' ? 'TR' : 'EN');
+                  }} 
                 />
               </div>
             </div>
@@ -369,10 +363,10 @@ const Settings = () => {
             <div className="p-4 sm:p-6 rounded-xl border shadow-sm space-y-4 bg-[var(--danger-bg)] border-[var(--danger-border)] transition-colors duration-300 mt-6">
               <div>
                 <h2 className="text-base sm:text-lg font-semibold text-[var(--danger-title)]">
-                  Tehlikeli Bölge
+                  {t('set_danger_zone')}
                 </h2>
                 <p className="text-xs sm:text-sm mt-1 text-[var(--danger-text)] leading-relaxed">
-                  Hesabınızı sildiğinizde varlıklarınız, gelir-gider kayıtlarınız ve tüm geçmiş verileriniz kalıcı olarak yok edilir. Bu işlemin geri dönüşü yoktur.
+                  {t('set_danger_zone_desc')}
                 </p>
               </div>
               <button
@@ -380,7 +374,7 @@ const Settings = () => {
                 disabled={loading}
                 className="px-4 py-2 font-medium rounded-lg text-[var(--danger-btn-text)] bg-[var(--danger-btn-bg)] hover:bg-[var(--danger-btn-hover)] transition disabled:opacity-50 w-auto text-center text-xs sm:text-sm self-start"
               >
-                {loading ? 'Siliniyor...' : 'Hesabımı Kalıcı Olarak Sil'}
+                {loading ? t('set_deleting') : t('set_delete_account_btn')}
               </button>
             </div>
           </div>

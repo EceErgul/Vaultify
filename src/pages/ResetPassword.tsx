@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { apiRequest } from '../utils/api';
+import { useTranslation } from '../context/LanguageContext';
 
 const Logo = '/src/assets/vaultify_logo_nobackground.png';
 
@@ -10,6 +11,7 @@ const ResetPassword = () => {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +27,7 @@ const ResetPassword = () => {
       setSubmitted(true);
     } catch (err: any) {
       console.error("Sıfırlama isteği hatası:", err);
-      setError(err?.message || "Bu e-posta adresine ait bir hesap bulunamadı veya bir hata oluştu.");
+      setError(err?.message || t('reset_err_default'));
     } finally {
       setLoading(false);
     }
@@ -39,7 +41,7 @@ const ResetPassword = () => {
           to="/login" 
           className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-1.5 sm:gap-2 bg-[#CDCDCD] px-2.5 sm:px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
         >
-          <span>←</span> <span>Giriş Ekranına Dön</span>
+          <span>←</span> <span>{t('reset_back_to_login')}</span>
         </Link>
 
         <div className="w-20 h-20 sm:w-24 sm:h-24 mb-4 sm:mb-6 opacity-90">
@@ -48,21 +50,21 @@ const ResetPassword = () => {
 
         {!submitted ? (
           <>
-            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">Şifrenizi mi unuttunuz?</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">{t('reset_title')}</h2>
             <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-10 text-center max-w-sm font-regular px-2">
-              Endişelenmeyin! Kayıtlı e-posta adresinizi girin, size şifrenizi sıfırlamanız için bir bağlantı gönderelim.
+              {t('reset_desc')}
             </p>
 
             <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 sm:space-y-6 flex flex-col items-center">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
                 <label className="text-xs sm:text-sm font-medium text-[#333D50] sm:w-32 sm:text-right whitespace-nowrap">
-                  E-posta adresiniz:
+                  {t('reset_email_label')}
                 </label>
                 <input 
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ornek@mail.com"
+                  placeholder={t('reset_email_placeholder')}
                   className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500 transition-all"
                   disabled={loading}
                   required
@@ -85,7 +87,7 @@ const ResetPassword = () => {
                   disabled={loading}
                   className="w-full sm:w-auto px-8 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] transition-all whitespace-nowrap border-none outline-none disabled:opacity-50 cursor-pointer flex items-center justify-center"
                 >
-                  {loading ? 'İstek Gönderiliyor...' : 'Sıfırlama Linki Gönder'}
+                  {loading ? t('reset_loading') : t('reset_submit_btn')}
                 </Button>
               </div>
             </form>
@@ -97,13 +99,13 @@ const ResetPassword = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2">E-posta Gönderildi!</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2">{t('reset_success_title')}</h2>
             <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 max-w-sm font-regular">
-              <span className="font-bold text-gray-700">{email}</span> adresini kontrol edin. Şifre sıfırlama talimatlarını içeren bir e-posta gönderdik.
+              <span className="font-bold text-gray-700">{email}</span>{t('reset_success_desc_1')}
             </p>
             <Link to="/login">
               <button className="text-xs sm:text-sm text-[#333D50] font-medium hover:underline cursor-pointer">
-                Giriş sayfasına geri dön
+                {t('reset_success_back')}
               </button>
             </Link>
           </div>

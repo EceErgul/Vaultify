@@ -3,6 +3,7 @@ import BaseModal from './Modal';
 import Input from './Input';
 import Button from './Button';
 import { apiRequest } from '../../utils/api';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface AbonelikModalProps {
   onClose: () => void;
@@ -43,6 +44,7 @@ const TrialCheckbox = ({ active, onClick }: { active: boolean, onClick: () => vo
 );
 
 export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuccess }) => {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [payDay, setPayDay] = useState('');
   const [price, setPrice] = useState('');
@@ -83,31 +85,31 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuc
   };
 
   return (
-    <BaseModal title="Abonelik Ekle" onClose={onClose}>
+    <BaseModal title={t('sub_modal_add_title')} onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-4 px-2 sm:pr-4 mt-2">
-        <label className="font-medium text-base sm:text-lg">Abonelik Adı:</label>
-        <Input placeholder="netflix, amazon prime vb." value={name} onChange={(e) => setName(e.target.value)} />
+        <label className="font-medium text-base sm:text-lg">{t('sub_name_label')}</label>
+        <Input placeholder={t('sub_name_placeholder')} value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-base sm:text-lg">Ödeme Günü:</label>
-        <Input placeholder="ayın kaçında ödeniyor?" value={payDay} onChange={(e) => setPayDay(e.target.value)} />
+        <label className="font-medium text-base sm:text-lg">{t('sub_payday_label')}</label>
+        <Input placeholder={t('sub_payday_placeholder')} value={payDay} onChange={(e) => setPayDay(e.target.value)} />
 
-        <label className="font-medium text-base sm:text-lg">Fiyat:</label>
-        <Input placeholder="Abonelik fiyatı" value={price} onChange={(e) => setPrice(e.target.value)} />
+        <label className="font-medium text-base sm:text-lg">{t('sub_price_label')}</label>
+        <Input placeholder={t('sub_price_placeholder')} value={price} onChange={(e) => setPrice(e.target.value)} />
 
-        <label className="font-medium text-base sm:text-lg leading-tight">
-          Abonelik<br className="hidden sm:block" /> Başlangıcı:
+        <label className="font-medium text-base sm:text-lg leading-tight whitespace-pre-line">
+          {t('sub_start_date_label')}
         </label>
-        <Input placeholder="GG/AA/YYYY" value={startDate} onChange={handleDateChange} maxLength={10} />
+        <Input placeholder={t('sub_date_placeholder')} value={startDate} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-base sm:text-lg leading-tight">
-          Deneme<br className="hidden sm:block" /> Sürümü:
+        <label className="font-medium text-base sm:text-lg leading-tight whitespace-pre-line">
+          {t('sub_trial_label')}
         </label>
         <TrialCheckbox active={isTrial} onClick={() => setIsTrial(!isTrial)} />
       </div>
 
       <div className="mt-6 flex justify-end px-2 sm:pr-8 pb-2">
         <Button variant="add" className="w-full sm:w-[160px] h-[45px] shadow-md" onClick={handleAdd} disabled={loading}>
-          {loading ? 'Ekleniyor...' : '+ Ekle'}
+          {loading ? t('sub_btn_adding') : t('sub_btn_add')}
         </Button>
       </div>
     </BaseModal>
@@ -115,6 +117,7 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuc
 };
 
 export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, initialData, onSuccess }) => {
+  const { t } = useTranslation();
   const [name, setName] = useState(initialData?.name || '');
   const [payDay, setPayDay] = useState(initialData?.payDay || '');
   const [price, setPrice] = useState(initialData?.price || '');
@@ -132,7 +135,7 @@ export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, in
   const handleUpdate = async () => {
     if (!initialData?.id) {
       console.error("HATA: Düzenlenecek abonelik ID'si bulunamadı!", initialData);
-      alert("Hata: Abonelik bilgisi eksik, lütfen sayfayı yenileyip tekrar deneyin.");
+      alert(t('sub_error_id_missing'));
       return;
     }
 
@@ -161,31 +164,31 @@ export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, in
   };
 
   return (
-    <BaseModal title="Abonelik Düzenle" onClose={onClose}>
+    <BaseModal title={t('sub_modal_edit_title')} onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-[150px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-4 px-2 sm:pr-4 mt-2">
-        <label className="font-medium text-base sm:text-lg">Abonelik Adı:</label>
+        <label className="font-medium text-base sm:text-lg">{t('sub_name_label')}</label>
         <Input value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-base sm:text-lg">Ödeme Günü:</label>
+        <label className="font-medium text-base sm:text-lg">{t('sub_payday_label')}</label>
         <Input value={payDay} onChange={(e) => setPayDay(e.target.value)} />
 
-        <label className="font-medium text-base sm:text-lg">Fiyat:</label>
+        <label className="font-medium text-base sm:text-lg">{t('sub_price_label')}</label>
         <Input value={price} onChange={(e) => setPrice(e.target.value)} />
 
-        <label className="font-medium text-base sm:text-lg leading-tight">
-          Abonelik<br className="hidden sm:block" /> Başlangıcı:
+        <label className="font-medium text-base sm:text-lg leading-tight whitespace-pre-line">
+          {t('sub_start_date_label')}
         </label>
         <Input value={startDate} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-base sm:text-lg leading-tight">
-          Deneme<br className="hidden sm:block" /> Sürümü:
+        <label className="font-medium text-base sm:text-lg leading-tight whitespace-pre-line">
+          {t('sub_trial_label')}
         </label>
         <TrialCheckbox active={isTrial} onClick={() => setIsTrial(!isTrial)} />
       </div>
 
       <div className="mt-6 flex justify-end px-2 sm:pr-8 pb-2">
         <Button variant="apply" className="w-full sm:w-[160px] h-[45px] shadow-md" onClick={handleUpdate} disabled={loading}>
-          {loading ? 'Güncelleniyor...' : 'Uygula'}
+          {loading ? t('sub_btn_updating') : t('sub_btn_apply')}
         </Button>
       </div>
     </BaseModal>

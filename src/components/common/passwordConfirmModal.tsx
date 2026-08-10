@@ -1,6 +1,5 @@
-// PasswordConfirmModal.tsx
-
 import React, { useState } from 'react';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface Props {
   isOpen: boolean;
@@ -9,6 +8,7 @@ interface Props {
 }
 
 const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: Props) => {
+  const { t } = useTranslation();
   const [password, setPassword] = useState('');
 
   if (!isOpen) return null;
@@ -16,14 +16,14 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: Props) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-xl w-80 text-black">
-        <h3 className="font-semibold mb-4">İşlemi Onaylayın</h3>
+        <h3 className="font-semibold mb-4">{t('pwd_modal_title')}</h3>
         <p className="text-xs mb-4 text-gray-600">
-          Değişiklikleri kaydetmek için lütfen mevcut şifrenizi girin.
+          {t('pwd_modal_desc')}
         </p>
         <input
           type="password"
           className="border rounded w-full p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-yellow-500"
-          placeholder="Mevcut Şifreniz"
+          placeholder={t('pwd_modal_placeholder')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -32,13 +32,13 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: Props) => {
             onClick={onClose} 
             className="px-4 py-2 text-xs border rounded hover:bg-gray-100 transition"
           >
-            İptal
+            {t('pwd_modal_btn_cancel')}
           </button>
           <button 
             onClick={() => { onConfirm(password); setPassword(''); }} 
             className="px-4 py-2 text-xs bg-yellow-400 hover:bg-yellow-500 text-black font-semibold rounded transition shadow-sm"
           >
-            Değişiklikleri Kaydet
+            {t('pwd_modal_btn_confirm')}
           </button>
         </div>
       </div>

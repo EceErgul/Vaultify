@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import tr from '../locales/tr.json';
+import en from '../locales/en.json';
 
 type Language = 'tr' | 'en';
 type Translations = typeof tr;
@@ -12,6 +13,11 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const dictionaries: Record<Language, Record<string, string>> = {
+  tr: tr as Record<string, string>,
+  en: en as Record<string, string>,
+};
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     return (localStorage.getItem('app_lang') as Language) || 'tr';
@@ -23,7 +29,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const t = (key: keyof Translations): string => {
-    return tr[key] || key;
+    const currentDict = dictionaries[language] || dictionaries.tr;
+    return currentDict[key] || (tr as Record<string, string>)[key] || key;
   };
 
   return (

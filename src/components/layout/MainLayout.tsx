@@ -8,7 +8,7 @@ interface MainLayoutProps {
   isLoggedIn: boolean;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ isLoggedIn }) => {
+const MainLayout: React.FC<MainLayoutProps> = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -30,8 +30,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ isLoggedIn }) => {
       />
 
       <div className="flex-1 flex flex-col min-[836px]:ml-64 min-h-screen transition-all duration-300 pt-16 bg-[var(--bg-page)] text-[var(--text-main)]">
-        <Header 
-          isLoggedIn={isLoggedIn} 
+        <Header
           onToggleSidebar={toggleSidebar} 
         />
         <main className="flex-1 p-6 overflow-y-auto">

@@ -3,6 +3,7 @@ import Button from '../components/common/Button';
 import { AbonelikEkleModal, AbonelikDuzenleModal } from '../components/common/AbonelikEkleVeDuzenleModal';
 import AbonelikSilModal from '../components/common/AbonelikSilModal';
 import { apiRequest } from '../utils/api';
+import { useTranslation } from '../context/LanguageContext';
 
 interface Subscription {
   id: string;
@@ -15,6 +16,7 @@ interface Subscription {
 }
 
 const Subscriptions = () => {
+  const { t } = useTranslation();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -125,25 +127,25 @@ const Subscriptions = () => {
       
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mb-10 sm:mb-16 w-full justify-center items-center">
         <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
-          <h3 className="text-xl font-medium mb-4">Aylık Toplam</h3>
+          <h3 className="text-xl font-medium mb-4">{t('subs_monthly_total')}</h3>
           <p className="text-sm leading-relaxed">
-            Bu ay toplam {aylikToplam.toLocaleString('tr-TR')} ₺<br/>abonelik ödemeniz var.
+            {t('subs_monthly_text_part1')}{aylikToplam.toLocaleString('tr-TR')} ₺<br/>{t('subs_monthly_text_part2')}
           </p>
         </div>
         <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
-          <h3 className="text-xl font-medium mb-4">Sıradaki Ödeme</h3>
+          <h3 className="text-xl font-medium mb-4">{t('subs_next_payment')}</h3>
           {siradakiOdeme ? (
             <p className="text-sm leading-relaxed">
               {siradakiOdeme.subscription_name}<br/>
-              {getKalanGun(siradakiOdeme.payment_day) === 0 ? 'Bugün' : `${getKalanGun(siradakiOdeme.payment_day)} gün sonra`} ({Number(siradakiOdeme.cost).toLocaleString('tr-TR')} ₺)
+              {getKalanGun(siradakiOdeme.payment_day) === 0 ? t('subs_today') : `${getKalanGun(siradakiOdeme.payment_day)}${t('subs_days_later_suffix')}`} ({Number(siradakiOdeme.cost).toLocaleString('tr-TR')} ₺)
             </p>
           ) : (
-            <p className="text-sm text-gray-400 italic">Kayıtlı abonelik yok.</p>
+            <p className="text-sm text-gray-400 italic">{t('subs_empty')}</p>
           )}
         </div>
       </div>
 
-      <h2 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 tracking-wider text-center">ABONELİKLERİM</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 tracking-wider text-center">{t('subs_title')}</h2>
 
       <div className={`w-full ${sliderMaxWidthClass} overflow-hidden mb-6 min-h-[320px] transition-all duration-300 box-border`}>
         <div 
@@ -152,7 +154,7 @@ const Subscriptions = () => {
         >
           {loading ? (
             <div className="w-full flex items-center justify-center text-sm text-gray-400 min-h-[300px]">
-              Yükleniyor...
+              {t('subs_loading')}
             </div>
           ) : (
             sortedListWithAdd.map((item) => {
@@ -188,16 +190,16 @@ const Subscriptions = () => {
                           onError={(e) => { (e.target as HTMLImageElement).src = 'https://cdn-icons-png.flaticon.com/512/2721/2721980.png'; }}
                         />
                       </div>
-                      <button onClick={() => { setSelectedSubscription(sub); setIsEditOpen(true); }} className="text-[12px] font-regular hover:underline">Düzenle</button>
+                      <button onClick={() => { setSelectedSubscription(sub); setIsEditOpen(true); }} className="text-[12px] font-regular hover:underline">{t('subs_edit')}</button>
                     </div>
 
                     <h4 className="text-[15px] font-semibold mb-3 truncate">{sub.subscription_name}</h4>
                     
                     <div className="space-y-2 text-[12px] font-regular">
-                      <p>{Number(sub.cost).toLocaleString('tr-TR')} ₺ /ay</p>
-                      <p className="font-medium">{kalanGun === 0 ? 'Bugün Ödeme Günü' : `${kalanGun} Gün Sonra Ödeme`}</p>
-                      <p className="pt-2">{abonelikSuresi} Aydır Abonesin</p>
-                      <p className="text-[11px] opacity-80 italic">Her ayın <span className="font-bold">{sub.payment_day}</span>. günü <br /> ödenir.</p>
+                      <p>{Number(sub.cost).toLocaleString('tr-TR')}{t('subs_per_month')}</p>
+                      <p className="font-medium">{kalanGun === 0 ? t('subs_today_payment') : `${kalanGun}${t('subs_days_later_payment_suffix')}`}</p>
+                      <p className="pt-2">{abonelikSuresi}{t('subs_months_subscribed_suffix')}</p>
+                      <p className="text-[11px] opacity-80 italic whitespace-pre-line">{t('subs_payment_day_p1')}<span className="font-bold">{sub.payment_day}</span>{t('subs_payment_day_p2')}</p>
                     </div>
                   </div>
                 </div>
@@ -219,7 +221,7 @@ const Subscriptions = () => {
 
       <div className="flex gap-10">
         <Button variant="delete" className="w-[160px] h-[35px] text-[12px] shadow-sm" onClick={() => setIsDeleteOpen(true)}>
-          - Abonelik Sil
+          {t('subs_delete_btn')}
         </Button>
       </div>
 

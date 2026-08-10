@@ -5,6 +5,7 @@ import Dropdown from './Dropdown';
 import Button from './Button';
 import { IncomeSource } from '../../types/index';
 import { apiRequest } from '../../utils/api';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface GelirModalProps {
   onClose: () => void;
@@ -18,10 +19,6 @@ interface GelirModalProps {
   };
 }
 
-const GELIR_KATEGORILERI: IncomeSource[] = [
-  'Maaş', 'Kira Geliri', 'Varlıklarım', 'İkramiye/Prim', 'Ek İş', 'Miras', 'Devlet Desteği', 'Diğer'
-];
-
 const formatToDisplayDate = (isoDate?: string) => {
   if (!isoDate) return '';
   const dateObj = new Date(isoDate);
@@ -32,11 +29,23 @@ const formatToDisplayDate = (isoDate?: string) => {
 };
 
 export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }) => {
+  const { t } = useTranslation();
   const [date, setDate] = useState('');
   const [name, setName] = useState('');
-  const [category, setCategory] = useState<IncomeSource>('Maaş');
+  const [category, setCategory] = useState<string>('');
   const [amount, setAmount] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+
+  const gelirKategorileri = [
+    t('cat_salary'),
+    t('cat_rent'),
+    t('cat_assets'),
+    t('cat_bonus'),
+    t('cat_side_job'),
+    t('cat_inheritance'),
+    t('cat_government'),
+    t('cat_other')
+  ];
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -65,30 +74,31 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }
   };
 
   return (
-    <BaseModal title="Gelir Ekle" onClose={onClose}>
+    <BaseModal title={t('income_add_title')} onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-start sm:items-center gap-x-2 gap-y-3 sm:gap-y-5 font-inter pr-1 sm:pr-4">
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Tarih:</label>
-        <Input placeholder="GG/AA/YYYY" value={date} onChange={handleDateChange} maxLength={10} />
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_date')}</label>
+        <Input placeholder={t('income_date_placeholder')} value={date} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Gelir Adı:</label>
-        <Input placeholder="Gelir adı" value={name} onChange={(e) => setName(e.target.value)} />
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_name')}</label>
+        <Input placeholder={t('income_name_placeholder')} value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Kategori:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_category')}</label>
         <div className="relative w-full z-[999]">
           <Dropdown 
-            options={GELIR_KATEGORILERI}
-            onSelect={(v) => setCategory(v as IncomeSource)}
-            placeholder={category} value={''}          
+            options={gelirKategorileri}
+            value={category}
+            onSelect={(v) => setCategory(v)}
+            placeholder={t('placeholder_select')} 
           />
         </div>
 
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Miktar:</label>
-        <Input type="number" placeholder="Gelir Miktarı" value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} />
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_amount')}</label>
+        <Input type="number" placeholder={t('income_amount_placeholder')} value={amount || ''} onChange={(e) => setAmount(Number(e.target.value))} />
       </div>
 
       <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">
         <Button variant="add" className="w-full sm:w-[140px] text-xs sm:text-sm" onClick={handleAdd} disabled={loading}>
-          {loading ? 'Ekleniyor...' : '+ Ekle'}
+          {loading ? t('income_btn_adding') : t('income_btn_add')}
         </Button>
       </div>
     </BaseModal>
@@ -96,11 +106,23 @@ export const GelirEkleModal: React.FC<GelirModalProps> = ({ onClose, onSuccess }
 };
 
 export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialData, onSuccess }) => {
+  const { t } = useTranslation();
   const [date, setDate] = useState(formatToDisplayDate(initialData?.date));
   const [name, setName] = useState(initialData?.name || '');
-  const [category, setCategory] = useState<IncomeSource>(initialData?.category || 'Maaş');
+  const [category, setCategory] = useState<string>(initialData?.category || '');
   const [amount, setAmount] = useState<number>(initialData?.amount || 0);
   const [loading, setLoading] = useState(false);
+
+  const gelirKategorileri = [
+    t('cat_salary'),
+    t('cat_rent'),
+    t('cat_assets'),
+    t('cat_bonus'),
+    t('cat_side_job'),
+    t('cat_inheritance'),
+    t('cat_government'),
+    t('cat_other')
+  ];
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -129,26 +151,31 @@ export const GelirDuzenleModal: React.FC<GelirModalProps> = ({ onClose, initialD
   };
 
   return (
-    <BaseModal title="Gelir Düzenle" onClose={onClose}>
+    <BaseModal title={t('income_edit_title')} onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-[120px_1fr] items-start sm:items-center gap-x-2 gap-y-3 sm:gap-y-5 font-inter pr-1 sm:pr-4">
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Tarih:</label>
-        <Input placeholder="GG/AA/YYYY" value={date} onChange={handleDateChange} maxLength={10} />
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_date')}</label>
+        <Input placeholder={t('income_date_placeholder')} value={date} onChange={handleDateChange} maxLength={10} />
 
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Gelir Adı:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_name')}</label>
         <Input value={name} onChange={(e) => setName(e.target.value)} />
 
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Kategori:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_category')}</label>
         <div className="relative w-full z-[999]">
-          <Dropdown options={GELIR_KATEGORILERI} onSelect={(v) => setCategory(v as IncomeSource)} placeholder={category} value={''} />
+          <Dropdown 
+            options={gelirKategorileri} 
+            value={category} 
+            onSelect={(v) => setCategory(v)} 
+            placeholder={t('placeholder_select')} 
+          />
         </div>
 
-        <label className="font-medium text-xs sm:text-sm text-[#333D50]">Miktar:</label>
+        <label className="font-medium text-xs sm:text-sm text-[#333D50]">{t('income_label_amount')}</label>
         <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
       </div>
 
       <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">
         <Button variant="apply" className="w-full sm:w-[140px] text-xs sm:text-sm" onClick={handleUpdate} disabled={loading}>
-          {loading ? 'Güncelleniyor...' : 'Uygula'}
+          {loading ? t('income_btn_updating') : t('income_btn_apply')}
         </Button>
       </div>
     </BaseModal>

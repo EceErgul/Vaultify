@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface DropdownProps {
   options: string[];
@@ -10,6 +11,7 @@ interface DropdownProps {
 
 const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder, value }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <div className="relative w-full">
@@ -18,7 +20,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, placeholder, val
         className="flex h-[45px] w-full items-center justify-between overflow-hidden rounded-[6px] border border-[#CDCDCD] bg-white cursor-pointer"
       >
         <span className="px-4 text-sm text-[#333D50] opacity-70">
-          {value || placeholder || "Seçim yapınız"}
+          {value || placeholder || t('placeholder_select')}
         </span>
 
         <div className="flex h-[35px] w-[35px] items-center justify-center border-l border-[#CDCDCD] bg-white mr-[4px]">

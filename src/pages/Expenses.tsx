@@ -6,6 +6,7 @@ import FiltreleModal, { FilterState } from '../components/common/FiltreleModal';
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
+import { useTranslation } from '../context/LanguageContext';
 
 interface Expense {
   id: string;
@@ -29,6 +30,7 @@ const initialFilterValues: FilterState = {
 };
 
 const Expenses = () => {
+  const { t } = useTranslation();
   const [isDeleteMode, setIsDeleteMode] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -137,18 +139,18 @@ const Expenses = () => {
   return (
     <div className="p-8 font-inter max-w-7xl mx-auto">
       <div className="flex justify-between items-start mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-black">Toplam Harcamalarım</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-black">{t('exp_title')}</h2>
         <div className="flex flex-col gap-2">
-          <Button variant="add" className="w-[140px] h-[32px] text-[11px] shadow-sm" onClick={handleOpenAddModal}>+ Harcama Ekle</Button>
+          <Button variant="add" className="w-[140px] h-[32px] text-[11px] shadow-sm" onClick={handleOpenAddModal}>{t('exp_add_btn')}</Button>
           
           {!isDeleteMode ? (
-            <Button variant="delete" className="w-[140px] h-[32px] text-[11px]" onClick={() => setIsDeleteMode(true)}>Harcama Sil</Button>
+            <Button variant="delete" className="w-[140px] h-[32px] text-[11px]" onClick={() => setIsDeleteMode(true)}>{t('exp_delete_btn')}</Button>
           ) : (
-            <Button variant="delete" className="w-[140px] h-[32px] text-[11px] !bg-gray-500 !text-white" onClick={() => { setIsDeleteMode(false); setSelectedIds([]); }}>Vazgeç</Button>
+            <Button variant="delete" className="w-[140px] h-[32px] text-[11px] !bg-gray-500 !text-white" onClick={() => { setIsDeleteMode(false); setSelectedIds([]); }}>{t('exp_cancel_btn')}</Button>
           )}
 
           <Button variant="filter" className="w-[140px] h-[32px] text-[11px] bg-[#FFEF79] border border-black shadow-sm" onClick={() => setIsFilterModalOpen(true)}>
-            Filtrele ≡ ({activeFilterCount})
+            {t('exp_filter_btn')} ({activeFilterCount})
           </Button>
         </div>
       </div>
@@ -162,7 +164,7 @@ const Expenses = () => {
               else setSelectedIds(filteredHarcamalar.map(h => h.id));
             }} 
           />
-          <span className="text-sm font-regular">Hepsini Seç</span>
+          <span className="text-sm font-regular">{t('exp_select_all')}</span>
         </div>
       )}
 
@@ -172,22 +174,22 @@ const Expenses = () => {
           <thead>
             <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
               {isDeleteMode && <th className="w-12 border-r border-black"></th>}
-              <th className="border-r border-black p-2 font-regular">Tarih</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">Harcama Adı</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">Kategori</th>
-              <th className="mobile-only border-r border-black p-2 font-regular">Harcama Adı / Kategori</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">Ödeme Yöntemi</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">Tutar</th>
-              <th className="mobile-only border-r border-black p-2 font-regular">Ödeme Yöntemi / Tutar</th>
+              <th className="border-r border-black p-2 font-regular">{t('exp_th_date')}</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_name')}</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_category')}</th>
+              <th className="mobile-only border-r border-black p-2 font-regular">{t('exp_th_name_cat')}</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_payment')}</th>
+              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_amount')}</th>
+              <th className="mobile-only border-r border-black p-2 font-regular">{t('exp_th_payment_amount')}</th>
 
-              {!isDeleteMode && <th className="p-2 font-regular w-24">İşlem</th>}
+              {!isDeleteMode && <th className="p-2 font-regular w-24">{t('exp_th_action')}</th>}
             </tr>
           </thead>
           <tbody>
             {loading ? (
               <tr className="h-12 bg-white">
-                <td colSpan={isDeleteMode ? 7 : 6} className="desktop-only text-center text-xs">Harcamalar yükleniyor...</td>
-                <td colSpan={isDeleteMode ? 5 : 4} className="mobile-only text-center text-xs">Harcamalar yükleniyor...</td>
+                <td colSpan={isDeleteMode ? 7 : 6} className="desktop-only text-center text-xs">{t('exp_loading')}</td>
+                <td colSpan={isDeleteMode ? 5 : 4} className="mobile-only text-center text-xs">{t('exp_loading')}</td>
               </tr>
             ) : (Array.isArray(filteredHarcamalar) ? filteredHarcamalar : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
@@ -221,7 +223,7 @@ const Expenses = () => {
 
                   {!isDeleteMode && (
                     <td className="text-center">
-                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-900 hover:text-black">Düzenle</button>
+                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-900 hover:text-black">{t('exp_edit_btn')}</button>
                     </td>
                   )}
                 </tr>
@@ -259,12 +261,12 @@ const Expenses = () => {
       )}
 
       {isConfirmDeleteOpen && (
-        <BaseModal title="Harcamayı Sil" onClose={() => setIsConfirmDeleteOpen(false)}>
+        <BaseModal title={t('exp_modal_del_title')} onClose={() => setIsConfirmDeleteOpen(false)}>
           <div className="p-4 text-center font-inter">
-            <p className="text-sm mb-6">Seçtiğiniz <b>{selectedIds.length}</b> harcamayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+            <p className="text-sm mb-6">{t('exp_modal_del_text_part1')}<b>{selectedIds.length}</b>{t('exp_modal_del_text_part2')}</p>
             <div className="flex justify-center gap-3">
-              <Button variant="cancel" className="w-[100px]" onClick={() => setIsConfirmDeleteOpen(false)}>Vazgeç</Button>
-              <Button variant="applyDelete" className="w-[100px]" onClick={() => { handleConfirmDelete(); setIsConfirmDeleteOpen(false); }}>Sil</Button>
+              <Button variant="cancel" className="w-[100px]" onClick={() => setIsConfirmDeleteOpen(false)}>{t('exp_modal_cancel')}</Button>
+              <Button variant="applyDelete" className="w-[100px]" onClick={() => { handleConfirmDelete(); setIsConfirmDeleteOpen(false); }}>{t('exp_modal_confirm')}</Button>
             </div>
           </div>
         </BaseModal>

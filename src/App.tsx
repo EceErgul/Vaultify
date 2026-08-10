@@ -15,6 +15,7 @@ import ResetPassword from './pages/ResetPassword';
 import NewPassword from './pages/NewPassword';
 import './styles/index.css';
 import { UserProvider } from './context/UserContext';
+import { LanguageProvider } from './context/LanguageContext'; // <-- LanguageProvider eklendi
 
 const LoginComponent = Login as ComponentType<{ setUserStatus: Dispatch<SetStateAction<boolean>> }>;
 
@@ -47,32 +48,34 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <UserProvider>
-        <Routes>
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/login" element={<LoginComponent setUserStatus={setUserStatus} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/new-password" element={<NewPassword />} />
-          
-          <Route element={<ProtectedRoute isLoggedIn={userStatus} />}>
-            <Route element={<MainLayout isLoggedIn={userStatus} />}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/assets" element={<Assets />} />
-              <Route path="/assets/:id" element={<AssetsDetail />} />
-              <Route path="/expenses" element={<Expenses />} />
-              <Route path="/incomes" element={<Incomes />} />
-              <Route path="/subscriptions" element={<Subscriptions />} />
-              <Route path="/settings" element={<Settings />} />
+    <LanguageProvider>
+      <Router>
+        <UserProvider>
+          <Routes>
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/login" element={<LoginComponent setUserStatus={setUserStatus} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/new-password" element={<NewPassword />} />
+            
+            <Route element={<ProtectedRoute isLoggedIn={userStatus} />}>
+              <Route element={<MainLayout isLoggedIn={userStatus} />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/assets" element={<Assets />} />
+                <Route path="/assets/:id" element={<AssetsDetail />} />
+                <Route path="/expenses" element={<Expenses />} />
+                <Route path="/incomes" element={<Incomes />} />
+                <Route path="/subscriptions" element={<Subscriptions />} />
+                <Route path="/settings" element={<Settings />} />
+              </Route>
             </Route>
-          </Route>
 
-          <Route path="/" element={<Navigate to={userStatus ? "/dashboard" : "/landing"} replace />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>       
-      </UserProvider>
-    </Router>
+            <Route path="/" element={<Navigate to={userStatus ? "/dashboard" : "/landing"} replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>       
+        </UserProvider>
+      </Router>
+    </LanguageProvider>
   );
 }
 

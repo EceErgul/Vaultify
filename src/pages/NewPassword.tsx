@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { apiRequest } from '../utils/api';
+import { useTranslation } from '../context/LanguageContext';
 
 const Logo = '/src/assets/vaultify_logo_nobackground.png';
 
@@ -9,6 +10,7 @@ const UpdatePassword = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -21,12 +23,12 @@ const UpdatePassword = () => {
     setError('');
 
     if (password !== confirmPassword) {
-      setError('Şifreler birbiriyle uyuşmuyor.');
+      setError(t('new_pass_err_mismatch'));
       return;
     }
 
     if (password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır.');
+      setError(t('new_pass_err_length'));
       return;
     }
 
@@ -42,7 +44,7 @@ const UpdatePassword = () => {
         navigate('/login');
       }, 3000);
     } catch (err: any) {
-      setError(err?.message || 'Şifre sıfırlama linki geçersiz veya süresi dolmuş.');
+      setError(err?.message || t('new_pass_err_default'));
     } finally {
       setLoading(false);
     }
@@ -56,7 +58,7 @@ const UpdatePassword = () => {
           to="/login" 
           className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-1.5 sm:gap-2 bg-[#CDCDCD] px-2.5 sm:px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
         >
-          <span>←</span> <span>Giriş Ekranına Dön</span>
+          <span>←</span> <span>{t('new_pass_back')}</span>
         </Link>
 
         <div className="w-20 h-20 sm:w-24 sm:h-24 mb-4 sm:mb-6 opacity-90">
@@ -65,14 +67,14 @@ const UpdatePassword = () => {
 
         {!success ? (
           <>
-            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">Yeni Şifre Oluştur</h2>
+            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">{t('new_pass_title')}</h2>
             <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 text-center font-regular px-2">
-              Lütfen hesabınız için yeni ve güçlü bir şifre belirleyin.
+              {t('new_pass_desc')}
             </p>
 
             <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 flex flex-col items-center">
               <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-xs font-medium text-[#333D50]">Yeni Şifre:</label>
+                <label className="text-xs font-medium text-[#333D50]">{t('new_pass_label_new')}</label>
                 <input 
                   type="password"
                   value={password}
@@ -84,7 +86,7 @@ const UpdatePassword = () => {
               </div>
 
               <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-xs font-medium text-[#333D50]">Şifre Tekrar:</label>
+                <label className="text-xs font-medium text-[#333D50]">{t('new_pass_label_confirm')}</label>
                 <input 
                   type="password"
                   value={confirmPassword}
@@ -105,7 +107,7 @@ const UpdatePassword = () => {
                   disabled={loading}
                   className="w-full h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] cursor-pointer flex items-center justify-center"
                 >
-                  {loading ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}
+                  {loading ? t('new_pass_loading') : t('new_pass_submit_btn')}
                 </Button>
               </div>
             </form>
@@ -117,8 +119,8 @@ const UpdatePassword = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-green-600 mb-1 sm:mb-2">Şifreniz Başarıyla Güncellendi!</h3>
-            <p className="text-xs sm:text-sm text-gray-500">Giriş ekranına yönlendiriliyorsunuz, lütfen bekleyin...</p>
+            <h3 className="text-lg sm:text-xl font-semibold text-green-600 mb-1 sm:mb-2">{t('new_pass_success_title')}</h3>
+            <p className="text-xs sm:text-sm text-gray-500">{t('new_pass_success_desc')}</p>
           </div>
         )}
       </div>

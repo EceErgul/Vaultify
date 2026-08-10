@@ -1,5 +1,7 @@
+import React from 'react';
 import { LayoutDashboard, Wallet, Receipt, HandCoins, CalendarClock, Settings } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -7,13 +9,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const menuItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Varlıklarım', path: '/assets', icon: Wallet },
-    { name: 'Harcamalar', path: '/expenses', icon: Receipt },
-    { name: 'Gelirler', path: '/incomes', icon: HandCoins },
-    { name: 'Abonelikler', path: '/subscriptions', icon: CalendarClock },
-    { name: 'Ayarlar', path: '/settings', icon: Settings },
+    { name: t('nav_dashboard'), path: '/dashboard', icon: LayoutDashboard },
+    { name: t('nav_assets'), path: '/assets', icon: Wallet },
+    { name: t('nav_expenses'), path: '/expenses', icon: Receipt },
+    { name: t('nav_incomes'), path: '/incomes', icon: HandCoins },
+    { name: t('nav_subscriptions'), path: '/subscriptions', icon: CalendarClock },
+    { name: t('nav_settings'), path: '/settings', icon: Settings },
   ];
 
   return (

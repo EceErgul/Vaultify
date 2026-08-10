@@ -4,6 +4,7 @@ import Input from './Input';
 import Dropdown from './Dropdown';
 import Button from './Button';
 import { AssetsType } from '../../types/index';
+import { useTranslation } from '../../context/LanguageContext';
 
 interface VarlikModalProps {
   isOpen: boolean;
@@ -26,33 +27,39 @@ const VarlikModallari: React.FC<VarlikModalProps> = ({
   initialData, 
   onSave 
 }) => {
+  const { t } = useTranslation();
   const [assetName, setAssetName] = useState<string>('');
-  const [selectedType, setSelectedType] = useState<AssetsType>('Borsa');
+  const [selectedType, setSelectedType] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
 
-  const assetTypeOptions: AssetsType[] = ['Borsa', 'Döviz', 'Altın', 'Kripto', 'Teemmü'];
+  const assetTypeOptions = [
+    t('asset_type_stock'),
+    t('asset_type_currency'),
+    t('asset_type_gold'),
+    t('asset_type_crypto'),
+    t('asset_type_other')
+  ];
 
   useEffect(() => {
     if (isOpen) {
       if (mode === 'edit' && initialData) {
         setDate(initialData.date || '');
         setAssetName(initialData.assetName || '');
-        setSelectedType(initialData.assetType || 'Borsa');
+        setSelectedType(initialData.assetType || '');
         setAmount(initialData.amount ? String(initialData.amount) : '');
         setPrice(initialData.price ? String(initialData.price) : '');
       } else {
-        // 'add' modu için formu sıfırla
         setDate('');
         setAssetName('');
-        setSelectedType('Borsa');
+        setSelectedType(t('asset_type_stock'));
         setAmount('');
         setPrice('');
       }
     }
-  }, [isOpen, mode, initialData]);
+  }, [isOpen, mode, initialData, t]);
 
   if (!isOpen) return null;
 
@@ -98,13 +105,13 @@ const VarlikModallari: React.FC<VarlikModalProps> = ({
   const isEdit = mode === 'edit';
 
   return (
-    <BaseModal title={isEdit ? "Varlık Ayrıntısı Düzenle" : "Varlık Ekle"} onClose={onClose}>
+    <BaseModal title={isEdit ? t('asset_modal_title_edit') : t('asset_modal_title_add')} onClose={onClose}>
       <div className="grid grid-cols-[65px_1fr] sm:grid-cols-[100px_1fr] items-center gap-x-2 gap-y-3 sm:gap-y-5 font-inter pr-1 sm:pr-2">
         
-        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Tarih:</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('asset_label_date')}</label>
         <Input 
           type="text"
-          placeholder="GG/AA/YYYY" 
+          placeholder={t('asset_date_placeholder')} 
           value={date}
           onChange={handleDateChange}
           maxLength={10}
@@ -113,39 +120,39 @@ const VarlikModallari: React.FC<VarlikModalProps> = ({
 
         {!isEdit && (
           <>
-            <label className="text-xs sm:text-sm font-medium text-[#333D50]">Varlık:</label>
+            <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('asset_label_name')}</label>
             <Input 
-              placeholder="Örn: Altın, Dolar"
+              placeholder={t('asset_name_placeholder')}
               value={assetName}
               onChange={(e) => setAssetName(e.target.value)}
               disabled={loading}
             />
 
-            <label className="text-xs sm:text-sm font-medium text-[#333D50]">Tür:</label>
+            <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('asset_label_type')}</label>
             <Dropdown 
               options={assetTypeOptions}
               onSelect={(v) => setSelectedType(v as AssetsType)}
-              placeholder="Tür Seçiniz" 
+              placeholder={t('asset_type_placeholder')} 
               value={selectedType}
             />
           </>
         )}
 
-        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Miktar:</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('asset_label_amount')}</label>
         <Input 
           type="number" 
           value={amount}
           onChange={(e) => setAmount(e.target.value)} 
-          placeholder="Alınan miktar" 
+          placeholder={t('asset_amount_placeholder')} 
           disabled={loading}
         />
 
-        <label className="text-xs sm:text-sm font-medium text-[#333D50]">Fiyat:</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('asset_label_price')}</label>
         <Input 
           type="number" 
           value={price}
           onChange={(e) => setPrice(e.target.value)} 
-          placeholder="Birim Fiyatı"
+          placeholder={t('asset_price_placeholder')}
           disabled={loading}
         />
 
@@ -156,7 +163,7 @@ const VarlikModallari: React.FC<VarlikModalProps> = ({
             className="w-[120px] sm:w-[140px] text-xs sm:text-sm"
             disabled={loading}
            >
-            {loading ? 'Kaydediliyor...' : (isEdit ? 'Uygula' : '+ Ekle')}
+            {loading ? t('asset_btn_loading') : (isEdit ? t('asset_btn_apply') : t('asset_btn_add'))}
            </Button>
         </div>
       </div>

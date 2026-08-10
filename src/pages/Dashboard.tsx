@@ -4,11 +4,13 @@ import '../styles/dashboard.css';
 import { Income } from '../types/index';
 import { getCategoryColorVar } from '../utils/colourHelpers';
 import { useUser } from '../context/UserContext';
+import { useTranslation } from '../context/LanguageContext';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
 
 const Dashboard: React.FC = () => {
   const { dashboardData, loading } = useUser();
+  const { t } = useTranslation();
   const [isMounted, setIsMounted] = useState(false);
   const [windowWidth, setWindowWidth] = useState<number>(
     typeof window !== 'undefined' ? window.innerWidth : 1200
@@ -67,24 +69,24 @@ const Dashboard: React.FC = () => {
 
     return [
       { 
-        title: "Net Varlık Özeti", 
+        title: t('dash_section_net_assets'), 
         amount: (totalIncome - totalExpense) + totalAssets,
         data: [
-          { name: 'Gelir', value: totalIncome, fill: resolveCssColor('--color-maas') },
-          { name: 'Gider', value: totalExpense, fill: resolveCssColor('--color-ev') },
-          { name: 'Abonelikler', value: totalSubscriptions, fill: resolveCssColor('--color-abonelik') },
-          { name: 'Birikim (Varlıklar)', value: totalAssets, fill: resolveCssColor('--color-varliklarim') },
+          { name: t('dash_item_income'), value: totalIncome, fill: resolveCssColor('--color-maas') },
+          { name: t('dash_item_expense'), value: totalExpense, fill: resolveCssColor('--color-ev') },
+          { name: t('dash_item_subscriptions'), value: totalSubscriptions, fill: resolveCssColor('--color-abonelik') },
+          { name: t('dash_item_savings'), value: totalAssets, fill: resolveCssColor('--color-varliklarim') },
         ] 
       },
-      { title: "Gelir Dağılımı", amount: totalIncome, data: incomeChartData },
-      { title: "Gider Dağılımı", amount: totalExpense, data: expenseChartData },
+      { title: t('dash_section_income_dist'), amount: totalIncome, data: incomeChartData },
+      { title: t('dash_section_expense_dist'), amount: totalExpense, data: expenseChartData },
     ];
-  }, [incomes, expenses, assets, subscriptions, isMounted, isInvisibleMode]);
+  }, [incomes, expenses, assets, subscriptions, isMounted, isInvisibleMode, t]);
 
   if (!isMounted || loading) {
     return (
       <div className="p-4 sm:p-8 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] flex items-center justify-center">
-        <span className="text-base sm:text-lg font-medium">Panel verileri yükleniyor...</span>
+        <span className="text-base sm:text-lg font-medium">{t('dash_loading')}</span>
       </div>
     );
   }
@@ -94,9 +96,9 @@ const Dashboard: React.FC = () => {
       <div className="p-4 sm:p-8 bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md p-6 sm:p-8 bg-[var(--bg-card)] rounded-[var(--v-card)] border border-[var(--border-color)] shadow-v-soft">
           <div className="text-4xl">👁️‍🗨️</div>
-          <h2 className="text-xl font-bold">Görünmezlik Modu Aktif</h2>
+          <h2 className="text-xl font-bold">{t('dash_invisible_title')}</h2>
           <p className="text-sm text-[var(--text-muted)]">
-            Finansal verilerinizin güvenliği için Dashboard paneli geçici olarak gizlenmiştir. Ayarlar sayfasından bu modu kapatabilirsiniz.
+            {t('dash_invisible_desc')}
           </p>
         </div>
       </div>
@@ -116,7 +118,7 @@ const Dashboard: React.FC = () => {
                 <h2 className="text-lg sm:text-2xl font-bold group-hover:text-[var(--sidebar-accent)] transition-colors">
                   {section.title}
                 </h2>
-                <p className="text-[10px] sm:text-sm text-[var(--text-muted)] mt-0.5 uppercase tracking-widest">Finansal Özet</p>
+                <p className="text-[10px] sm:text-sm text-[var(--text-muted)] mt-0.5 uppercase tracking-widest">{t('dash_financial_summary')}</p>
               </div>
               <div className="text-right">
                 <span className="dashboard-amount text-base sm:text-2xl font-black text-[var(--sidebar-accent)]">

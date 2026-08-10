@@ -2,9 +2,10 @@ import React, { useState, useMemo } from 'react';
 import BaseModal from './Modal';
 import Input from './Input';
 import Button from './Button';
-import { Search, Calendar as CalendarIcon, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp } from 'lucide-react';
 import { ExpenseCategory, PaymentMethod } from '../../types/index';
 import { getSuggestions } from '../../utils/filterUtils';
+import { useTranslation } from '../../context/LanguageContext';
 
 export interface FilterState {
   searchTerm: string;
@@ -33,28 +34,38 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
   initialFilters, 
   onApplyFilters 
 }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState<string>(initialFilters.searchTerm);
   const [textDate, setTextDate] = useState<string>(initialFilters.date);
-  const [inputDateValue, setInputDateValue] = useState<string>('');
   const [activeTab, setActiveTab] = useState<FilterTab>(null);
   const [minAmount, setMinAmount] = useState<string>(initialFilters.minAmount);
   const [maxAmount, setMaxAmount] = useState<string>(initialFilters.maxAmount);
-  const [expenseName, setExpenseName] = useState<string>(initialFilters.expenseName);
-  
   const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(initialFilters.category);
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(initialFilters.paymentMethod);
-
   const [dateSort, setDateSort] = useState<'asc' | 'desc'>(initialFilters.dateSort);
   const [amountSort, setAmountSort] = useState<'asc' | 'desc'>(initialFilters.amountSort);
 
-  const kategoriler: ExpenseCategory[] = [
-    'Ev Alışverişi', 'Market Alışverişi', 'Kira', 'Eğlence', 
-    'Ulaşım', 'Taksitler', 'Borçlar', 'Faturalar', 'Sağlık', 'Diğer'
+  const kategoriler = [
+    t('exp_cat_home'),
+    t('exp_cat_market'),
+    t('exp_cat_rent'),
+    t('exp_cat_entertainment'),
+    t('exp_cat_transport'),
+    t('exp_cat_installments'),
+    t('exp_cat_debts'),
+    t('exp_cat_bills'),
+    t('exp_cat_health'),
+    t('exp_cat_other')
   ];
 
-  const odemeYontemleri: PaymentMethod[] = ['Nakit', 'Kredi Kartı', 'Havale', 'Taksit'];
+  const odemeYontemleri = [
+    t('exp_pay_cash'),
+    t('exp_pay_card'),
+    t('exp_pay_transfer'),
+    t('exp_pay_installment')
+  ];
 
-  const suggestions = useMemo(() => getSuggestions(searchTerm, kategoriler), [searchTerm]);
+  const suggestions = useMemo(() => getSuggestions(searchTerm, kategoriler), [searchTerm, kategoriler]);
 
   const handleTextDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -93,8 +104,15 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
     onClose();
   };
 
+  const tabLabelKeyMap = {
+    tarih: 'filter_tab_date',
+    kategori: 'filter_tab_category',
+    odeme: 'filter_tab_payment',
+    tutar: 'filter_tab_amount'
+  } as const;
+
   return (
-    <BaseModal title="Filtrele" onClose={onClose}>
+    <BaseModal title={t('filter_modal_title')} onClose={onClose}>
       <div className="flex flex-col space-y-4 font-inter px-4 w-full max-w-md mx-auto">
         
         <div className="relative w-full max-w-[340px] mx-auto">
@@ -107,7 +125,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full h-full pl-11 pr-4 rounded-[30px] border border-[#CDCDCD] bg-white text-xs"
-              placeholder="Ara" 
+              placeholder={t('filter_search_placeholder')} 
             />
           </div>
           {searchTerm.length > 0 && suggestions.length > 0 && (
@@ -139,7 +157,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
         <div className="grid grid-cols-4 gap-1 text-[11px] font-bold text-[#333D50] border-b border-gray-100 pb-2">
           {(['tarih', 'kategori', 'odeme', 'tutar'] as Exclude<FilterTab, null>[]).map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(activeTab === tab ? null : tab)} className={`flex items-center justify-center gap-1 py-1 ${activeTab === tab ? 'text-[#7ECCF4]' : ''}`}>
-              <span>{tab.charAt(0).toUpperCase() + tab.slice(1)}</span>
+              <span>{t(tabLabelKeyMap[tab])}</span>
               {activeTab === tab ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
             </button>
           ))}
@@ -148,60 +166,71 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
         <div className="bg-white/50 border border-dashed border-[#CDCDCD] rounded-xl p-4 min-h-[200px]">
           {activeTab === 'tarih' && (
             <div className="flex flex-col gap-2">
-              <input type="text" value={textDate} onChange={handleTextDateChange} placeholder="gg/aa/yyyy" className="p-2 border rounded text-xs" />
+              <input type="text" value={textDate} onChange={handleTextDateChange} placeholder={t('filter_date_placeholder')} className="p-2 border rounded text-xs" />
               <input type="date" className="p-2 border rounded" onChange={handleCalendarChange} />
             </div>
           )}
           {activeTab === 'kategori' && (
             <div className="grid grid-cols-2 gap-2 items-stretch">
-              {kategoriler.map(kat => (
-                <button 
-                  key={kat} 
-                  onClick={() => setSelectedCategory(selectedCategory === kat ? null : kat)} 
-                  className={`text-xs px-3 py-2.5 rounded h-auto min-h-[42px] flex items-center justify-center text-center leading-tight ${selectedCategory === kat ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
-                >
-                  {kat}
-                </button>
-              ))}
+              {kategoriler.map((kat, index) => {
+                const rawCategories: ExpenseCategory[] = [
+                  'Ev Alışverişi', 'Market Alışverişi', 'Kira', 'Eğlence', 
+                  'Ulaşım', 'Taksitler', 'Borçlar', 'Faturalar', 'Sağlık', 'Diğer'
+                ];
+                const rawValue = rawCategories[index];
+                return (
+                  <button 
+                    key={kat} 
+                    onClick={() => setSelectedCategory(selectedCategory === rawValue ? null : rawValue)} 
+                    className={`text-xs px-3 py-2.5 rounded h-auto min-h-[42px] flex items-center justify-center text-center leading-tight ${selectedCategory === rawValue ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
+                  >
+                    {kat}
+                  </button>
+                );
+              })}
             </div>
           )}
           {activeTab === 'odeme' && (
              <div className="flex flex-col gap-2">
-                {odemeYontemleri.map(y => (
-                  <button 
-                    key={y} 
-                    onClick={() => setSelectedPayment(selectedPayment === y ? null : y)} 
-                    className={`text-xs p-2 rounded ${selectedPayment === y ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
-                  >
-                    {y}
-                  </button>
-                ))}
+                {odemeYontemleri.map((y, index) => {
+                  const rawPayments: PaymentMethod[] = ['Nakit', 'Kredi Kartı', 'Havale', 'Taksit'];
+                  const rawValue = rawPayments[index];
+                  return (
+                    <button 
+                      key={y} 
+                      onClick={() => setSelectedPayment(selectedPayment === rawValue ? null : rawValue)} 
+                      className={`text-xs p-2 rounded ${selectedPayment === rawValue ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
+                    >
+                      {y}
+                    </button>
+                  );
+                })}
              </div>
           )}
           {activeTab === 'tutar' && (
              <div className="flex flex-col gap-2">
-                <Input placeholder="Min" value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
-                <Input placeholder="Max" value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} />
+                <Input placeholder={t('filter_min_placeholder')} value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
+                <Input placeholder={t('filter_max_placeholder')} value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} />
              </div>
           )}
         </div>
 
         <div className="space-y-2 pt-2 border-t">
           <div className="flex items-center gap-2 text-xs">
-            <span>Tarih Sırala:</span>
+            <span>{t('filter_date_sort_label')}</span>
             <button onClick={() => setDateSort(prev => prev === 'asc' ? 'desc' : 'asc')} className="font-bold bg-gray-100 px-2 py-1 rounded">
-              {dateSort === 'asc' ? 'En Eski' : 'En Yeni'}
+              {dateSort === 'asc' ? t('filter_sort_oldest') : t('filter_sort_newest')}
             </button>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span>Tutar Sırala:</span>
+            <span>{t('filter_amount_sort_label')}</span>
             <button onClick={() => setAmountSort(prev => prev === 'asc' ? 'desc' : 'asc')} className="font-bold bg-gray-100 px-2 py-1 rounded">
-              {amountSort === 'asc' ? 'Düşükten Yükseğe' : 'Yüksekten Düşüğe'}
+              {amountSort === 'asc' ? t('filter_sort_low_to_high') : t('filter_sort_high_to_low')}
             </button>
           </div>
         </div>
 
-        <Button variant="apply" className="w-full" onClick={handleApply}>Uygula</Button>
+        <Button variant="apply" className="w-full" onClick={handleApply}>{t('filter_btn_apply')}</Button>
       </div>
     </BaseModal>
   );
