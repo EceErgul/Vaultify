@@ -6,6 +6,7 @@ import { getCategoryColorVar } from '../utils/colourHelpers';
 import { useUser } from '../context/UserContext';
 import { useTranslation } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { apiRequest } from '../utils/api';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
 
@@ -77,6 +78,18 @@ const Dashboard: React.FC = () => {
       value: Number(item.expenses_amount || 0),
       fill: resolveCssColor(getCategoryColorVar(item.expense_category || item.expense_category_chart))
     }));
+
+    const handleGetAIAnalysis = async () => {
+      try {
+        const response = await apiRequest('/ai/analyze', {
+          method: 'POST',
+          body: JSON.stringify({ financeData: dashboardData }),
+        });
+        console.log("Gemini Analizi:", response.analysis);
+      } catch (error) {
+        console.error("AI istek hatası:", error);
+      }
+    };
 
     return [
       { 

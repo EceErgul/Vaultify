@@ -22,8 +22,6 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
     window.location.reload();
   };
 
-  console.log("Header'daki userInfo içeriği:", userInfo);
-
   return (
     <header 
       className="w-full h-16 border-b border-[var(--border-color)] flex items-center justify-between px-3 sm:px-6 shadow-sm fixed top-0 left-0 z-50"

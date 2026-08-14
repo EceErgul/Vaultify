@@ -1,5 +1,26 @@
 import pool from '../config/db';
 import * as settingService from '../services/setting.service';
+import { getLivePrice } from './market.service';
+
+export const getAssetById = async (userId: string, assetId: string) => {
+  const result = await pool.query(
+    `SELECT * FROM assets WHERE id = $1 AND user_id = $2`,
+    [assetId, userId]
+  );
+  
+  if (result.rows.length === 0) {
+    throw new Error('Varlık bulunamadı veya bu varlığa erişim yetkiniz yok.');
+  }
+
+  const asset = result.rows[0];
+
+  const liveUnitPrice = await getLivePrice(asset.asset_type, asset.asset_name);
+
+  return {
+    ...asset,
+    live_unit_price: liveUnitPrice
+  };
+};
 
 export const getAssetTransactions = async (userId: string, assetId: string) => {
   const isInvisible = await settingService.checkInvisibleMode(userId);

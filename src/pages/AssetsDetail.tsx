@@ -8,6 +8,7 @@ import { apiRequest } from '../utils/api';
 import Slider from '../components/common/Slider';
 import { useTranslation } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
+import AIAssetInsights from '../components/common/AiAssistedInsights';
 
 interface Transaction {
   id: string;
@@ -162,13 +163,13 @@ const AssetsDetail = () => {
     try {
       await apiRequest(`/assets/${id}`, {
         method: 'PUT',
-        body: {
+        body: JSON.stringify({
           asset_name: formData.asset_name,
           asset_type: formData.asset_type,
           date: formData.date,
           total_quantity: formData.amount,
           total_cost: Number(formData.amount) * Number(formData.price)
-        }
+        })
       });
       await fetchDetailData();
       setIsAssetEditModalOpen(false);
@@ -183,13 +184,13 @@ const AssetsDetail = () => {
     try {
       await apiRequest(`/assets/transactions/${editingTx.id}`, { 
         method: 'PUT', 
-        body: {
+        body: JSON.stringify({
           transactionType: editingTx.transactionType,
           date: formData.date,
           totalQuantity: parseFloat(formData.amount),
           pricePerUnit: parseFloat(formData.price),
           totalValue: parseFloat(formData.amount) * parseFloat(formData.price)
-        }
+        })
       });
       await fetchDetailData();
       setIsTransactionEditModalOpen(false);
@@ -265,7 +266,7 @@ const AssetsDetail = () => {
         )}
       </div>
 
-      <div className="asset-detail-grid">
+      <div className="asset-detail-grid mb-6">
         {[
           { label: t('card_total_qty'), value: `${totalQty.toLocaleString('tr-TR')}`, bg: "#FFF5D9" },
           { label: t('card_avg_cost'), value: `${avgCost.toFixed(2)} ${currencySymbol}`, bg: "#FFF5D9" },
@@ -286,6 +287,15 @@ const AssetsDetail = () => {
             <span className={`font-bold text-2xl ${card.textColor || 'text-black'}`}>{card.value}</span>
           </div>
         ))}
+      </div>
+
+      <div className="mb-6">
+        <AIAssetInsights
+          assetId={assetInfo.id}
+          assetName={assetInfo.assetName}
+          balance={totalValue}
+          currency={currencySymbol}
+        />
       </div>
 
       <div className="border border-black overflow-hidden rounded-md shadow-lg">

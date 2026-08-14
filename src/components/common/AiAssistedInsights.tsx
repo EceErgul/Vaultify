@@ -1,25 +1,32 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../context/LanguageContext'; 
+import { apiRequest } from '../../utils/api';
 
 interface AIAssetInsightsProps {
+  assetId?: string | number;
   assetName: string;
   balance: number;
   currency: string;
 }
 
-export const AIAssetInsights: React.FC<AIAssetInsightsProps> = ({ assetName, balance, currency }) => {
+export const AIAssetInsights: React.FC<AIAssetInsightsProps> = ({ assetId, assetName, balance, currency }) => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [insight, setInsight] = useState<string | null>(null);
 
   const fetchAIAnalysis = async () => {
     setLoading(true);
-    setTimeout(() => {
-      setInsight(
-        `"${assetName}" (${balance} ${currency}) portföy dağılımınızda dengeli bir ağırlığa sahip. Piyasa koşulları göz önüne alındığında risk oranınızı optimize etmek faydalı olabilir.`
-      );
+    try {
+      const res = await apiRequest(`/assets/${assetId}/analyze`, {
+        method: 'GET',
+        headers: { 'Accept-Language': 'tr' }
+      });
+      setInsight(res.data);
+    } catch (err: any) {
+      setInsight("Analiz şu an kullanılamıyor.");
+    } finally {
       setLoading(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -52,3 +59,5 @@ export const AIAssetInsights: React.FC<AIAssetInsightsProps> = ({ assetName, bal
     </div>
   );
 };
+
+export default AIAssetInsights;

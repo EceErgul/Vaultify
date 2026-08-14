@@ -3,6 +3,15 @@ import * as assetDetailService from '../services/assetDetail.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { checkInvisibleMode } from '../services/setting.service';
 
+export const getAssetById = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const asset = await assetDetailService.getAssetById(req.userId!, req.params.id);
+    res.status(200).json({ success: true, data: asset });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAssetTransactions = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
     const isInvisible = await checkInvisibleMode(req.userId!);

@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../app';
 
-jest.setTimeout(10000);
+jest.setTimeout(50000);
 
 describe('Asset & Vault Management Tests', () => {
   let authToken: string;

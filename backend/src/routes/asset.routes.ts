@@ -1,14 +1,22 @@
 import { Router } from 'express';
-import { getAssets, getAssetById, createAsset, deleteAsset } from '../controllers/asset.controller';
-import { getAssetTransactions, addTransaction, deleteTransaction, updateTransaction } from '../controllers/assetDetail.controller';
+import { getAssets, createAsset, deleteAsset } from '../controllers/asset.controller';
+import { 
+  getAssetById, 
+  getAssetTransactions, 
+  addTransaction, 
+  deleteTransaction, 
+  updateTransaction 
+} from '../controllers/assetDetail.controller';
 import { protect } from '../middlewares/auth.middleware';
+import { analyzeAsset } from '../controllers/ai.controller';
 
 const router = Router();
 
 router.use(protect);
 
-router.get('/', getAssets);
+router.get('/:assetId/analyze', analyzeAsset);
 router.get('/:id', getAssetById);
+router.get('/', getAssets);
 router.post('/', createAsset);
 router.delete('/:id', deleteAsset);
 

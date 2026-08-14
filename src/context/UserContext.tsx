@@ -40,7 +40,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const result = response?.data || response;
 
       if (result) {
-        console.log("Dashboard API'den gelen ham kullanıcı verisi:", result.user); // <-- Burayı ekle
         setDashboardData(result);
         if (result.user) {
           setUserInfo({
