@@ -22,6 +22,8 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
     window.location.reload();
   };
 
+  console.log("Header'daki userInfo içeriği:", userInfo);
+
   return (
     <header 
       className="w-full h-16 border-b border-[var(--border-color)] flex items-center justify-between px-3 sm:px-6 shadow-sm fixed top-0 left-0 z-50"
@@ -48,9 +50,9 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-[var(--border-color)] shrink-0">
-          {userInfo.profileImage ? (
+          {userInfo.profileImage || userInfo.profile_picture ? (
             <img 
-              src={`${BACKEND_URL}${userInfo.profileImage}?t=${new Date().getTime()}`} 
+              src={`${BACKEND_URL}${userInfo.profileImage || userInfo.profile_picture}?t=${new Date().getTime()}`} 
               alt={t('header_profile_alt')} 
               className="w-full h-full object-cover"
             />

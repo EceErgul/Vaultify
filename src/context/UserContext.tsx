@@ -5,6 +5,7 @@ interface UserInfo {
   fullName: string;
   email: string;
   profileImage: string | null;
+  profile_picture?: string | null;
 }
 
 interface UserContextType {
@@ -39,12 +40,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       const result = response?.data || response;
 
       if (result) {
+        console.log("Dashboard API'den gelen ham kullanıcı verisi:", result.user); // <-- Burayı ekle
         setDashboardData(result);
         if (result.user) {
           setUserInfo({
             fullName: result.user.full_name || '',
             email: result.user.email || '',
-            profileImage: result.user.profile_picture || null,
+            profileImage: result.user.profile_picture || result.user.profilePicture || null
           });
         }
       }

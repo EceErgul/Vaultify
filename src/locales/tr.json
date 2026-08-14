@@ -249,6 +249,8 @@
 
   "footer_rights": "Tüm hakları saklıdır",
   "footer_contact": "İletişim:",
+  "footer_terms": "Kullanım Koşulları",
+  "footer_cookies": "Çerez Politikası",
 
   "header_toggle_menu": "Menüyü Aç/Kapat",
   "header_logo_alt": "Vaultify Logosu",
@@ -424,5 +426,18 @@
   "currency_tl": "Türk Lirası (₺)",
   "currency_usd": "Amerikan Doları ($)",
   "currency_eur": "Euro (€)",
-  "currency_gbp": "İngiliz Sterlini (£)"
+  "currency_gbp": "İngiliz Sterlini (£)",
+
+  "ai_assistant_title": "Vaultify AI Yatırım Asistanı",
+  "ai_assistant_desc": "Bu varlıkla ilgili risk analizi, büyüme potansiyeli ve akıllı portföy önerileri almak için butona tıklayın.",
+  "ai_analyze_btn": "Yatırım Önerisi Al",
+  "ai_analyzing": "Analiz Ediliyor...",
+  "terms_title": "Kullanım Koşulları (Terms of Use)",
+  "terms_section1_title": "1. Hizmetin Kabulü",
+  "terms_section1_desc": "Vaultify platformunu kullanarak bu kullanım koşullarını kabul etmiş sayılırsınız.",
+  "terms_section2_title": "2. Hesap Güvenliği ve JWT Oturumları",
+  "terms_section2_desc": "Oturum açtığınızda oluşturulan JSON Web Token (JWT) anahtarları güvenli şekilde saklanır.",
+  "cookie_title": "Çerez ve Oturum Politikası",
+  "cookie_section1_title": "1. Çerezlerin Kullanımı",
+  "cookie_section1_desc": "Vaultify, oturum sürekliliğini ve tercihlerinizi korumak için çerezler ve yerel depolama kullanır."
 }

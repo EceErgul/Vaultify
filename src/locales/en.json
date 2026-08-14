@@ -249,6 +249,8 @@
 
   "footer_rights": "All rights reserved",
   "footer_contact": "Contact:",
+  "footer_terms": "Terms of Use",
+  "footer_cookies": "Cookie Policy",
 
   "header_toggle_menu": "Toggle Menu",
   "header_logo_alt": "Vaultify Logo",
@@ -424,5 +426,18 @@
   "currency_tl": "Turkish Lira (₺)",
   "currency_usd": "US Dollar ($)",
   "currency_eur": "Euro (€)",
-  "currency_gbp": "British Pound (£)"
+  "currency_gbp": "British Pound (£)",
+
+  "ai_assistant_title": "Vaultify AI Investment Assistant",
+  "ai_assistant_desc": "Click the button to get risk analysis, growth potential, and smart portfolio recommendations for this asset.",
+  "ai_analyze_btn": "Get Investment Advice",
+  "ai_analyzing": "Analyzing...",
+  "terms_title": "Terms of Use",
+  "terms_section1_title": "1. Acceptance of Service",
+  "terms_section1_desc": "By using Vaultify, you agree to these terms of use.",
+  "terms_section2_title": "2. Account Security & JWT Sessions",
+  "terms_section2_desc": "JSON Web Token (JWT) session keys generated upon login are stored securely.",
+  "cookie_title": "Cookie and Session Policy",
+  "cookie_section1_title": "1. Use of Cookies",
+  "cookie_section1_desc": "Vaultify uses cookies and local storage to maintain session continuity and your preferences."
 }

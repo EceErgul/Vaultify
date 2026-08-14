@@ -32,7 +32,7 @@ export const registerUser = async (userData: any) => {
 
 export const loginUser = async (credentials: any) => {
   const { email } = credentials;
-  const password = credentials.password ? credentials.password.toString().trim() : "";
+  const password = credentials.password ? credentials.password.toString() : "";
 
   const userRes = await pool.query(
     'SELECT id, full_name, email, password_hash, profile_picture FROM users WHERE email = $1', 
@@ -44,10 +44,10 @@ export const loginUser = async (credentials: any) => {
   }
 
   const user = userRes.rows[0];
-  const dbPasswordHash = user.password_hash || user.passwordhash || user.password;
+  const dbPasswordHash = user.password_hash;
 
-  if (!dbPasswordHash) {
-    throw new Error('Database password field is missing or undefined');
+  if (!dbPasswordHash || dbPasswordHash === 'GOOGLE_OAUTH_ACCOUNT') {
+    throw new Error('Bu hesap şifreli giriş desteklemiyor veya şifre tanımlı değil.');
   }
 
   const isMatch = await bcrypt.compare(password, dbPasswordHash);

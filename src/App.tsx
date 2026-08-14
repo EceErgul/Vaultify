@@ -13,6 +13,8 @@ import Register from './pages/Register';
 import Landing from './pages/Landing';
 import ResetPassword from './pages/ResetPassword';
 import NewPassword from './pages/NewPassword';
+import TermsOfUse from './pages/TermsOfUse';
+import CookiePolicy from './pages/CookiePolicy';
 import './styles/index.css';
 import { UserProvider } from './context/UserContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -59,6 +61,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/new-password" element={<NewPassword />} />
+              <Route path="/terms" element={<TermsOfUse />} />
+              <Route path="/cookies" element={<CookiePolicy />} />
               
               <Route element={<ProtectedRoute isLoggedIn={userStatus} />}>
                 <Route element={<MainLayout isLoggedIn={userStatus} />}>

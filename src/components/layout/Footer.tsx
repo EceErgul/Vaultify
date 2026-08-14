@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from '../../context/LanguageContext';
 
 const CurrentYear = new Date().getFullYear();
@@ -16,7 +17,22 @@ const Footer = () => {
           <span>· {t('footer_rights')}</span>
         </div>
 
-        <div className="flex flex-wrap justify-center md:justify-start items-center gap-1 sm:gap-3">
+        <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 font-medium">
+          <Link 
+            to="/terms" 
+            className="text-[var(--sidebar-text)] hover:text-[var(--sidebar-accent)] transition-all duration-300"
+          >
+            {t('footer_terms')}
+          </Link>
+          <Link 
+            to="/cookies" 
+            className="text-[var(--sidebar-text)] hover:text-[var(--sidebar-accent)] transition-all duration-300"
+          >
+            {t('footer_cookies')}
+          </Link>
+        </div>
+
+        <div className="flex flex-wrap justify-center md:justify-end items-center gap-1 sm:gap-3">
           <span className="font-semibold text-white">{t('footer_contact')}</span>
           <a 
             href="mailto:contact@vaultify.com"

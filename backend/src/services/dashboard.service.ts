@@ -12,7 +12,7 @@ export class DashboardService {
         subscriptionsResult,
         settingsResult
       ] = await Promise.all([
-        pool.query('SELECT id, full_name, email FROM users WHERE id = $1', [userId]),
+        pool.query('SELECT id, full_name, email, profile_picture FROM users WHERE id = $1', [userId]),
         pool.query('SELECT * FROM assets WHERE user_id = $1', [userId]),
         pool.query('SELECT * FROM expenses WHERE user_id = $1', [userId]),
         pool.query('SELECT * FROM incomes WHERE user_id = $1', [userId]),
