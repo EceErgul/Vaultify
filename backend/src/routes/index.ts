@@ -7,7 +7,6 @@ import expenseRoutes from './expense.routes';
 import incomeRoutes from './income.routes';
 import settingRoutes from './setting.routes';
 import subscriptionRoutes from './subscription.routes';
-import '../jobs/assetCron';
 
 const router = Router();
 

@@ -21,6 +21,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
 
     res.status(201).json({ success: true, data: result });
   } catch (error) {
+    console.error("REGISTER ERROR DEBUG:", error);
     next(error);
   }
 };
@@ -40,7 +41,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     );
 
     res.status(200).json({ success: true, data: result });
-  } catch (error) {
+  } catch (error: any) {
+    console.error("LOGIN ERROR DEBUG:", error);
+    if (error.message === 'Invalid email or password') {
+      return res.status(401).json({ success: false, message: error.message });
+    }
     next(error);
   }
 };
