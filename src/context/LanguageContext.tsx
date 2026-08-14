@@ -1,14 +1,17 @@
 import React, { createContext, useContext, useState } from 'react';
-import tr from '../locales/tr.json';
-import en from '../locales/en.json';
+import trData from '../locales/tr.json';
+import enData from '../locales/en.json';
+
+const tr = (trData as any)?.default || trData || {};
+const en = (enData as any)?.default || enData || {};
 
 type Language = 'tr' | 'en';
-type Translations = typeof tr;
+type Translations = Record<string, string>;
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: keyof Translations) => string;
+  t: (key: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -20,16 +23,22 @@ const dictionaries: Record<Language, Record<string, string>> = {
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
-    return (localStorage.getItem('app_lang') as Language) || 'tr';
+    try {
+      return (localStorage.getItem('app_lang') as Language) || 'tr';
+    } catch {
+      return 'tr';
+    }
   });
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    localStorage.setItem('app_lang', lang);
+    try {
+      localStorage.setItem('app_lang', lang);
+    } catch {}
   };
 
-  const t = (key: keyof Translations): string => {
-    const currentDict = dictionaries[language] || dictionaries.tr;
+  const t = (key: string): string => {
+    const currentDict = dictionaries[language] || dictionaries.tr || {};
     return currentDict[key] || (tr as Record<string, string>)[key] || key;
   };
 

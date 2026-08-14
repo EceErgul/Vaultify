@@ -86,26 +86,27 @@ const Login = ({ setUserStatus }: LoginProps) => {
         <form onSubmit={handleLogin} className="w-full max-w-md flex flex-col items-center">
           <div className="space-y-4 w-full">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
-              <label className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right">{t('login_email_label')}</label>
-              <input 
+              <label htmlFor="email" className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right">
+                {t('login_email_label')}
+              </label>
+              <input
+                id="email"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full sm:w-64 h-10 sm:h-8 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
-                disabled={loading}
                 required
+                className="w-full sm:w-64 h-10 sm:h-8 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
-              <label className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right">{t('login_password_label')}</label>
-              <input 
+              <label htmlFor="password" className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right">
+                {t('login_password_label')}
+              </label>
+              <input
+                id="password"
                 type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full sm:w-64 h-10 sm:h-8 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
-                disabled={loading}
                 required
+                className="w-full sm:w-64 h-10 sm:h-8 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+
               />
             </div>
           </div>
