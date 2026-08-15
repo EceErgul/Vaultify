@@ -44,7 +44,8 @@ const Login = ({ setUserStatus }: LoginProps) => {
   };
   
   const handleGoogleLogin = () => {
-    window.location.href = 'http://127.0.0.1:5000/api/auth/google';
+    const apiBase = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api';
+    window.location.href = `${apiBase}/auth/google`;
   };
 
   return (
@@ -92,6 +93,8 @@ const Login = ({ setUserStatus }: LoginProps) => {
                 id="email"
                 type="email"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full sm:w-64 h-10 sm:h-8 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
               />
             </div>
@@ -104,8 +107,9 @@ const Login = ({ setUserStatus }: LoginProps) => {
                 id="password"
                 type="password"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full sm:w-64 h-10 sm:h-8 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
-
               />
             </div>
           </div>

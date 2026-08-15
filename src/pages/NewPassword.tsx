@@ -3,8 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { apiRequest } from '../utils/api';
 import { useTranslation } from '../context/LanguageContext';
-
-const Logo = '/src/assets/vaultify_logo_nobackground.png';
+import Logo from '@/assets/vaultify_logo_nobackground.png';
 
 const UpdatePassword = () => {
   const [searchParams] = useSearchParams();
@@ -51,7 +50,7 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter text-[#333D50]">
       <div className="bg-white w-full max-w-[800px] min-h-[550px] sm:min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-14 pb-8 px-4 sm:px-10 rounded-xl sm:rounded-none">
         
         <Link 
@@ -68,31 +67,31 @@ const UpdatePassword = () => {
         {!success ? (
           <>
             <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">{t('new_pass_title')}</h2>
-            <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 text-center font-regular px-2">
+            <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 text-center font-regular px-2 max-w-sm">
               {t('new_pass_desc')}
             </p>
 
-            <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4 flex flex-col items-center">
-              <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-xs font-medium text-[#333D50]">{t('new_pass_label_new')}</label>
+            <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 flex flex-col items-center">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
+                <label className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right whitespace-nowrap">{t('new_pass_label_new')}</label>
                 <input 
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
                   required
                 />
               </div>
 
-              <div className="flex flex-col gap-1.5 w-full">
-                <label className="text-xs font-medium text-[#333D50]">{t('new_pass_label_confirm')}</label>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
+                <label className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right whitespace-nowrap">{t('new_pass_label_confirm')}</label>
                 <input 
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
                   required
                 />
               </div>
@@ -105,7 +104,7 @@ const UpdatePassword = () => {
                 <Button 
                   type="submit"
                   disabled={loading}
-                  className="w-full h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] cursor-pointer flex items-center justify-center"
+                  className="w-full sm:w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] cursor-pointer flex items-center justify-center"
                 >
                   {loading ? t('new_pass_loading') : t('new_pass_submit_btn')}
                 </Button>

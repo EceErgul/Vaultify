@@ -6,6 +6,10 @@ import { sendEmail } from '../utils/sendEmail';
 import crypto from 'crypto';
 import { sendNotificationIfEnabled } from '../services/notification.service';
 import axios from 'axios';
+
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const BACKEND_URL = process.env.BACKEND_URL || process.env.API_URL || 'http://127.0.0.1:5000';
+
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { full_name, email, password } = req.body;
@@ -73,7 +77,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
     await authService.storeResetToken(email, resetToken, expires);
 
-    const resetUrl = `http://localhost:5173/new-password?token=${resetToken}`;
+    const resetUrl = `${FRONTEND_URL}/new-password?token=${resetToken}`;
     const template = getEmailTemplate('PASSWORD_RESET', { link: resetUrl });
 
     await sendEmail({
@@ -123,7 +127,7 @@ export const resetPasswordRequest = async (req: Request, res: Response) => {
 
 export const googleRedirect = (req: Request, res: Response) => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
-  const redirectUri = 'http://127.0.0.1:5000/api/auth/google/callback';
+  const redirectUri = `${BACKEND_URL}/api/auth/google/callback`;
   const scope = encodeURIComponent('email profile');
   const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
   
@@ -142,7 +146,7 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
       code,
       client_id: process.env.GOOGLE_CLIENT_ID,
       client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: 'http://127.0.0.1:5000/api/auth/google/callback',
+      redirect_uri: `${BACKEND_URL}/api/auth/google/callback`,
       grant_type: 'authorization_code',
     });
 
@@ -180,10 +184,10 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
       );
     }
 
-    res.redirect(`http://localhost:5173/dashboard?token=${result.token}`);
+    res.redirect(`${FRONTEND_URL}/dashboard?token=${result.token}`);
   } catch (error) {
     console.error("Google Callback Hatası:", error);
-    res.redirect('http://localhost:5173/login?error=google_failed');
+    res.redirect(`${FRONTEND_URL}/login?error=google_failed`);
   }
 };
 

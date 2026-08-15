@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { apiRequest } from '../utils/api';
 import { useTranslation } from '../context/LanguageContext';
-
-const Logo = '/src/assets/vaultify_logo_nobackground.png';
+import Logo from '@/assets/vaultify_logo_nobackground.png';
 
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
@@ -34,7 +33,7 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter">
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter text-[#333D50]">
       <div className="bg-white w-full max-w-[800px] min-h-[550px] sm:min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-14 pb-8 px-4 sm:px-10 rounded-xl sm:rounded-none">
         
         <Link 
@@ -57,7 +56,7 @@ const ResetPassword = () => {
 
             <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4 sm:space-y-6 flex flex-col items-center">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-center gap-1.5 sm:gap-4 w-full">
-                <label className="text-xs sm:text-sm font-medium text-[#333D50] sm:w-32 sm:text-right whitespace-nowrap">
+                <label className="text-xs sm:text-sm font-medium sm:w-32 sm:text-right whitespace-nowrap">
                   {t('reset_email_label')}
                 </label>
                 <input 
