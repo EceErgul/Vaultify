@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import LandingHeader from '../components/layout/LandingHeader';
 import Footer from '../components/layout/Footer';
 import { useTranslation } from '../context/LanguageContext';
-
-const LandingBG = '/src/assets/mainPage-heroBanner.jpg';
+import LandingBG from '../assets/mainPage-heroBanner.jpg';
 
 const LandingPage: React.FC = () => {
   const { t } = useTranslation();
