@@ -3,8 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { apiRequest } from '../utils/api';
 import { useTranslation } from '../context/LanguageContext';
-
-const Logo = '/src/assets/vaultify_logo_nobackground.png';
+import Logo from '../vaultify_logo_nobackground.png';
 
 interface LoginProps {
   setUserStatus: Dispatch<SetStateAction<boolean>>;

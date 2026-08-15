@@ -8,8 +8,7 @@
     "start:frontend": "vite",
     "dev": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "build": "vite build",
-    "preview": "vite preview",
-    "test": "npx jest"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^2.17.1",
@@ -29,9 +28,6 @@
     "tailwind-merge": "^2.2.2"
   },
   "devDependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.2",
     "@types/bcryptjs": "^2.4.6",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.2.0",
@@ -45,10 +41,12 @@
     "identity-obj-proxy": "^3.0.0",
     "jest-environment-jsdom": "^30.4.1",
     "postcss": "^8.4.38",
+    "sharp": "^0.35.3",
     "tailwindcss": "^3.4.1",
     "ts-jest": "^29.4.12",
     "typescript": "^5.2.2",
-    "vite": "^8.2.1"
+    "vite": "^8.2.1",
+    "vite-plugin-image-optimizer": "^2.0.3"
   },
   "overrides": {
     "@types/react": "18.2.0",
