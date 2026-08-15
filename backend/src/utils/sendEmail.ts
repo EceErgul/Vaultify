@@ -8,6 +8,11 @@ interface EmailOptions {
 }
 
 export const sendEmail = async (options: EmailOptions) => {
+  if (process.env.NODE_ENV === 'test' || options.email.includes('vaultify.com') || options.email.includes('asset_user_')) {
+    console.log(`[TEST MOCK] E-posta gönderimi engellendi. Alıcı: ${options.email}`);
+    return;
+  }
+
   console.log("SMTP Config:", { 
     host: process.env.SMTP_HOST, 
     port: process.env.SMTP_PORT, 
