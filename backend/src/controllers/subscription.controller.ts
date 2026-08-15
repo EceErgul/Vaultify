@@ -1,0 +1,52 @@
+import { Response, NextFunction } from 'express';
+import * as subscriptionService from '../services/subscription.service';
+import { AuthRequest } from '../middlewares/auth.middleware';
+import { checkInvisibleMode } from '../services/setting.service';
+
+export const getSubscriptions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const isInvisible = await checkInvisibleMode(req.userId!);
+    if (isInvisible) return res.status(200).json({ success: true, data: [] });
+
+    const subs = await subscriptionService.getSubscriptions(req.userId!);
+    res.status(200).json({ success: true, data: subs });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createSubscription = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const sub = await subscriptionService.createSubscription(req.userId!, req.body);
+    res.status(201).json({ success: true, data: sub });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateSubscription = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const sub = await subscriptionService.updateSubscription(req.userId!, req.params.id, req.body);
+    res.status(200).json({ success: true, data: sub });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteSubscription = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const sub = await subscriptionService.deleteSubscription(req.userId!, req.params.id);
+    res.status(200).json({ success: true, data: sub });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const clearAllSubscriptions = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const sub = await subscriptionService.clearAllSubscriptions(req.userId!);
+    res.status(200).json({ success: true, message: "Tüm kayıtlar başarıyla temizlendi." });
+  } catch (error) {
+    next(error);
+  }
+};
