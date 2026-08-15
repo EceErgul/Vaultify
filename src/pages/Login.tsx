@@ -23,16 +23,21 @@ const Login = ({ setUserStatus }: LoginProps) => {
     setLoading(true);
 
     try {
-      const response = await apiRequest('/auth/login', {
+      const response: any = await apiRequest('/auth/login', {
         method: 'POST',
         body: { email, password },
       });
 
-      if (response && response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token);
+      console.log("Login gelen ham response:", response);
+
+      const token = response?.token || response?.data?.token;
+
+      if (token) {
+        localStorage.setItem('token', token);
         setUserStatus(true);
         navigate('/dashboard');
       } else {
+        console.error("Token bulunamadı, gelen yanıt:", response);
         setError(true);
       }
     } catch (err) {
