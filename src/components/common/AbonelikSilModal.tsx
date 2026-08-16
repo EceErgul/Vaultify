@@ -82,10 +82,10 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
   }) => (
     <div
       onClick={onChange}
-      className="w-5 h-5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[4px] flex items-center justify-center shrink-0 cursor-pointer shadow-sm"
+      className="w-5 h-5 bg-white border border-gray-300 rounded-[4px] flex items-center justify-center shrink-0 cursor-pointer shadow-sm"
     >
       {checked && (
-        <svg viewBox="0 0 100 100" className="w-3 h-3 stroke-[var(--text-main)] stroke-[15px]">
+        <svg viewBox="0 0 100 100" className="w-3 h-3 stroke-black stroke-[15px]">
           <line x1="0" y1="0" x2="100" y2="100" />
           <line x1="100" y1="0" x2="0" y2="100" />
         </svg>
@@ -110,20 +110,20 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
               <span className="text-sm font-bold text-[var(--text-main)]">{t('sub_select_all')}</span>
             </div>
 
-            <div className="max-h-[240px] overflow-y-auto border border-[var(--border-color)] rounded-sm">
+            <div className="max-h-[240px] overflow-y-auto border border-red-900 rounded-sm">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-[var(--bg-danger)] text-[var(--text-main)] text-xs h-10">
-                    <th className="w-12 border-b border-r border-[var(--border-color)]"></th>
-                    <th className="p-2 border-b border-r border-[var(--border-color)] text-left font-bold">{t('sub_name_label')}</th>
-                    <th className="p-2 border-b border-r border-[var(--border-color)] font-bold text-center">{t('sub_payday_label')}</th>
-                    <th className="p-2 border-b border-r border-[var(--border-color)] font-bold text-center">{t('sub_price_label')}</th>
-                    <th className="p-2 border-b border-[var(--border-color)] font-bold text-center">{t('sub_duration_months')}</th>
+                  <tr className="bg-[var(--danger-header-bg)] text-white text-xs h-10">
+                    <th className="w-12 border-b border-r border-red-900"></th>
+                    <th className="p-2 border-b border-r border-red-900 text-left font-bold">{t('sub_name_label')}</th>
+                    <th className="p-2 border-b border-r border-red-900 font-bold text-center">{t('sub_payday_label')}</th>
+                    <th className="p-2 border-b border-r border-red-900 font-bold text-center">{t('sub_price_label')}</th>
+                    <th className="p-2 border-b border-red-900 font-bold text-center">{t('sub_duration_months')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {subscriptions.length === 0 ? (
-                    <tr className="bg-[var(--bg-danger-light)] text-[var(--text-main)]">
+                    <tr className="bg-[var(--danger-row-odd)] text-white">
                       <td colSpan={5} className="text-center p-4 text-xs italic">{t('sub_empty_list')}</td>
                     </tr>
                   ) : (
@@ -132,10 +132,10 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                       return (
                         <tr 
                           key={sub.id} 
-                          className={`text-[11px] h-10 border-b border-[var(--border-color)] cursor-pointer hover:opacity-90 select-none text-[var(--text-main)] ${
+                          className={`text-[11px] h-10 border-b border-red-900 cursor-pointer hover:opacity-90 select-none text-white ${
                             (index + 1) % 2 === 0 
-                              ? 'bg-[var(--bg-danger-even)]' 
-                              : 'bg-[var(--bg-danger-odd)]'
+                              ? 'bg-[var(--danger-row-even)]' 
+                              : 'bg-[var(--danger-row-odd)]'
                           }`}
                           onClick={() => {
                             if (loading) return;
@@ -143,14 +143,14 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                             else setSelectedIds([...selectedIds, sub.id]);
                           }}
                         >
-                          <td className="text-center p-2 border-r border-[var(--border-color)]">
+                          <td className="text-center p-2 border-r border-red-900">
                             <div className="flex justify-center items-center">
                               <CustomCheckbox checked={isChecked} />
                             </div>
                           </td>
-                          <td className="p-2 border-r border-[var(--border-color)] font-medium">{sub.subscription_name}</td>
-                          <td className="p-2 border-r border-[var(--border-color)] text-center">{calculateKalanGun(sub.payment_day)}</td>
-                          <td className="p-2 border-r border-[var(--border-color)] text-center font-semibold">{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}</td>
+                          <td className="p-2 border-r border-red-900 font-medium">{sub.subscription_name}</td>
+                          <td className="p-2 border-r border-red-900 text-center">{calculateKalanGun(sub.payment_day)}</td>
+                          <td className="p-2 border-r border-red-900 text-center font-semibold">{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}</td>
                           <td className="p-2 text-center">{calculateSure(sub.start_date)} {t('sub_duration_months')}</td>
                         </tr>
                       );

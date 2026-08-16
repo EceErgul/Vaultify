@@ -30,6 +30,11 @@ const ProtectedRoute = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 };
 
 function App() {
+  useEffect(() => {
+    const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+  }, []);
+
   const [userStatus, setUserStatus] = useState<boolean>(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const token = queryParams.get('token');
@@ -78,7 +83,7 @@ function App() {
 
               <Route path="/" element={<Navigate to={userStatus ? "/dashboard" : "/landing"} replace />} />
               <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>       
+            </Routes>      
           </UserProvider>
         </Router>
       </CurrencyProvider>
