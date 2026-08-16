@@ -1,24 +1,26 @@
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = path.resolve(__dirname, '..', 'uploads');
-    
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
-    
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'app_uploads',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+    public_id: (_req: any, _file: any) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      return `${uniqueSuffix}`;
+    },
+  } as any,
 });
 
 export const upload = multer({ 
-  storage: storage,
+  storage: storage as unknown as multer.StorageEngine,
   limits: { fileSize: 10 * 1024 * 1024 }
 });

@@ -44,7 +44,7 @@ export const uploadProfileImage = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: "Dosya yüklenmedi" });
     }
     const userId = req.userId!;
-    const imageUrl = `/uploads/${req.file.filename}`;
+    const imageUrl = req.file.path;
     
     await userService.updateProfileImage(userId, imageUrl); 
     

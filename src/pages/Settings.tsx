@@ -355,7 +355,7 @@ const Settings = () => {
               <button type="button" onClick={() => fileInputRef.current?.click()} className={`w-10 h-10 sm:w-8 sm:h-8 border rounded flex items-center justify-center font-regular ${isDark ? 'border-[#4A5568]' : 'border-[#CDCDCD]'}`}>
                 {userInfo.profileImage ? (
                   <img 
-                    src={`http://localhost:5000${userInfo.profileImage}`} 
+                    src={userInfo.profileImage} 
                     alt="Profil" 
                     className="w-full h-full object-cover rounded" 
                   />
