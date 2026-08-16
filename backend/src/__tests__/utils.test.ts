@@ -1,5 +1,13 @@
 import '@testing-library/jest-dom';
 
+jest.mock('../services/notification.service', () => ({
+  sendNotificationIfEnabled: jest.fn().mockResolvedValue(true),
+}));
+
+jest.mock('../utils/sendEmail', () => ({
+  sendEmail: jest.fn().mockResolvedValue(true),
+}));
+
 describe('Vaultify Utils and API Helper Tests', () => {
   
   describe('Formatting and Calculation Helpers', () => {
