@@ -3,6 +3,7 @@ import { verifyToken } from '../utils/jwt';
 
 export interface AuthRequest extends Request {
   userId?: string;
+  file?: Express.Multer.File;
 }
 
 export const protect = (req: AuthRequest, res: Response, next: NextFunction) => {
