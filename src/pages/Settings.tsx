@@ -193,8 +193,14 @@ const Settings = () => {
         body: formData,
       });
 
-      if (response && response.profileImage) {
-        setUserInfo(prev => ({ ...prev, profileImage: response.profileImage }));
+      const newImageUrl = response?.url || response?.profileImage;
+
+      if (newImageUrl) {
+        setUserInfo(prev => {
+          const updated = { ...prev, profileImage: newImageUrl };
+          localStorage.setItem('user', JSON.stringify(updated));
+          return updated;
+        });
       }
 
       window.dispatchEvent(new Event('profileUpdated'));
@@ -352,7 +358,7 @@ const Settings = () => {
 
             <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4 pt-2">
               <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_profile_photo_label')}</span>
-              <button type="button" onClick={() => fileInputRef.current?.click()} className={`w-10 h-10 sm:w-8 sm:h-8 border rounded flex items-center justify-center font-regular ${isDark ? 'border-[#4A5568]' : 'border-[#CDCDCD]'}`}>
+              <button type="button" onClick={() => fileInputRef.current?.click()} className={`w-10 h-10 sm:w-8 sm:h-8 border rounded flex items-center justify-center font-regular overflow-hidden ${isDark ? 'border-[#4A5568]' : 'border-[#CDCDCD]'}`}>
                 {userInfo.profileImage ? (
                   <img 
                     src={userInfo.profileImage} 

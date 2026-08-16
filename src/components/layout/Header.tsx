@@ -5,8 +5,6 @@ import LogoImg from '../../assets/vaultify_logo_nobackground.png';
 import { useUser } from '../../context/UserContext';
 import { useTranslation } from '../../context/LanguageContext';
 
-const BACKEND_URL = 'http://localhost:5000';
-
 interface HeaderProps {
   onToggleSidebar?: () => void;
 }
@@ -15,6 +13,7 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const { userInfo } = useUser();
   const { t } = useTranslation();
+  const profileImg = userInfo?.profileImage || userInfo?.profile_picture;
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -48,9 +47,9 @@ const Header = ({ onToggleSidebar }: HeaderProps) => {
 
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--sidebar-active)] flex items-center justify-center overflow-hidden border border-[var(--border-color)] shrink-0">
-          {userInfo.profileImage || userInfo.profile_picture ? (
+          {profileImg ? (
             <img 
-              src={`${BACKEND_URL}${userInfo.profileImage || userInfo.profile_picture}?t=${new Date().getTime()}`} 
+              src={`${profileImg}?t=${new Date().getTime()}`} 
               alt={t('header_profile_alt')} 
               className="w-full h-full object-cover"
             />
