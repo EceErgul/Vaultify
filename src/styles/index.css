@@ -23,6 +23,13 @@
   --danger-btn-bg: #DC2626;
   --danger-btn-hover: #B91C1C;
   --danger-btn-text: #FFFFFF;
+  --card-yellow-bg: #FFF5D9;
+  --card-blue-bg: #E3F2FD;
+  --card-green-bg: #E8F5E9;
+  --card-red-bg: #FFEBEE;
+  --table-header-bg: #FFEF79;
+  --table-row-even: #FFF5D9;
+  --table-row-odd: #FFF5AD;
 }
 
 .dark {
@@ -43,6 +50,19 @@
   --danger-btn-bg: #991B1B;
   --danger-btn-hover: #B91C1C;
   --danger-btn-text: #FFFFFF;
+  --card-yellow-bg: #332b1a;
+  --card-blue-bg: #1a2634;
+  --card-green-bg: #14291a;
+  --card-red-bg: #2d1518;
+  --table-header-bg: #3d3514;
+  --table-row-even: #1f2937;
+  --table-row-odd: #273444;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .asset-detail-grid {

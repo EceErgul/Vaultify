@@ -83,10 +83,10 @@ const Incomes = () => {
   };
 
   return (
-    <div className="p-8 font-inter max-w-6xl mx-auto">
+    <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-300">
       <div className="flex justify-between items-start mb-6">
         <div>
-          <h2 className="text-3xl font-semibold text-black">{t('inc_title')}</h2>
+          <h2 className="text-3xl font-semibold text-[var(--text-main)]">{t('inc_title')}</h2>
         </div>
         <div className="flex flex-col gap-2">
           <Button 
@@ -109,7 +109,7 @@ const Incomes = () => {
       </div>
 
       {isDeleteMode && (
-        <div className="flex items-center gap-3 mb-2 ml-1 animate-in fade-in duration-300">
+        <div className="flex items-center gap-3 mb-2 ml-1 animate-in fade-in duration-300 text-[var(--text-main)]">
           <GeneralDeleteCheckbox 
             checked={selectedIds.length === gelirler.length && gelirler.length > 0} 
             onChange={() => {
@@ -121,38 +121,38 @@ const Incomes = () => {
         </div>
       )}
 
-      <div className="border border-black overflow-hidden rounded-sm shadow-sm">
+      <div className="border border-[var(--border-color)] overflow-hidden rounded-sm shadow-sm bg-[var(--bg-card)]">
         <Slider>
         <table className="w-full border-collapse custom-income-table">
           <thead>
-            <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
-              <th className="w-12 border-r border-black"></th>
-              <th className="border-r border-black p-2 font-regular">{t('inc_th_date')}</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">{t('inc_th_name')}</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">{t('inc_th_category')}</th>
-              <th className="mobile-only border-r border-black p-2 font-regular">{t('inc_th_name_cat')}</th>
+            <tr className="bg-[var(--table-header-bg)] h-11 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+              <th className="w-12 border-r border-[var(--border-color)]"></th>
+              <th className="border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_date')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_name')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_category')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_name_cat')}</th>
 
               <th className="p-2 font-regular">{t('inc_th_amount')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className="h-12 bg-white">
-                <td colSpan={5} className="desktop-only text-center text-xs">{t('inc_loading')}</td>
-                <td colSpan={4} className="mobile-only text-center text-xs">{t('inc_loading')}</td>
+              <tr className="h-12 bg-[var(--bg-card)]">
+                <td colSpan={5} className="desktop-only text-center text-xs text-[var(--text-muted)]">{t('inc_loading')}</td>
+                <td colSpan={4} className="mobile-only text-center text-xs text-[var(--text-muted)]">{t('inc_loading')}</td>
               </tr>
             ) : (Array.isArray(gelirler) ? gelirler : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
-              const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
+              const rowBg = isEven ? 'var(--table-row-even)' : 'var(--table-row-odd)';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
 
               return (
                 <tr 
                   key={item.id} 
-                  style={{ backgroundColor: bgColor }}
-                  className="h-12 border-b border-black last:border-0 text-sm text-black transition-all"
+                  style={{ backgroundColor: rowBg }}
+                  className="h-12 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)] transition-colors"
                 >
-                  <td className="text-center border-r border-black/20">
+                  <td className="text-center border-r border-[var(--border-color)]">
                     <div className="flex justify-center items-center h-full">
                       {isDeleteMode ? (
                         <GeneralDeleteCheckbox 
@@ -162,7 +162,7 @@ const Incomes = () => {
                       ) : (
                         <button
                           onClick={() => handleRowEdit(item)}
-                          className="text-xs bg-black/10 hover:bg-black/20 text-black px-2 py-1 rounded transition-all"
+                          className="text-xs bg-[var(--table-header-bg)]/20 hover:bg-[var(--table-header-bg)]/40 text-[var(--text-main)] px-2 py-1 rounded transition-all"
                           title="Düzenle"
                         >
                           ✏️
@@ -170,19 +170,19 @@ const Incomes = () => {
                       )}
                     </div>
                   </td>
-                  <td className="border-r border-black px-4 text-center font-regular">
+                  <td className="border-r border-[var(--border-color)] px-4 text-center font-regular">
                     {formattedDate}
                   </td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">
+                  <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">
                     {item.income_name}
                   </td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">
+                  <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">
                     {item.income_category}
                   </td>
-                  <td className="mobile-only border-r border-black px-4 font-regular">
+                  <td className="mobile-only border-r border-[var(--border-color)] px-4 font-regular">
                     <div className="combined-cell-content">
                       <span className="main-text">{item.income_name}</span>
-                      <span className="sub-text">{item.income_category}</span>
+                      <span className="sub-text text-[var(--text-muted)]">{item.income_category}</span>
                     </div>
                   </td>
 
@@ -193,11 +193,11 @@ const Incomes = () => {
               );
             })}
             {!loading && gelirler.length === 0 && (
-              <tr className="h-12 bg-white">
-                <td colSpan={5} className="desktop-only text-center text-gray-400 italic text-xs">
+              <tr className="h-12 bg-[var(--bg-card)]">
+                <td colSpan={5} className="desktop-only text-center text-[var(--text-muted)] italic text-xs">
                   {t('inc_empty')}
                 </td>
-                <td colSpan={4} className="mobile-only text-center text-gray-400 italic text-xs">
+                <td colSpan={4} className="mobile-only text-center text-[var(--text-muted)] italic text-xs">
                   {t('inc_empty')}
                 </td>
               </tr>
@@ -221,8 +221,8 @@ const Incomes = () => {
 
       {isConfirmModalOpen && (
         <BaseModal title={t('inc_modal_del_title')} onClose={() => setIsConfirmModalOpen(false)}>
-          <div className="p-4 text-center font-inter">
-            <p className="mb-6 text-sm text-[#333D50]">
+          <div className="p-4 text-center font-inter text-[var(--text-main)]">
+            <p className="mb-6 text-sm text-[var(--text-main)]">
               {t('inc_modal_del_text_part1')}<span className="font-bold">{selectedIds.length}</span>{t('inc_modal_del_text_part2')}
             </p>
             <div className="flex justify-center gap-4">

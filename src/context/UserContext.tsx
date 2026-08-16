@@ -37,10 +37,12 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       setError(null);
       
       const response = await apiRequest('/dashboard');
+      console.log("--- API'den Gelen Ham Veri ---", response);
       const result = response?.data || response;
 
       if (result) {
         setDashboardData(result);
+        console.log("--- Dashboard'a Set Edilen Veri ---", result);
         if (result.user) {
           setUserInfo({
             fullName: result.user.full_name || '',

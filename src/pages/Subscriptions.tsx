@@ -134,29 +134,29 @@ const Subscriptions = () => {
   const cardWidthClass = itemsPerPage === 1 ? 'min-w-full' : itemsPerPage === 2 ? 'min-w-[50%]' : 'min-w-[33.333%]';
 
   return (
-    <div className="p-4 sm:p-8 font-inter w-full max-w-6xl mx-auto flex flex-col items-center overflow-x-hidden box-border">
+    <div className="p-4 sm:p-8 font-inter w-full max-w-6xl mx-auto flex flex-col items-center overflow-x-hidden box-border bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-300">
       
       <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mb-10 sm:mb-16 w-full justify-center items-center">
-        <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
-          <h3 className="text-xl font-medium mb-4">{t('subs_monthly_total')}</h3>
-          <p className="text-sm leading-relaxed">
+        <div className="w-full sm:w-[280px] h-[160px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-sm flex flex-col items-center justify-center text-center p-4 box-border shadow-sm">
+          <h3 className="text-xl font-medium mb-4 text-[var(--text-main)]">{t('subs_monthly_total')}</h3>
+          <p className="text-sm leading-relaxed text-[var(--text-main)]">
             {t('subs_monthly_text_part1')}{aylikToplam.toLocaleString('tr-TR')} {currencySymbol}<br/>{t('subs_monthly_text_part2')}
           </p>
         </div>
-        <div className="w-full sm:w-[280px] h-[160px] bg-[#EBEBEB]/60 border border-black/20 rounded-sm flex flex-col items-center justify-center text-center p-4 box-border">
-          <h3 className="text-xl font-medium mb-4">{t('subs_next_payment')}</h3>
+        <div className="w-full sm:w-[280px] h-[160px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-sm flex flex-col items-center justify-center text-center p-4 box-border shadow-sm">
+          <h3 className="text-xl font-medium mb-4 text-[var(--text-main)]">{t('subs_next_payment')}</h3>
           {siradakiOdeme ? (
-            <p className="text-sm leading-relaxed">
+            <p className="text-sm leading-relaxed text-[var(--text-main)]">
               {siradakiOdeme.subscription_name}<br/>
               {getKalanGun(siradakiOdeme.payment_day) === 0 ? t('subs_today') : `${getKalanGun(siradakiOdeme.payment_day)}${t('subs_days_later_suffix')}`} ({Number(siradakiOdeme.cost).toLocaleString('tr-TR')} {currencySymbol})
             </p>
           ) : (
-            <p className="text-sm text-gray-400 italic">{t('subs_empty')}</p>
+            <p className="text-sm text-[var(--text-muted)] italic">{t('subs_empty')}</p>
           )}
         </div>
       </div>
 
-      <h2 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 tracking-wider text-center">{t('subs_title')}</h2>
+      <h2 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8 tracking-wider text-center text-[var(--text-main)]">{t('subs_title')}</h2>
 
       <div className={`w-full ${sliderMaxWidthClass} overflow-hidden mb-6 min-h-[320px] transition-all duration-300 box-border`}>
         <div 
@@ -164,7 +164,7 @@ const Subscriptions = () => {
           style={{ transform: `translateX(-${activeIndex * 100}%)` }}
         >
           {loading ? (
-            <div className="w-full flex items-center justify-center text-sm text-gray-400 min-h-[300px]">
+            <div className="w-full flex items-center justify-center text-sm text-[var(--text-muted)] min-h-[300px]">
               {t('subs_loading')}
             </div>
           ) : (
@@ -176,7 +176,7 @@ const Subscriptions = () => {
                       onClick={() => setIsAddOpen(true)}
                       className="w-full h-[300px] bg-[#B9B9B9] rounded-2xl shadow-lg border border-black/5 flex items-center justify-center cursor-pointer hover:opacity-90 transition-opacity"
                     >
-                      <span className="text-4xl text-white">+</span>
+                      <span className="text-4xl text-black font-semibold">+</span>
                     </div>
                   </div>
                 );
@@ -190,7 +190,7 @@ const Subscriptions = () => {
                 <div key={sub.id} className={`${cardWidthClass} p-2 flex-shrink-0 box-border`}>
                   <div 
                     style={{ backgroundColor: getCardColor(sub.payment_day, sub.is_trial) }}
-                    className="w-full h-[300px] rounded-2xl shadow-lg p-5 flex flex-col relative border border-black/5 transition-transform hover:scale-[1.02] box-border"
+                    className="w-full h-[300px] rounded-2xl shadow-lg p-5 flex flex-col relative border border-black/5 transition-transform hover:scale-[1.02] box-border text-black"
                   >
                     <div className="flex justify-between items-start mb-6">
                       <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center overflow-hidden border border-black/10">
@@ -201,12 +201,12 @@ const Subscriptions = () => {
                           onError={(e) => { (e.target as HTMLImageElement).src = 'https://cdn-icons-png.flaticon.com/512/2721/2721980.png'; }}
                         />
                       </div>
-                      <button onClick={() => { setSelectedSubscription(sub); setIsEditOpen(true); }} className="text-[12px] font-regular hover:underline">{t('subs_edit')}</button>
+                      <button onClick={() => { setSelectedSubscription(sub); setIsEditOpen(true); }} className="text-[12px] font-regular hover:underline text-black">{t('subs_edit')}</button>
                     </div>
 
-                    <h4 className="text-[15px] font-semibold mb-3 truncate">{sub.subscription_name}</h4>
+                    <h4 className="text-[15px] font-semibold mb-3 truncate text-black">{sub.subscription_name}</h4>
                     
-                    <div className="space-y-2 text-[12px] font-regular">
+                    <div className="space-y-2 text-[12px] font-regular text-black">
                       <p>{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}{t('subs_per_month')}</p>
                       <p className="font-medium">{kalanGun === 0 ? t('subs_today_payment') : `${kalanGun}${t('subs_days_later_payment_suffix')}`}</p>
                       <p className="pt-2">{abonelikSuresi}{t('subs_months_subscribed_suffix')}</p>
@@ -225,7 +225,7 @@ const Subscriptions = () => {
           <button
             key={i}
             onClick={() => setActiveIndex(i)}
-            className={`h-2 flex-shrink-0 transition-all duration-300 rounded-full ${activeIndex === i ? 'w-8 bg-[#B9B9B9]' : 'w-2 bg-[#D9D9D9]'}`}
+            className={`h-2 flex-shrink-0 transition-all duration-350 rounded-full ${activeIndex === i ? 'w-8 bg-[#888888]' : 'w-2 bg-[#D9D9D9]'}`}
           />
         ))}
       </div>

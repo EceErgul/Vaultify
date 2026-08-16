@@ -101,13 +101,13 @@ const Assets: React.FC = () => {
   };
 
   if (loading && assets.length === 0) {
-    return <div className="p-8 text-center text-sm text-gray-500">{t('assets_loading')}</div>;
+    return <div className="p-8 text-center text-sm text-[var(--text-muted)] bg-[var(--bg-page)] min-h-screen">{t('assets_loading')}</div>;
   }
 
   return (
-    <div className="p-4 sm:p-8 font-inter max-w-7xl mx-auto">
+    <div className="p-4 sm:p-8 font-inter max-w-7xl mx-auto bg-[var(--bg-page)] min-h-screen text-[var(--text-main)] transition-colors duration-300">
       <div className="flex justify-between items-start mb-6">
-        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-black">{t('assets_title')}</h2>
+        <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-[var(--text-main)]">{t('assets_title')}</h2>
         <div className="flex flex-col gap-2 items-end">
           <Button variant="add" className="w-[140px] h-[30px] text-[10px]" onClick={() => setIsModalOpen(true)}>{t('assets_add_btn')}</Button>
 
@@ -124,75 +124,73 @@ const Assets: React.FC = () => {
       {isDeleteMode && (
         <div className="flex items-center gap-3 mb-2 ml-1 animate-in fade-in duration-300">
           <GeneralDeleteCheckbox checked={selectedIds.length === assets.length && assets.length > 0} onChange={handleSelectAll} />
-          <span className="text-sm font-medium">{t('assets_select_all')}</span>
+          <span className="text-sm font-medium text-[var(--text-main)]">{t('assets_select_all')}</span>
         </div>
       )}
 
-      <div className="border border-black overflow-hidden rounded-sm bg-white">
+      <div className="border border-[var(--border-color)] overflow-hidden rounded-lg bg-[var(--bg-card)] shadow-v-soft">
         <Slider>
         <table className="w-full border-collapse custom-asset-table">
           <thead>
-            <tr className="bg-[#7ECCF4] h-10 border-b border-black text-black text-sm">
-              {isDeleteMode && <th className="w-12 border-r border-black"></th>}
-              <th className="desktop-only border-r border-black p-2 font-medium text-left pl-4">{t('assets_th_asset')}</th>
-              <th className="desktop-only border-r border-black p-2 font-medium">{t('assets_th_type')}</th>
-              <th className="mobile-only border-r border-black p-2 font-medium">{t('assets_th_asset_type')}</th>
-              <th className="desktop-only border-r border-black p-2 font-medium">{t('assets_th_quantity')}</th>
-              <th className="desktop-only border-r border-black p-2 font-medium">{t('assets_th_cost')}</th>
-              <th className="mobile-only border-r border-black p-2 font-medium">{t('assets_th_quantity_cost')}</th>
+            <tr className="bg-[var(--sidebar-accent)]/20 h-10 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+              {isDeleteMode && <th className="w-12 border-r border-[var(--border-color)]"></th>}
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-medium text-left pl-4">{t('assets_th_asset')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-medium">{t('assets_th_type')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-medium">{t('assets_th_asset_type')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-medium">{t('assets_th_quantity')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-medium">{t('assets_th_cost')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-medium">{t('assets_th_quantity_cost')}</th>
               <th className="p-2 font-medium">{t('assets_th_detail')}</th>
             </tr>
           </thead>
           <tbody>
             {assets.length === 0 ? (
-              <tr className="h-12 bg-[#D8F2FF]">
-                <td colSpan={isDeleteMode ? 6 : 5} className="text-center text-sm font-medium py-4">
+              <tr className="h-12 bg-[var(--bg-card)]">
+                <td colSpan={isDeleteMode ? 6 : 5} className="text-center text-sm font-medium py-4 text-[var(--text-muted)]">
                   {t('assets_empty')}
                 </td>
               </tr>
             ) : (
               assets.map((item, index) => {
                 const isEvenRow = (index + 1) % 2 === 0;
-                const bgColor = isEvenRow ? '#B1E5FF' : '#D8F2FF';
-                const cleanQuantity = Number(item.total_quantity).toString();
-                const cleanCost = Number(item.total_cost).toString();
                 
                 return (
                   <tr 
                     key={item.id} 
-                    style={{ backgroundColor: bgColor }}
-                    className="h-12 border-b border-black last:border-0 text-sm text-black"
+                    className={`h-12 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)] transition-colors ${
+                      isEvenRow ? 'bg-[var(--bg-page)]' : 'bg-[var(--bg-card)]'
+                    }`}
                   >
                     {isDeleteMode && (
-                      <td className="border-r border-black/20 w-12 text-center">
+                      <td className="border-r border-[var(--border-color)] w-12 text-center">
                         <GeneralDeleteCheckbox 
                           checked={selectedIds.includes(item.id)} 
                           onChange={() => handleSelectItem(item.id)} 
                         />
                       </td>
                     )}
-                    <td className="desktop-only border-r border-black px-4 font-medium">
+                    <td className="desktop-only border-r border-[var(--border-color)] px-4 font-medium">
                       {item.asset_name}
                     </td>
-                    <td className="desktop-only border-r border-black text-center">{item.asset_type}</td>
-                    <td className="mobile-only border-r border-black px-4 font-regular">
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center">{item.asset_type}</td>
+                    <td className="mobile-only border-r border-[var(--border-color)] px-4">
                       <div className="combined-cell-content">
                         <span className="main-text font-medium">{item.asset_name}</span>
-                        <span className="sub-text">{item.asset_type}</span>
+                        <span className="sub-text text-[var(--text-muted)]">{item.asset_type}</span>
                       </div>
                     </td>
-                    <td className="desktop-only border-r border-black text-center">{cleanQuantity}</td>
-                    <td className="desktop-only border-r border-black text-center">{cleanCost} {currencySymbol}</td>
-                    <td className="mobile-only border-r border-black px-4 font-regular">
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center">{Number(item.total_quantity).toString()}</td>
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center">{Number(item.total_cost).toString()} {currencySymbol}</td>
+                    <td className="mobile-only border-r border-[var(--border-color)] px-4">
                       <div className="combined-cell-content">
-                        <span className="main-text">{cleanQuantity}</span>
-                        <span className="sub-text">{cleanCost} {currencySymbol}</span>
+                        <span className="main-text">{Number(item.total_quantity).toString()}</span>
+                        <span className="sub-text text-[var(--text-muted)]">{Number(item.total_cost).toString()} {currencySymbol}</span>
                       </div>
                     </td>
                     <td className="text-center font-bold">
                       <button 
                         onClick={() => navigate(`/assets/${item.id}`)}
-                        className="text-xs underline text-blue-900 hover:text-black cursor-pointer"
+                        className="text-xs underline text-[var(--sidebar-accent)] hover:opacity-80 cursor-pointer"
                       >
                         {t('assets_view_transactions')}
                       </button>
@@ -216,7 +214,7 @@ const Assets: React.FC = () => {
 
       {isDeleteConfirmModalOpen && (
         <BaseModal title={t('assets_delete_modal_title')} onClose={() => setIsDeleteConfirmModalOpen(false)}>
-          <div className="p-6 text-center">
+          <div className="p-6 text-center text-[var(--text-main)]">
             <p className="mb-6">{t('assets_delete_modal_text').replace('{count}', String(selectedIds.length))}</p>
             <div className="flex justify-center gap-4">
               <Button variant="cancel" onClick={() => setIsDeleteConfirmModalOpen(false)}>{t('assets_delete_modal_cancel')}</Button>

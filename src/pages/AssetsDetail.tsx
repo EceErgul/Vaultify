@@ -203,7 +203,7 @@ const AssetsDetail = () => {
 
   if (loading) {
     return (
-      <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen flex items-center justify-center">
+      <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen flex items-center justify-center bg-[var(--bg-page)] text-[var(--text-main)]">
         <span className="text-lg font-medium">{t('detail_loading')}</span>
       </div>
     );
@@ -211,8 +211,8 @@ const AssetsDetail = () => {
 
   if (!assetInfo) {
     return (
-      <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen">
-        <div className="rounded-xl border border-red-300 bg-red-50 p-6 text-red-700">
+      <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen bg-[var(--bg-page)] text-[var(--text-main)]">
+        <div className="rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/30 p-6 text-red-700 dark:text-red-400">
           <h2 className="text-lg font-semibold mb-2">{t('detail_err_layer')}</h2>
           <p>{t('detail_err_hint')}</p>
           {error && <p className="mt-3 font-medium">{t('detail_err_prefix')}{error}</p>}
@@ -231,14 +231,14 @@ const AssetsDetail = () => {
   const profitLossPercentage = totalCost > 0 ? (netProfitLoss / totalCost) * 100 : 0;
 
   return (
-    <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen">
+    <div className="p-8 font-inter max-w-6xl mx-auto min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-300">
       <div className="flex flex-col gap-4 mb-4">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-medium text-black uppercase tracking-tight">
+            <h1 className="text-3xl font-medium text-[var(--text-main)] uppercase tracking-tight">
               {assetInfo.assetName}{t('detail_title_suffix')}
             </h1>
-            <p className="mt-2 text-sm text-gray-600">{t('detail_last_update')}{liveRelativeTime}</p>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">{t('detail_last_update')}{liveRelativeTime}</p>
           </div>
 
           <div className="flex flex-col gap-2 items-end">
@@ -260,7 +260,7 @@ const AssetsDetail = () => {
         </div>
 
         {error && (
-          <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-red-700">
+          <div className="rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/30 p-4 text-red-700 dark:text-red-400">
             <p className="font-medium">{t('detail_err_prefix')}{error}</p>
           </div>
         )}
@@ -268,23 +268,23 @@ const AssetsDetail = () => {
 
       <div className="asset-detail-grid mb-6">
         {[
-          { label: t('card_total_qty'), value: `${totalQty.toLocaleString('tr-TR')}`, bg: "#FFF5D9" },
-          { label: t('card_avg_cost'), value: `${avgCost.toFixed(2)} ${currencySymbol}`, bg: "#FFF5D9" },
-          { label: t('card_total_value'), value: `${totalValue.toFixed(2)} ${currencySymbol}`, bg: "#E3F2FD" },
+          { label: t('card_total_qty'), value: `${totalQty.toLocaleString('tr-TR')}`, bg: "var(--card-yellow-bg)" },
+          { label: t('card_avg_cost'), value: `${avgCost.toFixed(2)} ${currencySymbol}`, bg: "var(--card-yellow-bg)" },
+          { label: t('card_total_value'), value: `${totalValue.toFixed(2)} ${currencySymbol}`, bg: "var(--card-blue-bg)" },
           { 
             label: t('card_profit_loss'), 
             value: `${netProfitLoss >= 0 ? '+' : ''}${netProfitLoss.toFixed(2)} ${currencySymbol} (${profitLossPercentage.toFixed(2)}%)`,
-            bg: netProfitLoss >= 0 ? "#E8F5E9" : "#FFEBEE",
-            textColor: netProfitLoss >= 0 ? "text-green-700" : "text-red-700"
+            bg: netProfitLoss >= 0 ? "var(--card-green-bg)" : "var(--card-red-bg)",
+            textColor: netProfitLoss >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
           }
         ].map((card, i) => (
           <div 
             key={i} 
             style={{ backgroundColor: card.bg }}
-            className="border border-black rounded-[15px] h-44 flex flex-col items-center justify-center p-4 text-center shadow-sm transition-transform hover:scale-[1.02]"
+            className="border border-[var(--border-color)] rounded-[15px] h-44 flex flex-col items-center justify-center p-4 text-center shadow-sm transition-transform hover:scale-[1.02]"
           >
-            <span className="font-medium text-lg text-gray-700 mb-4 leading-tight">{card.label}</span>
-            <span className={`font-bold text-2xl ${card.textColor || 'text-black'}`}>{card.value}</span>
+            <span className="font-medium text-lg text-[var(--text-muted)] mb-4 leading-tight">{card.label}</span>
+            <span className={`font-bold text-2xl ${card.textColor || 'text-[var(--text-main)]'}`}>{card.value}</span>
           </div>
         ))}
       </div>
@@ -298,51 +298,51 @@ const AssetsDetail = () => {
         />
       </div>
 
-      <div className="border border-black overflow-hidden rounded-md shadow-lg">
+      <div className="border border-[var(--border-color)] overflow-hidden rounded-md shadow-lg bg-[var(--bg-card)]">
         <Slider>
         <table className="w-full border-collapse custom-asset-detail-table">
           <thead>
-            <tr className="bg-[#FFEF79] h-12 border-b border-black text-black text-sm">
-              <th className="border-r border-black p-2 font-bold uppercase">{t('detail_th_date')}</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_type')}</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_quantity')}</th>
-              <th className="mobile-only border-r border-black p-2 font-bold uppercase">{t('detail_th_type_quantity')}</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_price_per_unit')}</th>
-              <th className="desktop-only border-r border-black p-2 font-bold uppercase">{t('detail_th_total_amount')}</th>
-              <th className="mobile-only border-r border-black p-2 font-bold uppercase">{t('detail_th_price_amount')}</th>
+            <tr style={{ backgroundColor: 'var(--table-header-bg)' }} className="h-12 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+              <th className="border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_date')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_type')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_quantity')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_type_quantity')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_price_per_unit')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_total_amount')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_price_amount')}</th>
               <th className="p-2 font-bold uppercase">{t('detail_th_action')}</th>
             </tr>
           </thead>
           <tbody>
             {transactions.length === 0 ? (
-              <tr className="h-14 bg-[#FFF5D9]">
-                <td colSpan={6} className="text-center text-sm font-medium">{t('detail_empty_transactions')}</td>
+              <tr style={{ backgroundColor: 'var(--table-row-even)' }} className="h-14">
+                <td colSpan={6} className="text-center text-sm font-medium text-[var(--text-muted)]">{t('detail_empty_transactions')}</td>
               </tr>
             ) : (
               transactions.map((row, index) => {
                 const isEven = (index + 1) % 2 === 0;
-                const bgColor = isEven ? '#FFF5AD' : '#FFF5D9';
+                const rowBg = isEven ? 'var(--table-row-odd)' : 'var(--table-row-even)';
                 const formattedDate = new Date(row.date).toLocaleDateString('tr-TR');
 
                 return (
                   <tr 
                     key={row.id} 
-                    style={{ backgroundColor: bgColor }}
-                    className="h-14 border-b border-black last:border-0 text-sm text-black hover:brightness-95 transition-all"
+                    style={{ backgroundColor: rowBg }}
+                    className="h-14 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)] hover:brightness-95 transition-all"
                   >
-                    <td className="border-r border-black text-center">{formattedDate}</td>
+                    <td className="border-r border-[var(--border-color)] text-center">{formattedDate}</td>
                     
-                    <td className="desktop-only border-r border-black text-center font-medium">{row.transactionType}</td>
-                    <td className="desktop-only border-r border-black text-center">{row.totalQuantity}</td>
-                    <td className="mobile-only border-r border-black px-4">
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center font-medium">{row.transactionType}</td>
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center">{row.totalQuantity}</td>
+                    <td className="mobile-only border-r border-[var(--border-color)] px-4">
                       <div className="combined-cell-content">
                         <span className="main-text font-medium">{row.transactionType}</span>
-                        <span className="sub-text">{row.totalQuantity}</span>
+                        <span className="sub-text text-[var(--text-muted)]">{row.totalQuantity}</span>
                       </div>
                     </td>
-                    <td className="desktop-only border-r border-black text-center">{row.pricePerUnit.toFixed(2)} {currencySymbol}</td>
-                    <td className="desktop-only border-r border-black text-center font-semibold">{row.totalValue.toFixed(2)} {currencySymbol}</td>
-                    <td className="mobile-only border-r border-black px-4">
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center">{row.pricePerUnit.toFixed(2)} {currencySymbol}</td>
+                    <td className="desktop-only border-r border-[var(--border-color)] text-center font-semibold">{row.totalValue.toFixed(2)} {currencySymbol}</td>
+                    <td className="mobile-only border-r border-[var(--border-color)] px-4">
                       <div className="combined-cell-content">
                         <span className="main-text">{row.pricePerUnit.toFixed(2)} {currencySymbol}</span>
                         <span className="sub-text font-semibold">{row.totalValue.toFixed(2)} {currencySymbol}</span>
@@ -361,7 +361,7 @@ const AssetsDetail = () => {
                         >
                           📝
                         </button>
-                        <span className="text-gray-400">|</span>
+                        <span className="text-[var(--text-muted)]">|</span>
                         <button 
                           type="button"
                           onClick={() => handleDeleteClick(row.id)} 
@@ -420,8 +420,8 @@ const AssetsDetail = () => {
 
       {isConfirmDeleteOpen && (
         <BaseModal title={t('detail_modal_delete_title')} onClose={() => setIsConfirmDeleteOpen(false)}>
-          <div className="p-6 text-center font-inter">
-            <p className="mb-6 text-black text-lg font-medium">{t('detail_modal_delete_text')}</p>
+          <div className="p-6 text-center font-inter text-[var(--text-main)]">
+            <p className="mb-6 text-lg font-medium">{t('detail_modal_delete_text')}</p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
               <Button 
                 variant="cancel" 

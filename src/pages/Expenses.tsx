@@ -148,9 +148,9 @@ const Expenses = () => {
   };
 
   return (
-    <div className="p-8 font-inter max-w-7xl mx-auto">
+    <div className="p-8 font-inter max-w-7xl mx-auto min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-300">
       <div className="flex justify-between items-start mb-6">
-        <h2 className="text-2xl font-semibold tracking-tight text-black">{t('exp_title')}</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-[var(--text-main)]">{t('exp_title')}</h2>
         <div className="flex flex-col gap-2">
           <Button variant="add" className="w-[140px] h-[32px] text-[11px] shadow-sm" onClick={handleOpenAddModal}>{t('exp_add_btn')}</Button>
           
@@ -160,14 +160,14 @@ const Expenses = () => {
             <Button variant="delete" className="w-[140px] h-[32px] text-[11px] !bg-gray-500 !text-white" onClick={() => { setIsDeleteMode(false); setSelectedIds([]); }}>{t('exp_cancel_btn')}</Button>
           )}
 
-          <Button variant="filter" className="w-[140px] h-[32px] text-[11px] bg-[#FFEF79] border border-black shadow-sm" onClick={() => setIsFilterModalOpen(true)}>
+          <Button variant="filter" className="w-[140px] h-[32px] text-[11px] bg-[var(--table-header-bg)] border border-[var(--border-color)] text-[var(--text-main)] shadow-sm" onClick={() => setIsFilterModalOpen(true)}>
             {t('exp_filter_btn')} ({activeFilterCount})
           </Button>
         </div>
       </div>
 
       {isDeleteMode && (
-        <div className="flex items-center gap-3 mb-2 ml-1 animate-in fade-in slide-in-from-top-1 duration-300">
+        <div className="flex items-center gap-3 mb-2 ml-1 animate-in fade-in slide-in-from-top-1 duration-300 text-[var(--text-main)]">
           <GeneralDeleteCheckbox 
             checked={selectedIds.length === filteredHarcamalar.length && filteredHarcamalar.length > 0} 
             onChange={() => {
@@ -179,62 +179,62 @@ const Expenses = () => {
         </div>
       )}
 
-      <div className="border border-black overflow-hidden rounded-sm shadow-sm">
+      <div className="border border-[var(--border-color)] overflow-hidden rounded-sm shadow-sm bg-[var(--bg-card)]">
         <Slider>
         <table className="w-full border-collapse custom-expense-table">
           <thead>
-            <tr className="bg-[#7ECCF4] h-11 border-b border-black text-black text-sm">
-              {isDeleteMode && <th className="w-12 border-r border-black"></th>}
-              <th className="border-r border-black p-2 font-regular">{t('exp_th_date')}</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_name')}</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_category')}</th>
-              <th className="mobile-only border-r border-black p-2 font-regular">{t('exp_th_name_cat')}</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_payment')}</th>
-              <th className="desktop-only border-r border-black p-2 font-regular">{t('exp_th_amount')}</th>
-              <th className="mobile-only border-r border-black p-2 font-regular">{t('exp_th_payment_amount')}</th>
+            <tr className="bg-[var(--table-header-bg)] h-11 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+              {isDeleteMode && <th className="w-12 border-r border-[var(--border-color)]"></th>}
+              <th className="border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_date')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_name')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_category')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_name_cat')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_payment')}</th>
+              <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_amount')}</th>
+              <th className="mobile-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_payment_amount')}</th>
 
               {!isDeleteMode && <th className="p-2 font-regular w-24">{t('exp_th_action')}</th>}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className="h-12 bg-white">
-                <td colSpan={isDeleteMode ? 7 : 6} className="desktop-only text-center text-xs">{t('exp_loading')}</td>
-                <td colSpan={isDeleteMode ? 5 : 4} className="mobile-only text-center text-xs">{t('exp_loading')}</td>
+              <tr className="h-12 bg-[var(--bg-card)]">
+                <td colSpan={isDeleteMode ? 7 : 6} className="desktop-only text-center text-xs text-[var(--text-muted)]">{t('exp_loading')}</td>
+                <td colSpan={isDeleteMode ? 5 : 4} className="mobile-only text-center text-xs text-[var(--text-muted)]">{t('exp_loading')}</td>
               </tr>
             ) : (Array.isArray(filteredHarcamalar) ? filteredHarcamalar : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
-              const bgColor = isEven ? '#B1E5FF' : '#D8F2FF';
+              const rowBg = isEven ? 'var(--table-row-even)' : 'var(--table-row-odd)';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
 
               return (
-                <tr key={item.id} style={{ backgroundColor: bgColor }} className="h-12 border-b border-black last:border-0 text-sm text-black">
+                <tr key={item.id} style={{ backgroundColor: rowBg }} className="h-12 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)]">
                   {isDeleteMode && (
-                    <td className="text-center border-r border-black/25">
+                    <td className="text-center border-r border-[var(--border-color)]">
                       <GeneralDeleteCheckbox checked={selectedIds.includes(item.id)} onChange={() => toggleSelect(item.id)} />
                     </td>
                   )}
-                  <td className="border-r border-black px-4 text-center font-regular">{formattedDate}</td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.expense_name}</td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.expense_category}</td>
-                  <td className="mobile-only border-r border-black px-4 font-regular">
+                  <td className="border-r border-[var(--border-color)] px-4 text-center font-regular">{formattedDate}</td>
+                  <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">{item.expense_name}</td>
+                  <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">{item.expense_category}</td>
+                  <td className="mobile-only border-r border-[var(--border-color)] px-4 font-regular">
                     <div className="combined-cell-content">
                       <span className="main-text">{item.expense_name}</span>
-                      <span className="sub-text">{item.expense_category}</span>
+                      <span className="sub-text text-[var(--text-muted)]">{item.expense_category}</span>
                     </div>
                   </td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{item.payment_method}</td>
-                  <td className="desktop-only border-r border-black px-4 text-center font-regular">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</td>
-                  <td className="mobile-only border-r border-black px-4 font-regular">
+                  <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">{item.payment_method}</td>
+                  <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</td>
+                  <td className="mobile-only border-r border-[var(--border-color)] px-4 font-regular">
                     <div className="combined-cell-content">
                       <span className="main-text">{item.payment_method}</span>
-                      <span className="sub-text">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</span>
+                      <span className="sub-text font-semibold">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</span>
                     </div>
                   </td>
 
                   {!isDeleteMode && (
                     <td className="text-center">
-                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-900 hover:text-black">{t('exp_edit_btn')}</button>
+                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-600 dark:text-blue-400 hover:text-black dark:hover:text-white">{t('exp_edit_btn')}</button>
                     </td>
                   )}
                 </tr>
@@ -273,7 +273,7 @@ const Expenses = () => {
 
       {isConfirmDeleteOpen && (
         <BaseModal title={t('exp_modal_del_title')} onClose={() => setIsConfirmDeleteOpen(false)}>
-          <div className="p-4 text-center font-inter">
+          <div className="p-4 text-center font-inter text-[var(--text-main)]">
             <p className="text-sm mb-6">{t('exp_modal_del_text_part1')}<b>{selectedIds.length}</b>{t('exp_modal_del_text_part2')}</p>
             <div className="flex justify-center gap-3">
               <Button variant="cancel" className="w-[100px]" onClick={() => setIsConfirmDeleteOpen(false)}>{t('exp_modal_cancel')}</Button>

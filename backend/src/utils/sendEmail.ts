@@ -24,7 +24,7 @@ export const sendEmail = async (options: EmailOptions) => {
     user: process.env.SMTP_USER 
   });
 
-  const transportConfig: SMTPTransport.Options = {
+  const transportConfig: SMTPTransport.Options & { family?: number } = {
     host: process.env.SMTP_HOST!,
     port: Number(process.env.SMTP_PORT),
     secure: Number(process.env.SMTP_PORT) === 465, 
@@ -32,6 +32,7 @@ export const sendEmail = async (options: EmailOptions) => {
       user: process.env.SMTP_USER!,
       pass: process.env.SMTP_PASS!,
     },
+    family: 4,
   };
 
   try {

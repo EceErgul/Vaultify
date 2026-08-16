@@ -56,14 +56,22 @@ const Settings = () => {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const { userInfo, setUserInfo } = useUser();
 
-  const [settings, setSettings] = useState<ISettings>({
-    id: '', userId: '', autoArchive: false, autoArchiveMonths: ['12'],
-    defaultCurrency: 'TL', assetIntegrationActive: false, emailNotification: true,
-    trialExpirationNotification: true, encryptionEnabled: true, invisibleMode: false,
-    defaultLanguage: 'TR', theme: 'light',
+  const [settings, setSettings] = useState<ISettings>(() => {
+    const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+    return {
+      id: '', userId: '', autoArchive: false, autoArchiveMonths: ['12'],
+      defaultCurrency: 'TL', assetIntegrationActive: false, emailNotification: true,
+      trialExpirationNotification: true, encryptionEnabled: true, invisibleMode: false,
+      defaultLanguage: 'TR', theme: savedTheme,
+    };
   });
 
   const isDark = settings.theme === 'dark';
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', settings.theme);
+  }, [isDark, settings.theme]);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -74,6 +82,7 @@ const Settings = () => {
         if (settingsData) {
           const data = settingsData.data || settingsData;
           const fetchedCurrency = data.default_currency ?? 'TL';
+          const fetchedTheme = data.theme ?? ((localStorage.getItem('theme') as 'light' | 'dark') || 'light');
           
           setSettings({
             id: data.id || '',
@@ -87,9 +96,10 @@ const Settings = () => {
             encryptionEnabled: data.encryption_enabled ?? true,
             invisibleMode: data.invisible_mode ?? false,
             defaultLanguage: data.default_language ?? 'TR',
-            theme: data.theme ?? 'light',
+            theme: fetchedTheme,
           });
 
+          localStorage.setItem('theme', fetchedTheme);
           setCurrency(fetchedCurrency);
         }
       } catch (error) {
@@ -102,15 +112,16 @@ const Settings = () => {
     fetchSettings();
   }, [setCurrency]);
 
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark);
-  }, [settings.theme]);
-
   const updateSetting = async (key: keyof ISettings, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
 
     if (key === 'defaultCurrency') {
       setCurrency(value);
+    }
+
+    if (key === 'theme') {
+      localStorage.setItem('theme', value);
+      document.documentElement.classList.toggle('dark', value === 'dark');
     }
 
     const dbKeys: Record<string, string> = {
