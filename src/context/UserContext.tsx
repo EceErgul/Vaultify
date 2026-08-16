@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
 import { apiRequest } from '../utils/api';
 
 interface UserInfo {
@@ -24,6 +25,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const location = useLocation();
 
   const fetchData = useCallback(async () => {
     const token = localStorage.getItem('token');
@@ -61,7 +63,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData, location.pathname]);
 
   return (
     <UserContext.Provider value={{ userInfo, setUserInfo, dashboardData, loading, error, refreshData: fetchData }}>

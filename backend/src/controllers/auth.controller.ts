@@ -15,13 +15,13 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     const { full_name, email, password } = req.body;
     const result = await authService.registerUser({ full_name, email, password });
     const welcomeTemplate = getEmailTemplate('WELCOME', { name: result.user.full_name });
-    
-    await sendNotificationIfEnabled(
+
+    sendNotificationIfEnabled(
       result.user.id,
       'email_notification',
       welcomeTemplate.subject,
       welcomeTemplate.html
-    );
+    ).catch(err => console.error("Hoş geldin maili arka plan hatası:", err));
 
     res.status(201).json({ success: true, data: result });
   } catch (error) {
@@ -34,15 +34,14 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   try {
     const { email, password } = req.body;
     const result = await authService.loginUser({ email, password });
-    
     const loginTemplate = getEmailTemplate('LOGIN_SUCCESS', { name: result.user.full_name });
-    
-    await sendNotificationIfEnabled(
+
+    sendNotificationIfEnabled(
       result.user.id,
       'login_notifications',
       loginTemplate.subject,
       loginTemplate.html
-    );
+    ).catch(err => console.error("Giriş maili arka plan hatası:", err));
 
     res.status(200).json({ success: true, data: result });
   } catch (error: any) {
@@ -80,11 +79,11 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     const resetUrl = `${FRONTEND_URL}/new-password?token=${resetToken}`;
     const template = getEmailTemplate('PASSWORD_RESET', { link: resetUrl });
 
-    await sendEmail({
+    sendEmail({
       email: email,
       subject: template.subject,
       message: template.html,
-    });
+    }).catch(err => console.error("Şifre sıfırlama maili arka plan hatası:", err));
 
     res.status(200).json({ 
       success: true, 
@@ -102,12 +101,12 @@ export const resetPasswordSubmit = async (req: Request, res: Response, next: Nex
     const user = await authService.resetUserPassword(token, newPassword);
     const template = getEmailTemplate('PASSWORD_CHANGED', {});
 
-    await sendNotificationIfEnabled(
+    sendNotificationIfEnabled(
       user.id,
       'password_changed_notification', 
       template.subject,
       template.html
-    );
+    ).catch(err => console.error("Şifre değişti maili arka plan hatası:", err));
 
     res.status(200).json({ success: true, message: 'Şifreniz güncellendi.' });
   } catch (error) {
@@ -168,20 +167,20 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
 
     if (result.isNew) {
       const welcomeTemplate = getEmailTemplate('WELCOME', { name: result.user.full_name });
-      await sendNotificationIfEnabled(
+      sendNotificationIfEnabled(
         result.user.id,
         'email_notification',
         welcomeTemplate.subject,
         welcomeTemplate.html
-      );
+      ).catch(err => console.error("Google hoş geldin maili hatası:", err));
     } else {
       const loginTemplate = getEmailTemplate('LOGIN_SUCCESS', { name: result.user.full_name });
-      await sendNotificationIfEnabled(
+      sendNotificationIfEnabled(
         result.user.id,
         'login_notifications',
         loginTemplate.subject,
         loginTemplate.html
-      );
+      ).catch(err => console.error("Google giriş maili hatası:", err));
     }
 
     res.redirect(`${FRONTEND_URL}/dashboard?token=${result.token}`);
