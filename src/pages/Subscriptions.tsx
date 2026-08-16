@@ -207,7 +207,7 @@ const Subscriptions = () => {
                     <h4 className="text-[15px] font-semibold mb-3 truncate text-black">{sub.subscription_name}</h4>
                     
                     <div className="space-y-2 text-[12px] font-regular text-black">
-                      <p>{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}{t('subs_per_month')}</p>
+                      <p>{Number(sub.cost).toLocaleString('tr-TR')} {t('subs_per_month')}</p>
                       <p className="font-medium">{kalanGun === 0 ? t('subs_today_payment') : `${kalanGun}${t('subs_days_later_payment_suffix')}`}</p>
                       <p className="pt-2">{abonelikSuresi}{t('subs_months_subscribed_suffix')}</p>
                       <p className="text-[11px] opacity-80 italic whitespace-pre-line">{t('subs_payment_day_p1')}<span className="font-bold">{sub.payment_day}</span>{t('subs_payment_day_p2')}</p>

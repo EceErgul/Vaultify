@@ -37,6 +37,15 @@ export const apiRequest = async (endpoint: string, options: RequestOptions = {})
     throw new Error(`İstek başarısız (${response.status}): ${errorText}`);
   }
 
-  const data = await response.json();
-  return data;
+  const text = await response.text();
+  
+  if (!text) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return text;
+  }
 };
