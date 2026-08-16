@@ -9,11 +9,16 @@ interface EmailOptions {
 }
 
 export const sendEmail = async (options: EmailOptions) => {
+  const emailLower = options.email.toLowerCase();
+  
   if (
     process.env.DISABLE_EMAILS === 'true' || 
     process.env.NODE_ENV === 'test' || 
-    options.email.includes('vaultify.com') || 
-    options.email.includes('asset_user_')
+    emailLower.includes('vaultify.com') || 
+    emailLower.includes('asset_user_') ||
+    emailLower.includes('example.com') ||
+    emailLower.includes('test') ||
+    emailLower.includes('jest')
   ) {
     console.log(`[TEST MOCK] E-posta gönderimi engellendi. Alıcı: ${options.email}`);
     return;
