@@ -1,6 +1,10 @@
 import request from 'supertest';
 import app from '../app';
 
+jest.mock('../services/notification.service', () => ({
+  sendNotificationIfEnabled: jest.fn().mockResolvedValue(true),
+}));
+
 jest.setTimeout(50000);
 
 describe('Asset & Vault Management Tests', () => {
