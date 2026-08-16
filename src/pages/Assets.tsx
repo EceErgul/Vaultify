@@ -132,7 +132,7 @@ const Assets: React.FC = () => {
         <Slider>
         <table className="w-full border-collapse custom-asset-table">
           <thead>
-            <tr className="bg-[var(--sidebar-accent)]/20 h-10 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+            <tr className="bg-[var(--table-header-bg-blue)] text-[var(--text-main)] h-10 border-b border-[var(--border-color)] text-sm">
               {isDeleteMode && <th className="w-12 border-r border-[var(--border-color)]"></th>}
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-medium text-left pl-4">{t('assets_th_asset')}</th>
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-medium">{t('assets_th_type')}</th>
@@ -158,7 +158,7 @@ const Assets: React.FC = () => {
                   <tr 
                     key={item.id} 
                     className={`h-12 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)] transition-colors ${
-                      isEvenRow ? 'bg-[var(--bg-page)]' : 'bg-[var(--bg-card)]'
+                      isEvenRow ? 'bg-[var(--table-row-even-blue)]' : 'bg-[var(--table-row-odd-blue)]'
                     }`}
                   >
                     {isDeleteMode && (

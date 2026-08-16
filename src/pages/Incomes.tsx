@@ -125,32 +125,31 @@ const Incomes = () => {
         <Slider>
         <table className="w-full border-collapse custom-income-table">
           <thead>
-            <tr className="bg-[var(--table-header-bg)] h-11 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+            <tr className="bg-[var(--table-header-bg-blue)] h-11 border-b border-[var(--border-color)] text-[var(--text-main)]">
               <th className="w-12 border-r border-[var(--border-color)]"></th>
               <th className="border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_date')}</th>
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_name')}</th>
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_category')}</th>
               <th className="mobile-only border-r border-[var(--border-color)] p-2 font-regular">{t('inc_th_name_cat')}</th>
-
               <th className="p-2 font-regular">{t('inc_th_amount')}</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr className="h-12 bg-[var(--bg-card)]">
+              <tr style={{ backgroundColor: 'var(--table-row-even-blue)' }} className="h-12">
                 <td colSpan={5} className="desktop-only text-center text-xs text-[var(--text-muted)]">{t('inc_loading')}</td>
                 <td colSpan={4} className="mobile-only text-center text-xs text-[var(--text-muted)]">{t('inc_loading')}</td>
               </tr>
             ) : (Array.isArray(gelirler) ? gelirler : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
-              const rowBg = isEven ? 'var(--table-row-even)' : 'var(--table-row-odd)';
+              const rowBg = isEven ? 'var(--table-row-even-blue)' : 'var(--table-row-odd-blue)';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
 
               return (
                 <tr 
                   key={item.id} 
                   style={{ backgroundColor: rowBg }}
-                  className="h-12 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)] transition-colors"
+                  className="h-12 border-b border-[var(--border-color)] last:border-0 text-sm text-[var(--text-main)]"
                 >
                   <td className="text-center border-r border-[var(--border-color)]">
                     <div className="flex justify-center items-center h-full">
@@ -162,7 +161,7 @@ const Incomes = () => {
                       ) : (
                         <button
                           onClick={() => handleRowEdit(item)}
-                          className="text-xs bg-[var(--table-header-bg)]/20 hover:bg-[var(--table-header-bg)]/40 text-[var(--text-main)] px-2 py-1 rounded transition-all"
+                          className="text-xs bg-[var(--table-header-bg-blue)]/30 hover:bg-[var(--table-header-bg-blue)]/60 text-[var(--text-main)] dark:text-white px-2 py-1 rounded transition-all"
                           title="Düzenle"
                         >
                           ✏️
@@ -185,7 +184,6 @@ const Incomes = () => {
                       <span className="sub-text text-[var(--text-muted)]">{item.income_category}</span>
                     </div>
                   </td>
-
                   <td className="text-center font-regular px-4">
                     {Number(item.income_amount).toLocaleString('tr-TR')} {currencySymbol}
                   </td>
@@ -193,7 +191,7 @@ const Incomes = () => {
               );
             })}
             {!loading && gelirler.length === 0 && (
-              <tr className="h-12 bg-[var(--bg-card)]">
+              <tr style={{ backgroundColor: 'var(--table-row-even-blue)' }} className="h-12 border-b border-[var(--border-color)]">
                 <td colSpan={5} className="desktop-only text-center text-[var(--text-muted)] italic text-xs">
                   {t('inc_empty')}
                 </td>

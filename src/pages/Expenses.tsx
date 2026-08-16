@@ -160,7 +160,7 @@ const Expenses = () => {
             <Button variant="delete" className="w-[140px] h-[32px] text-[11px] !bg-gray-500 !text-white" onClick={() => { setIsDeleteMode(false); setSelectedIds([]); }}>{t('exp_cancel_btn')}</Button>
           )}
 
-          <Button variant="filter" className="w-[140px] h-[32px] text-[11px] bg-[var(--table-header-bg)] border border-[var(--border-color)] text-[var(--text-main)] shadow-sm" onClick={() => setIsFilterModalOpen(true)}>
+          <Button variant="filter" className="w-[140px] h-[32px] text-[11px] bg-[var(--table-header-bg-blue)] border border-[var(--border-color)] text-[var(--text-main)] shadow-sm" onClick={() => setIsFilterModalOpen(true)}>
             {t('exp_filter_btn')} ({activeFilterCount})
           </Button>
         </div>
@@ -183,7 +183,7 @@ const Expenses = () => {
         <Slider>
         <table className="w-full border-collapse custom-expense-table">
           <thead>
-            <tr className="bg-[var(--table-header-bg)] h-11 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+            <tr className="bg-[var(--table-header-bg-blue)] h-11 border-b border-[var(--border-color)] text-[var(--text-main)]">
               {isDeleteMode && <th className="w-12 border-r border-[var(--border-color)]"></th>}
               <th className="border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_date')}</th>
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-regular">{t('exp_th_name')}</th>
@@ -198,13 +198,13 @@ const Expenses = () => {
           </thead>
           <tbody>
             {loading ? (
-              <tr className="h-12 bg-[var(--bg-card)]">
+              <tr style={{ backgroundColor: 'var(--table-row-even-blue)' }} className="h-12">
                 <td colSpan={isDeleteMode ? 7 : 6} className="desktop-only text-center text-xs text-[var(--text-muted)]">{t('exp_loading')}</td>
                 <td colSpan={isDeleteMode ? 5 : 4} className="mobile-only text-center text-xs text-[var(--text-muted)]">{t('exp_loading')}</td>
               </tr>
             ) : (Array.isArray(filteredHarcamalar) ? filteredHarcamalar : []).map((item, index) => {
               const isEven = (index + 1) % 2 === 0;
-              const rowBg = isEven ? 'var(--table-row-even)' : 'var(--table-row-odd)';
+              const rowBg = isEven ? 'var(--table-row-even-blue)' : 'var(--table-row-odd-blue)';
               const formattedDate = new Date(item.date).toLocaleDateString('tr-TR');
 
               return (

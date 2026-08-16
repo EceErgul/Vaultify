@@ -58,6 +58,8 @@ const Settings = () => {
 
   const [settings, setSettings] = useState<ISettings>(() => {
     const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+    document.documentElement.classList.toggle('dark', savedTheme === 'dark');
+    
     return {
       id: '', userId: '', autoArchive: false, autoArchiveMonths: ['12'],
       defaultCurrency: 'TL', assetIntegrationActive: false, emailNotification: true,
@@ -82,9 +84,11 @@ const Settings = () => {
         if (settingsData) {
           const data = settingsData.data || settingsData;
           const fetchedCurrency = data.default_currency ?? 'TL';
-          const fetchedTheme = data.theme ?? ((localStorage.getItem('theme') as 'light' | 'dark') || 'light');
+          const savedTheme = (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+          const fetchedTheme = data.theme ?? savedTheme;
           
-          setSettings({
+          setSettings(prev => ({
+            ...prev,
             id: data.id || '',
             userId: data.user_id || '',
             autoArchive: data.auto_archive ?? false, 
@@ -97,9 +101,10 @@ const Settings = () => {
             invisibleMode: data.invisible_mode ?? false,
             defaultLanguage: data.default_language ?? 'TR',
             theme: fetchedTheme,
-          });
+          }));
 
           localStorage.setItem('theme', fetchedTheme);
+          document.documentElement.classList.toggle('dark', fetchedTheme === 'dark');
           setCurrency(fetchedCurrency);
         }
       } catch (error) {

@@ -302,7 +302,7 @@ const AssetsDetail = () => {
         <Slider>
         <table className="w-full border-collapse custom-asset-detail-table">
           <thead>
-            <tr style={{ backgroundColor: 'var(--table-header-bg)' }} className="h-12 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
+            <tr style={{ backgroundColor: 'var(--table-header-bg-yellow)' }} className="h-12 border-b border-[var(--border-color)] text-[var(--text-main)] text-sm">
               <th className="border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_date')}</th>
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_type')}</th>
               <th className="desktop-only border-r border-[var(--border-color)] p-2 font-bold uppercase">{t('detail_th_quantity')}</th>
@@ -315,13 +315,13 @@ const AssetsDetail = () => {
           </thead>
           <tbody>
             {transactions.length === 0 ? (
-              <tr style={{ backgroundColor: 'var(--table-row-even)' }} className="h-14">
+              <tr style={{ backgroundColor: 'var(--table-row-even-yellow)' }} className="h-14">
                 <td colSpan={6} className="text-center text-sm font-medium text-[var(--text-muted)]">{t('detail_empty_transactions')}</td>
               </tr>
             ) : (
               transactions.map((row, index) => {
                 const isEven = (index + 1) % 2 === 0;
-                const rowBg = isEven ? 'var(--table-row-odd)' : 'var(--table-row-even)';
+                const rowBg = isEven ? 'var(--table-row-even-yellow)' : 'var(--table-row-odd-yellow)';
                 const formattedDate = new Date(row.date).toLocaleDateString('tr-TR');
 
                 return (

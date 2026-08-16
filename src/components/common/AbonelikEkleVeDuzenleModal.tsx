@@ -30,12 +30,12 @@ const formatToDisplayDate = (isoDate?: string) => {
 
 const TrialCheckbox = ({ active, onClick }: { active: boolean, onClick: () => void }) => (
   <div 
-    className="w-[50px] h-[50px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[6px] relative flex items-center justify-center cursor-pointer shadow-sm"
+    className="w-[50px] h-[50px] bg-white border border-gray-300 rounded-[6px] relative flex items-center justify-center cursor-pointer shadow-sm"
     onClick={onClick}
   >
     {active && (
       <div className="absolute inset-0 p-2">
-        <svg viewBox="0 0 100 100" className="w-full h-full stroke-[var(--text-main)] stroke-[4px]">
+        <svg viewBox="0 0 100 100" className="w-full h-full stroke-[#333D50] stroke-[4px]">
           <line x1="0" y1="0" x2="100" y2="100" />
           <line x1="100" y1="0" x2="0" y2="100" />
         </svg>
@@ -98,24 +98,24 @@ export const AbonelikEkleModal: React.FC<AbonelikModalProps> = ({ onClose, onSuc
   return (
     <BaseModal title={t('sub_modal_add_title')} onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-4 px-2 sm:pr-4 mt-2 font-inter text-[var(--text-main)]">
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)]">{t('sub_name_label')}</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('sub_name_label')}</label>
         <Input placeholder={t('sub_name_placeholder')} value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)]">{t('sub_payday_label')}</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('sub_payday_label')}</label>
         <Input placeholder={t('sub_payday_placeholder')} value={payDay} onChange={(e) => setPayDay(e.target.value)} disabled={loading} />
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)]">{t('sub_price_label')}</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('sub_price_label')}</label>
         <div className="relative w-full">
           <Input placeholder={t('sub_price_placeholder')} value={price} onChange={(e) => setPrice(e.target.value)} disabled={loading} />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
         </div>
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)] leading-tight whitespace-pre-line">
+        <label className="text-xs sm:text-sm font-medium text-[#333D50] leading-tight whitespace-pre-line">
           {t('sub_start_date_label')}
         </label>
         <Input placeholder={t('sub_date_placeholder')} value={startDate} onChange={handleDateChange} maxLength={10} disabled={loading} />
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)] leading-tight whitespace-pre-line">
+        <label className="text-xs sm:text-sm font-medium text-[#333D50] leading-tight whitespace-pre-line">
           {t('sub_trial_label')}
         </label>
         <TrialCheckbox active={isTrial} onClick={() => setIsTrial(!isTrial)} />
@@ -190,24 +190,24 @@ export const AbonelikDuzenleModal: React.FC<AbonelikModalProps> = ({ onClose, in
   return (
     <BaseModal title={t('sub_modal_edit_title')} onClose={onClose}>
       <div className="grid grid-cols-1 sm:grid-cols-[140px_1fr] items-start sm:items-center gap-y-3 sm:gap-y-4 px-2 sm:pr-4 mt-2 font-inter text-[var(--text-main)]">
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)]">{t('sub_name_label')}</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('sub_name_label')}</label>
         <Input value={name} onChange={(e) => setName(e.target.value)} disabled={loading} />
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)]">{t('sub_payday_label')}</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('sub_payday_label')}</label>
         <Input value={payDay} onChange={(e) => setPayDay(e.target.value)} disabled={loading} />
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)]">{t('sub_price_label')}</label>
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t('sub_price_label')}</label>
         <div className="relative w-full">
           <Input value={price} onChange={(e) => setPrice(e.target.value)} disabled={loading} />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
         </div>
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)] leading-tight whitespace-pre-line">
+        <label className="text-xs sm:text-sm font-medium text-[#333D50] leading-tight whitespace-pre-line">
           {t('sub_start_date_label')}
         </label>
         <Input value={startDate} onChange={handleDateChange} maxLength={10} disabled={loading} />
 
-        <label className="text-xs sm:text-sm font-medium text-[var(--text-main)] leading-tight whitespace-pre-line">
+        <label className="text-xs sm:text-sm font-medium text-[#333D50] leading-tight whitespace-pre-line">
           {t('sub_trial_label')}
         </label>
         <TrialCheckbox active={isTrial} onClick={() => setIsTrial(!isTrial)} />

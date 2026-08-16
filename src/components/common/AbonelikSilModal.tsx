@@ -113,7 +113,7 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
             <div className="max-h-[240px] overflow-y-auto border border-[var(--border-color)] rounded-sm">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
-                  <tr className="bg-red-100 dark:bg-red-950/80 text-[var(--text-main)] text-xs h-10">
+                  <tr className="bg-[var(--bg-danger)] text-[var(--text-main)] text-xs h-10">
                     <th className="w-12 border-b border-r border-[var(--border-color)]"></th>
                     <th className="p-2 border-b border-r border-[var(--border-color)] text-left font-bold">{t('sub_name_label')}</th>
                     <th className="p-2 border-b border-r border-[var(--border-color)] font-bold text-center">{t('sub_payday_label')}</th>
@@ -123,7 +123,7 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                 </thead>
                 <tbody>
                   {subscriptions.length === 0 ? (
-                    <tr className="bg-red-50/60 dark:bg-red-950/20 text-[var(--text-main)]">
+                    <tr className="bg-[var(--bg-danger-light)] text-[var(--text-main)]">
                       <td colSpan={5} className="text-center p-4 text-xs italic">{t('sub_empty_list')}</td>
                     </tr>
                   ) : (
@@ -134,8 +134,8 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                           key={sub.id} 
                           className={`text-[11px] h-10 border-b border-[var(--border-color)] cursor-pointer hover:opacity-90 select-none text-[var(--text-main)] ${
                             (index + 1) % 2 === 0 
-                              ? 'bg-red-100/40 dark:bg-red-950/30' 
-                              : 'bg-red-50/60 dark:bg-red-900/20'
+                              ? 'bg-[var(--bg-danger-even)]' 
+                              : 'bg-[var(--bg-danger-odd)]'
                           }`}
                           onClick={() => {
                             if (loading) return;
