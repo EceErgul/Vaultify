@@ -5,10 +5,14 @@ jest.mock('../services/notification.service', () => ({
   sendNotificationIfEnabled: jest.fn().mockResolvedValue(true),
 }));
 
+jest.mock('../utils/sendEmail', () => ({
+  sendEmail: jest.fn().mockResolvedValue(true),
+}));
+
 jest.setTimeout(50000);
 
 describe('Asset & Vault Management Tests', () => {
-  let authToken: string;
+  let authToken: string;  
   const testUser = {
     full_name: 'Asset Test User',
     email: `asset_user_${Date.now()}@vaultify.com`,
