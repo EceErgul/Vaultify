@@ -286,6 +286,7 @@
   "sub_btn_apply": "Uygula",
   "sub_error_id_missing": "Hata: Abonelik bilgisi eksik, lütfen sayfayı yenileyip tekrar deneyin.",
 
+  "subs_add_btn": "Abonelik Ekle",
   "sub_del_title": "Abonelik Sil",
   "sub_del_confirm_title": "Emin misiniz?",
   "sub_select_all": "Hepsini Seç",
@@ -322,6 +323,7 @@
   "filter_tab_category": "Kategori",
   "filter_tab_payment": "Ödeme",
   "filter_tab_amount": "Tutar",
+  "filter_tab_instuction":"Detaylı filtreleme için üstteki sekmelerden birini seçin.",
   "filter_date_placeholder": "gg/aa/yyyy",
   "filter_min_placeholder": "Min",
   "filter_max_placeholder": "Max",

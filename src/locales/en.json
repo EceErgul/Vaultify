@@ -197,6 +197,7 @@
   "subs_months_subscribed_suffix": " Months Subscribed",
   "subs_payment_day_p1": "Paid on day ",
   "subs_payment_day_p2": " of every month.",
+  "subs_add_btn": "Add Subscription",
   "subs_delete_btn": "- Delete Subscription",
 
   "set_pwd_verify_title": "Verify Your Password",
@@ -322,6 +323,7 @@
   "filter_tab_category": "Category",
   "filter_tab_payment": "Payment",
   "filter_tab_amount": "Amount",
+  "filter_tab_instuction":"Select one of the tabs at the top for detailed filtering.",
   "filter_date_placeholder": "dd/mm/yyyy",
   "filter_min_placeholder": "Min",
   "filter_max_placeholder": "Max",
