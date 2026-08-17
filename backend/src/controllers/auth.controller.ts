@@ -114,13 +114,33 @@ export const resetPasswordSubmit = async (req: Request, res: Response, next: Nex
   }
 };
 
-export const resetPasswordRequest = async (req: Request, res: Response) => {
+export const resetPasswordRequest = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { email } = req.body;
-    console.log("Şifre sıfırlama isteği alındı:", email);
-    res.status(200).json({ success: true, message: "E-posta gönderildi." });
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Lütfen e-posta adresinizi giriniz.' });
+    }
+
+    const resetToken = crypto.randomBytes(16).toString('hex');
+    const expires = new Date(Date.now() + 60 * 60 * 1000);
+
+    await authService.storeResetToken(email, resetToken, expires);
+
+    const clientUrl = req.body.clientUrl || FRONTEND_URL;
+    const resetUrl = `${clientUrl}/new-password?token=${resetToken}`;
+    const template = getEmailTemplate('PASSWORD_RESET', { link: resetUrl });
+
+    sendEmail({
+      email: email,
+      subject: template.subject,
+      message: template.html,
+    }).catch(err => console.error("Şifre sıfırlama maili arka plan hatası:", err));
+
+    res.status(200).json({ success: true, message: "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi." });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Sunucu hatası" });
+    console.error("Reset password request hatası:", error);
+    next(error);
   }
 };
 

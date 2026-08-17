@@ -230,8 +230,18 @@ const Subscriptions = () => {
         ))}
       </div>
 
-      <div className="flex gap-10">
-        <Button variant="delete" className="w-[160px] h-[35px] text-[12px] shadow-sm" onClick={() => setIsDeleteOpen(true)}>
+      <div className="flex flex-wrap gap-4 sm:gap-10 items-center justify-center mb-10">
+        <Button 
+          className="w-[160px] h-[35px] text-[12px] shadow-sm" 
+          onClick={() => setIsAddOpen(true)}
+        >
+          {t('subs_add_btn') || "Abonelik Ekle"}
+        </Button>
+        <Button 
+          variant="delete" 
+          className="w-[160px] h-[35px] text-[12px] shadow-sm" 
+          onClick={() => setIsDeleteOpen(true)}
+        >
           {t('subs_delete_btn')}
         </Button>
       </div>

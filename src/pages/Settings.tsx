@@ -22,7 +22,17 @@ interface ISettings {
   theme: 'light' | 'dark';
 }
 
-const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean, onClose: () => void, onConfirm: (pwd: string) => void }) => {
+const PasswordConfirmModal = ({ 
+  isOpen, 
+  onClose, 
+  onConfirm, 
+  title 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  onConfirm: (pwd: string) => void; 
+  title?: string;
+}) => {
   const { t } = useTranslation();
   const [password, setPassword] = useState('');
   
@@ -30,7 +40,7 @@ const PasswordConfirmModal = ({ isOpen, onClose, onConfirm }: { isOpen: boolean,
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-3">
       <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-lg shadow-xl w-[92%] max-w-xs text-black dark:text-white">
-        <h3 className="font-semibold mb-3 sm:mb-4 text-sm">{t('set_pwd_verify_title')}</h3>
+        <h3 className="font-semibold mb-3 sm:mb-4 text-sm">{title || t('set_pwd_verify_title')}</h3>
         <input
           type="password"
           className="border rounded w-full p-2 mb-4 text-sm bg-transparent border-gray-300 dark:border-gray-600"
@@ -53,7 +63,7 @@ const Settings = () => {
   const { setCurrency } = useCurrency();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
-  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  const [modalAction, setModalAction] = useState<'profile' | 'clear' | 'delete' | null>(null);
   const { userInfo, setUserInfo } = useUser();
 
   const [settings, setSettings] = useState<ISettings>(() => {
@@ -147,33 +157,50 @@ const Settings = () => {
     }
   };
 
-  const handleProfileSaveWithPassword = async (password: string) => {
+  const handleModalConfirm = async (password: string) => {
     try {
-      await apiRequest('/users/profile', {
-        method: 'PUT',
-        body: { fullName: userInfo.fullName, email: userInfo.email, password }
-      });
-      alert(t('set_profile_updated'));
-      setIsPasswordModalOpen(false);
-    } catch (error) {
-      alert(t('set_profile_update_failed'));
-    }
-  };
-
-  const handleClearAllRecords = async () => {
-    if (window.confirm(t('set_confirm_clear'))) {
-      try {
-        await apiRequest('/subscriptions/clear-all', { method: 'DELETE' });
+      if (modalAction === 'profile') {
+        await apiRequest('/users/profile', {
+          method: 'PUT',
+          body: { fullName: userInfo.fullName, email: userInfo.email, password }
+        });
+        alert(t('set_profile_updated'));
+      } else if (modalAction === 'clear') {
+        await apiRequest('/subscriptions/clear-all', { 
+          method: 'DELETE',
+          body: { password }
+        });
         alert(t('set_success_clear'));
-      } catch (error) { console.error("Kayıtlar silinemedi:", error); }
+      } else if (modalAction === 'delete') {
+        setLoading(true);
+        await apiRequest('/auth/delete-account', { 
+          method: 'DELETE',
+          body: { password }
+        });
+        localStorage.removeItem('token');
+        alert(t('set_account_deleted'));
+        navigate('/landing', { replace: true });
+      }
+    } catch (error) {
+      console.error("İşlem hatası:", error);
+      alert(t('set_profile_update_failed') || 'İşlem başarısız, şifrenizi kontrol edin.');
+    } finally {
+      setLoading(false);
+      setModalAction(null);
     }
   };
 
   const handlePasswordReset = async () => {
     try {
-      await apiRequest('/auth/reset-password-request', { method: 'POST' });
+      const email = userInfo.email;
+      const clientUrl = window.location.origin;
+
+      await apiRequest('/auth/reset-password-request', { 
+        method: 'POST',
+        body: { email, clientUrl } 
+      });
+      
       alert(t('set_password_reset_sent'));
-      navigate('/reset-password');
     } catch (error) { 
       console.error("Şifre sıfırlama isteği başarısız:", error);
       alert(t('set_password_reset_failed'));
@@ -232,26 +259,6 @@ const Settings = () => {
     </div>
   );
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm(t('set_confirm_delete_account'));
-
-    if (!confirmDelete) return;
-
-    try {
-      setLoading(true);
-      await apiRequest('/auth/delete-account', { method: 'DELETE' });
-
-      localStorage.removeItem('token');
-      alert(t('set_account_deleted'));
-      navigate('/landing', { replace: true });
-    } catch (error) {
-      console.error("Hesap silme hatası:", error);
-      alert(t('set_account_delete_failed'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <div className={`p-3 sm:p-6 md:p-10 font-inter min-h-screen transition-colors duration-300 ${isDark ? 'bg-[#1A202C] text-[#E2E8F0]' : 'bg-white text-[#333D50]'}`}>
       <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
@@ -266,7 +273,7 @@ const Settings = () => {
             </div>
             <div className="flex flex-col items-start sm:flex-row sm:items-center justify-between sm:justify-start gap-2 sm:gap-4 pt-1 sm:pt-2">
               <span className="font-medium text-sm sm:text-base sm:min-w-[200px]">{t('set_clear_all_records')}</span>
-              <Button variant="delete" className="h-7 text-[10px] px-6 w-auto" onClick={handleClearAllRecords}>{t('btn_clear')}</Button>
+              <Button variant="delete" className="h-7 text-[10px] px-6 w-auto" onClick={() => setModalAction('clear')}>{t('btn_clear')}</Button>
             </div>
           </div>
         </section>
@@ -348,7 +355,7 @@ const Settings = () => {
                   <Button 
                     variant="add" 
                     className="mt-2 h-7 text-[10px] px-6 w-auto" 
-                    onClick={() => setIsPasswordModalOpen(true)}
+                    onClick={() => setModalAction('profile')}
                   >
                     {t('btn_save')}
                   </Button>
@@ -403,7 +410,7 @@ const Settings = () => {
                 </p>
               </div>
               <button
-                onClick={handleDeleteAccount}
+                onClick={() => setModalAction('delete')}
                 disabled={loading}
                 className="px-4 py-2 font-medium rounded-lg text-[var(--danger-btn-text)] bg-[var(--danger-btn-bg)] hover:bg-[var(--danger-btn-hover)] transition disabled:opacity-50 w-auto text-center text-xs sm:text-sm self-start"
               >
@@ -415,9 +422,9 @@ const Settings = () => {
       </div>
       
       <PasswordConfirmModal 
-        isOpen={isPasswordModalOpen} 
-        onClose={() => setIsPasswordModalOpen(false)} 
-        onConfirm={handleProfileSaveWithPassword} 
+        isOpen={modalAction !== null} 
+        onClose={() => setModalAction(null)} 
+        onConfirm={handleModalConfirm} 
       />
     </div>
   );

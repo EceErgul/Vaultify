@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import BaseModal from './Modal';
 import Input from './Input';
 import Button from './Button';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, RotateCcw } from 'lucide-react';
 import { ExpenseCategory, PaymentMethod } from '../../types/index';
 import { getSuggestions } from '../../utils/filterUtils';
 import { useTranslation } from '../../context/LanguageContext';
@@ -115,6 +115,91 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
     onClose();
   };
 
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setTextDate('');
+    setMinAmount('');
+    setMaxAmount('');
+    setSelectedCategory(null);
+    setSelectedPayment(null);
+    setDateSort('desc');
+    setAmountSort('desc');
+    setActiveTab(null);
+    setFilterCount(0);
+
+    const clearedFilters: FilterState = {
+      searchTerm: '',
+      date: '',
+      category: null,
+      paymentMethod: null,
+      minAmount: '',
+      maxAmount: '',
+      expenseName: '',
+      dateSort: 'desc',
+      amountSort: 'desc'
+    };
+    onApplyFilters(clearedFilters);
+    onClose();
+  };
+
+  const handleExclusiveDateSort = () => {
+    const nextSort = dateSort === 'asc' ? 'desc' : 'asc';
+    
+    setDateSort(nextSort);
+    setAmountSort('desc');
+    setSearchTerm('');
+    setTextDate('');
+    setMinAmount('');
+    setMaxAmount('');
+    setSelectedCategory(null);
+    setSelectedPayment(null);
+    setFilterCount(1);
+
+    const exclusiveFilters: FilterState = {
+      searchTerm: '',
+      date: '',
+      category: null,
+      paymentMethod: null,
+      minAmount: '',
+      maxAmount: '',
+      expenseName: '',
+      dateSort: nextSort,
+      amountSort: 'desc'
+    };
+
+    onApplyFilters(exclusiveFilters);
+    onClose();
+  };
+
+  const handleExclusiveAmountSort = () => {
+    const nextSort = amountSort === 'asc' ? 'desc' : 'asc';
+
+    setAmountSort(nextSort);
+    setDateSort('desc');
+    setSearchTerm('');
+    setTextDate('');
+    setMinAmount('');
+    setMaxAmount('');
+    setSelectedCategory(null);
+    setSelectedPayment(null);
+    setFilterCount(1);
+
+    const exclusiveFilters: FilterState = {
+      searchTerm: '',
+      date: '',
+      category: null,
+      paymentMethod: null,
+      minAmount: '',
+      maxAmount: '',
+      expenseName: '',
+      dateSort: 'desc',
+      amountSort: nextSort
+    };
+
+    onApplyFilters(exclusiveFilters);
+    onClose();
+  };
+
   const tabLabelKeyMap = {
     tarih: 'filter_tab_date',
     kategori: 'filter_tab_category',
@@ -126,8 +211,8 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
     <BaseModal title={t('filter_modal_title')} onClose={onClose}>
       <div className="flex flex-col space-y-4 font-inter px-4 w-full max-w-md mx-auto">
         
-        <div className="relative w-full max-w-[340px] mx-auto">
-          <div className="relative h-[40px]">
+        <div className="flex items-center gap-2">
+          <div className="relative w-full">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#CDCDCD]">
               <Search size={16} strokeWidth={2.5} />
             </span>
@@ -135,37 +220,38 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full h-full pl-11 pr-4 rounded-[30px] border border-[#CDCDCD] bg-white text-xs"
+              className="w-full h-[40px] pl-11 pr-4 rounded-[30px] border border-[#CDCDCD] dark:border-gray-600 bg-white dark:bg-gray-800 text-xs text-[#333D50] dark:text-gray-200"
               placeholder={t('filter_search_placeholder')} 
             />
+            {searchTerm.length > 0 && suggestions.length > 0 && (
+              <div className="absolute top-12 left-0 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-50 p-2 max-h-[150px] overflow-y-auto">
+                {suggestions.map((s) => (
+                  <button 
+                    key={s} 
+                    onClick={() => { 
+                      setSearchTerm(s);
+                    }} 
+                    className="block w-full text-left px-3 py-2 text-xs hover:bg-gray-50 dark:hover:bg-gray-700 text-[#333D50] dark:text-gray-200 rounded"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          {searchTerm.length > 0 && suggestions.length > 0 && (
-            <div className="absolute top-12 left-0 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 p-2 max-h-[150px] overflow-y-auto">
-              {suggestions.map((s) => (
-              <button 
-                key={s} 
-                onClick={() => { 
-                  setSearchTerm(s);
-                  setTimeout(() => {
-                    const updatedFilters: FilterState = {
-                      ...initialFilters,
-                      searchTerm: s,
-                      expenseName: s
-                    };
-                    onApplyFilters(updatedFilters);
-                    onClose();
-                  }, 0);
-                }} 
-                className="block w-full text-left px-3 py-2 text-xs hover:bg-gray-50 rounded"
-              >
-                {s}
-              </button>
-            ))}
-            </div>
-          )}
+
+          <button 
+            type="button"
+            onClick={handleClearFilters}
+            title={t('filter_clear_tooltip') || "Filtreleri Temizle"}
+            className="flex items-center justify-center h-[40px] px-3 bg-gray-100 dark:bg-gray-700 text-[#333D50] dark:text-gray-200 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0 text-xs font-medium gap-1"
+          >
+            <RotateCcw size={14} />
+            <span className="hidden sm:inline">Temizle</span>
+          </button>
         </div>
 
-        <div className="grid grid-cols-4 gap-1 text-[11px] font-bold text-[#333D50] border-b border-gray-100 pb-2">
+        <div className="grid grid-cols-4 gap-1 text-[11px] font-bold text-[#333D50] dark:text-gray-200 border-b border-gray-100 dark:border-gray-700 pb-2">
           {(['tarih', 'kategori', 'odeme', 'tutar'] as Exclude<FilterTab, null>[]).map((tab) => (
             <button key={tab} type="button" onClick={() => setActiveTab(activeTab === tab ? null : tab)} className={`flex items-center justify-center gap-1 py-1 ${activeTab === tab ? 'text-[#7ECCF4]' : ''}`}>
               <span>{t(tabLabelKeyMap[tab])}</span>
@@ -174,15 +260,15 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
           ))}
         </div>
 
-        <div className="bg-white/50 border border-dashed border-[#CDCDCD] rounded-xl p-4 min-h-[200px]">
+        <div className="bg-white/50 dark:bg-gray-800/50 border border-dashed border-[#CDCDCD] dark:border-gray-600 rounded-xl p-4 min-h-[180px]">
           {activeTab === 'tarih' && (
             <div className="flex flex-col gap-2">
-              <input type="text" value={textDate} onChange={handleTextDateChange} placeholder={t('filter_date_placeholder')} className="p-2 border rounded text-xs" />
-              <input type="date" className="p-2 border rounded" onChange={handleCalendarChange} />
+              <input type="text" value={textDate} onChange={handleTextDateChange} placeholder={t('filter_date_placeholder')} className="p-2 border dark:border-gray-600 rounded text-xs bg-white dark:bg-gray-800 text-[#333D50] dark:text-gray-200" />
+              <input type="date" className="p-2 border dark:border-gray-600 rounded text-xs bg-white dark:bg-gray-800 text-[#333D50] dark:text-gray-200" onChange={handleCalendarChange} />
             </div>
           )}
           {activeTab === 'kategori' && (
-            <div className="grid grid-cols-2 gap-2 items-stretch">
+            <div className="grid grid-cols-2 gap-2 items-stretch max-h-[160px] overflow-y-auto pr-1">
               {kategoriler.map((kat, index) => {
                 const rawCategories: ExpenseCategory[] = [
                   'Ev Alışverişi', 'Market Alışverişi', 'Kira', 'Eğlence', 
@@ -192,8 +278,9 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
                 return (
                   <button 
                     key={kat} 
+                    type="button"
                     onClick={() => setSelectedCategory(selectedCategory === rawValue ? null : rawValue)} 
-                    className={`text-xs px-3 py-2.5 rounded h-auto min-h-[42px] flex items-center justify-center text-center leading-tight ${selectedCategory === rawValue ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
+                    className={`text-xs px-3 py-2.5 rounded h-auto min-h-[42px] flex items-center justify-center text-center leading-tight ${selectedCategory === rawValue ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 dark:bg-gray-700 text-[#333D50] dark:text-gray-200'}`}
                   >
                     {kat}
                   </button>
@@ -209,8 +296,9 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
                   return (
                     <button 
                       key={y} 
+                      type="button"
                       onClick={() => setSelectedPayment(selectedPayment === rawValue ? null : rawValue)} 
-                      className={`text-xs p-2 rounded ${selectedPayment === rawValue ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 text-[#333D50]'}`}
+                      className={`text-xs p-2 rounded ${selectedPayment === rawValue ? 'bg-[#7ECCF4] text-white' : 'bg-gray-100 dark:bg-gray-700 text-[#333D50] dark:text-gray-200'}`}
                     >
                       {y}
                     </button>
@@ -222,32 +310,45 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
              <div className="flex flex-col gap-2">
                 <div className="relative w-full">
                   <Input placeholder={t('filter_min_placeholder')} value={minAmount} onChange={(e) => setMinAmount(e.target.value)} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
                 </div>
                 <div className="relative w-full">
                   <Input placeholder={t('filter_max_placeholder')} value={maxAmount} onChange={(e) => setMaxAmount(e.target.value)} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
                 </div>
              </div>
           )}
+          {!activeTab && (
+            <div className="flex items-center justify-center h-full min-h-[140px] text-xs text-gray-400 dark:text-gray-500 text-center">
+              {t('filter_tab_instruction') || "Detaylı filtreleme için üstteki sekmelerden birini seçin."}
+            </div>
+          )}
         </div>
 
-        <div className="space-y-2 pt-2 border-t">
-          <div className="flex items-center gap-2 text-xs">
-            <span>{t('filter_date_sort_label')}</span>
-            <button onClick={() => setDateSort(prev => prev === 'asc' ? 'desc' : 'asc')} className="font-bold bg-gray-100 px-2 py-1 rounded">
+        <div className="space-y-2 pt-2 border-t dark:border-gray-700 text-[#333D50] dark:text-gray-200">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium">{t('filter_date_sort_label')}</span>
+            <button 
+              type="button" 
+              onClick={handleExclusiveDateSort}
+              className="font-bold bg-gray-100 dark:bg-gray-700 text-[#333D50] dark:text-gray-200 px-3 py-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
               {dateSort === 'asc' ? t('filter_sort_oldest') : t('filter_sort_newest')}
             </button>
           </div>
-          <div className="flex items-center gap-2 text-xs">
-            <span>{t('filter_amount_sort_label')}</span>
-            <button onClick={() => setAmountSort(prev => prev === 'asc' ? 'desc' : 'asc')} className="font-bold bg-gray-100 px-2 py-1 rounded">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-medium">{t('filter_amount_sort_label')}</span>
+            <button 
+              type="button" 
+              onClick={handleExclusiveAmountSort}
+              className="font-bold bg-gray-100 dark:bg-gray-700 text-[#333D50] dark:text-gray-200 px-3 py-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
               {amountSort === 'asc' ? t('filter_sort_low_to_high') : t('filter_sort_high_to_low')}
             </button>
           </div>
         </div>
 
-        <Button variant="apply" className="w-full" onClick={handleApply}>{t('filter_btn_apply')}</Button>
+        <Button variant="apply" className="w-full mt-2" onClick={handleApply}>{t('filter_btn_apply')}</Button>
       </div>
     </BaseModal>
   );

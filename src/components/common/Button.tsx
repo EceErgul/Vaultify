@@ -13,7 +13,7 @@ const Button: React.FC<ButtonProps> = ({ variant = 'add', children, className = 
     applyDelete: 'bg-[#FF8A8A] text-black dark:bg-[#dc2626] dark:text-white',
     auth: 'bg-[#333D50] text-white dark:bg-[#475569] dark:text-white',
     hero: 'bg-[#F0FAFF] text-[#333D50] dark:bg-[#1e293b] dark:text-[#f8fafc]',
-    filter: 'bg-[#FFEF79] text-black dark:bg-[#eab308] dark:text-zinc-950',
+    filter: 'bg-[#FFF6AF] text-black dark:bg-[#ca8a04] dark:text-white',
     cancel: 'bg-[#EAEAEA] text-black dark:bg-[#334155] dark:text-slate-200',
   };
 

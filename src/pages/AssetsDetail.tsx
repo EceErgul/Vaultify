@@ -420,8 +420,8 @@ const AssetsDetail = () => {
 
       {isConfirmDeleteOpen && (
         <BaseModal title={t('detail_modal_delete_title')} onClose={() => setIsConfirmDeleteOpen(false)}>
-          <div className="p-6 text-center font-inter text-[var(--text-main)]">
-            <p className="mb-6 text-lg font-medium">{t('detail_modal_delete_text')}</p>
+          <div className="p-6 text-center font-inter bg-[var(--bg-card)] text-[var(--text-main)] rounded-b-xl">
+            <p className="mb-6 text-lg font-medium text-[var(--text-main)]">{t('detail_modal_delete_text')}</p>
             <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4">
               <Button 
                 variant="cancel" 
