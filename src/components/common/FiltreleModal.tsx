@@ -142,62 +142,12 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
     onClose();
   };
 
-  const handleExclusiveDateSort = () => {
-    const nextSort = dateSort === 'asc' ? 'desc' : 'asc';
-    
-    setDateSort(nextSort);
-    setAmountSort('desc');
-    setSearchTerm('');
-    setTextDate('');
-    setMinAmount('');
-    setMaxAmount('');
-    setSelectedCategory(null);
-    setSelectedPayment(null);
-    setFilterCount(1);
-
-    const exclusiveFilters: FilterState = {
-      searchTerm: '',
-      date: '',
-      category: null,
-      paymentMethod: null,
-      minAmount: '',
-      maxAmount: '',
-      expenseName: '',
-      dateSort: nextSort,
-      amountSort: 'desc'
-    };
-
-    onApplyFilters(exclusiveFilters);
-    onClose();
+  const handleToggleDateSort = () => {
+    setDateSort(prev => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
-  const handleExclusiveAmountSort = () => {
-    const nextSort = amountSort === 'asc' ? 'desc' : 'asc';
-
-    setAmountSort(nextSort);
-    setDateSort('desc');
-    setSearchTerm('');
-    setTextDate('');
-    setMinAmount('');
-    setMaxAmount('');
-    setSelectedCategory(null);
-    setSelectedPayment(null);
-    setFilterCount(1);
-
-    const exclusiveFilters: FilterState = {
-      searchTerm: '',
-      date: '',
-      category: null,
-      paymentMethod: null,
-      minAmount: '',
-      maxAmount: '',
-      expenseName: '',
-      dateSort: 'desc',
-      amountSort: nextSort
-    };
-
-    onApplyFilters(exclusiveFilters);
-    onClose();
+  const handleToggleAmountSort = () => {
+    setAmountSort(prev => (prev === 'asc' ? 'desc' : 'asc'));
   };
 
   const tabLabelKeyMap = {
@@ -248,29 +198,6 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
             <RotateCcw size={14} />
             <span className="hidden sm:inline">Temizle</span>
           </button>
-        </div>
-
-        <div className="flex flex-col gap-2 border-b pb-3 border-gray-100">
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-[#333D50]">{t('filter_date_sort_label')}</span>
-            <button 
-              type="button" 
-              onClick={handleExclusiveDateSort}
-              className="font-bold bg-gray-100 text-[#333D50] px-3 py-1.5 rounded hover:bg-gray-200 transition-colors text-[10px]"
-            >
-              {dateSort === 'asc' ? t('filter_sort_oldest') : t('filter_sort_newest')}
-            </button>
-          </div>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-medium text-[#333D50]">{t('filter_amount_sort_label')}</span>
-            <button 
-              type="button" 
-              onClick={handleExclusiveAmountSort}
-              className="font-bold bg-gray-100 text-[#333D50] px-3 py-1.5 rounded hover:bg-gray-200 transition-colors text-[10px]"
-            >
-              {amountSort === 'asc' ? t('filter_sort_low_to_high') : t('filter_sort_high_to_low')}
-            </button>
-          </div>
         </div>
 
         <div className="grid grid-cols-4 gap-1 text-[11px] font-bold text-[#333D50] border-b border-gray-100 pb-2">
@@ -345,6 +272,29 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
               {t('filter_tab_instruction') || "Detaylı filtreleme için üstteki sekmelerden birini seçin."}
             </div>
           )}
+        </div>
+
+        <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between text-xs bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
+            <span className="font-medium text-[#333D50]">{t('filter_date_sort_label')}</span>
+            <button 
+              type="button" 
+              onClick={handleToggleDateSort}
+              className="font-bold bg-white border border-gray-200 text-[#333D50] px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors text-xs shadow-sm"
+            >
+              {dateSort === 'asc' ? t('filter_sort_oldest') : t('filter_sort_newest')}
+            </button>
+          </div>
+          <div className="flex items-center justify-between text-xs bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
+            <span className="font-medium text-[#333D50]">{t('filter_amount_sort_label')}</span>
+            <button 
+              type="button" 
+              onClick={handleToggleAmountSort}
+              className="font-bold bg-white border border-gray-200 text-[#333D50] px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors text-xs shadow-sm"
+            >
+              {amountSort === 'asc' ? t('filter_sort_low_to_high') : t('filter_sort_high_to_low')}
+            </button>
+          </div>
         </div>
 
         <Button variant="apply" className="w-full mt-2" onClick={handleApply}>{t('filter_btn_apply')}</Button>

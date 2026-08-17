@@ -323,7 +323,7 @@
   "filter_tab_category": "Category",
   "filter_tab_payment": "Payment",
   "filter_tab_amount": "Amount",
-  "filter_tab_instuction":"Select one of the tabs at the top for detailed filtering.",
+  "filter_tab_instruction":"Select one of the tabs at the top for detailed filtering.",
   "filter_date_placeholder": "dd/mm/yyyy",
   "filter_min_placeholder": "Min",
   "filter_max_placeholder": "Max",

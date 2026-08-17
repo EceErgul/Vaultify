@@ -36,6 +36,11 @@
   --danger-header-bg: #f87171;
   --danger-row-even:  #fecaca;
   --danger-row-odd:   #fee2e2;
+  --landing-card-bg: #FFF8E7;
+  --landing-card-border: #E5E5E5;
+  --landing-privacy-bg: #F2F9FF;
+  --landing-text-main: #1A1A1A;
+  --landing-text-muted: #4A4A4A;
 }
 
 .dark {
@@ -69,6 +74,11 @@
   --danger-header-bg: #991b1b;
   --danger-row-even:  #450a0a;
   --danger-row-odd:   #7f1d1d;
+  --landing-card-bg: #28241E;
+  --landing-card-border: #3F3529;
+  --landing-privacy-bg: #19222D;
+  --landing-text-main: #F7FAFC;
+  --landing-text-muted: #A0AEC0;
 }
 
 body {

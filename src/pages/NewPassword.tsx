@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import Button from '../components/common/Button';
 import { apiRequest } from '../utils/api';
@@ -10,12 +10,30 @@ const UpdatePassword = () => {
   const token = searchParams.get('token');
   const navigate = useNavigate();
   const { t } = useTranslation();
-
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleThemeChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (e.matches) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    };
+
+    handleThemeChange(mediaQuery);
+    mediaQuery.addEventListener('change', handleThemeChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleThemeChange);
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,12 +68,12 @@ const UpdatePassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 font-inter text-[#333D50]">
-      <div className="bg-white w-full max-w-[800px] min-h-[550px] sm:min-h-[600px] border border-gray-300 shadow-sm relative flex flex-col items-center pt-14 pb-8 px-4 sm:px-10 rounded-xl sm:rounded-none">
+    <div className="min-h-screen bg-gray-100 dark:bg-[#1A202C] flex items-center justify-center p-4 font-inter text-[#333D50] dark:text-[#F7FAFC] transition-colors">
+      <div className="bg-white dark:bg-[#2D3748] w-full max-w-[800px] min-h-[550px] sm:min-h-[600px] border border-gray-300 dark:border-[#4A5568] shadow-sm relative flex flex-col items-center pt-14 pb-8 px-4 sm:px-10 rounded-xl sm:rounded-none transition-colors">
         
         <Link 
           to="/login" 
-          className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-1.5 sm:gap-2 bg-[#CDCDCD] px-2.5 sm:px-3 py-1.5 rounded text-xs text-[#333D50] hover:bg-gray-400 transition-colors shadow-sm"
+          className="absolute top-4 left-4 sm:top-6 sm:left-6 flex items-center gap-1.5 sm:gap-2 bg-[#CDCDCD] dark:bg-[#4A5568] px-2.5 sm:px-3 py-1.5 rounded text-xs text-[#333D50] dark:text-[#F7FAFC] hover:bg-gray-400 dark:hover:bg-[#64748B] transition-colors shadow-sm"
         >
           <span>←</span> <span>{t('new_pass_back')}</span>
         </Link>
@@ -66,8 +84,8 @@ const UpdatePassword = () => {
 
         {!success ? (
           <>
-            <h2 className="text-xl sm:text-2xl font-semibold text-black mb-1 sm:mb-2 text-center">{t('new_pass_title')}</h2>
-            <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8 text-center font-regular px-2 max-w-sm">
+            <h2 className="text-xl sm:text-2xl font-semibold text-black dark:text-[#F7FAFC] mb-1 sm:mb-2 text-center">{t('new_pass_title')}</h2>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-[#A0AEC0] mb-6 sm:mb-8 text-center font-regular px-2 max-w-sm">
               {t('new_pass_desc')}
             </p>
 
@@ -79,7 +97,7 @@ const UpdatePassword = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 dark:border-[#4A5568] bg-white dark:bg-[#1A202C] text-[#333D50] dark:text-[#F7FAFC] rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500 dark:focus:border-[#38BDF8]"
                   required
                 />
               </div>
@@ -91,20 +109,20 @@ const UpdatePassword = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500"
+                  className="w-full sm:w-64 h-10 sm:h-9 border border-gray-300 dark:border-[#4A5568] bg-white dark:bg-[#1A202C] text-[#333D50] dark:text-[#F7FAFC] rounded-lg sm:rounded-full px-4 text-sm focus:outline-none focus:border-gray-500 dark:focus:border-[#38BDF8]"
                   required
                 />
               </div>
 
               <div className="min-h-[24px] flex items-center justify-center w-full">
-                {error && <p className="text-xs text-red-600 font-medium italic text-center px-2">{error}</p>}
+                {error && <p className="text-xs text-red-600 dark:text-[#F87171] font-medium italic text-center px-2">{error}</p>}
               </div>
 
               <div className="flex justify-center pt-2 sm:pt-4 w-full">
                 <Button 
                   type="submit"
                   disabled={loading}
-                  className="w-full sm:w-32 h-10 !bg-[#333D50] text-white rounded shadow-md hover:!bg-[#45526C] cursor-pointer flex items-center justify-center"
+                  className="w-full sm:w-32 h-10 !bg-[#333D50] dark:!bg-[#38BDF8] text-white dark:text-[#0F172A] rounded shadow-md hover:!bg-[#45526C] dark:hover:!bg-[#7ECCF4] cursor-pointer flex items-center justify-center font-bold"
                 >
                   {loading ? t('new_pass_loading') : t('new_pass_submit_btn')}
                 </Button>
@@ -113,13 +131,13 @@ const UpdatePassword = () => {
           </>
         ) : (
           <div className="text-center mt-6 sm:mt-10 px-2 flex flex-col items-center">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-green-100 dark:bg-[#14291a] text-green-600 dark:text-[#4ADE80] rounded-full flex items-center justify-center mb-4 sm:mb-6">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 sm:h-8 sm:w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold text-green-600 mb-1 sm:mb-2">{t('new_pass_success_title')}</h3>
-            <p className="text-xs sm:text-sm text-gray-500">{t('new_pass_success_desc')}</p>
+            <h3 className="text-lg sm:text-xl font-semibold text-green-600 dark:text-[#4ADE80] mb-1 sm:mb-2">{t('new_pass_success_title')}</h3>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-[#A0AEC0]">{t('new_pass_success_desc')}</p>
           </div>
         )}
       </div>
