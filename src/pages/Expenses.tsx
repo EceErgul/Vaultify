@@ -130,8 +130,8 @@ const Expenses = () => {
       result = result.filter(item => item.date.startsWith(currentFilters.date));
     }
     result.sort((a, b) => {
-      const amountA = parseAmount(a.expenses_amount);
-      const amountB = parseAmount(b.expenses_amount);
+      const amountA = parseAmount(a.expenses_amount); 
+      const amountB = parseAmount(b.expenses_amount); 
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
 

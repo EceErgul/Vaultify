@@ -228,12 +228,10 @@ body {
 
   .custom-income-table .combined-cell-content .main-text {
     font-weight: 500;
-    color: #000000;
   }
 
   .custom-income-table .combined-cell-content .sub-text {
     font-size: 0.85rem;
-    color: #333333;
     opacity: 0.8;
   }
 
@@ -259,12 +257,10 @@ body {
 
   .custom-asset-table .combined-cell-content .main-text {
     font-weight: 500;
-    color: #000000;
   }
 
   .custom-asset-table .combined-cell-content .sub-text {
     font-size: 0.85rem;
-    color: #333333;
     opacity: 0.8;
   }
 
@@ -290,12 +286,10 @@ body {
 
   .custom-asset-detail-table .combined-cell-content .main-text {
     font-weight: 500;
-    color: #000000;
   }
 
   .custom-asset-detail-table .combined-cell-content .sub-text {
     font-size: 0.85rem;
-    color: #333333;
     opacity: 0.8;
   }
 }
