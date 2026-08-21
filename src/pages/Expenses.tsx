@@ -30,6 +30,18 @@ const initialFilterValues: FilterState = {
   amountSort: 'asc',
 };
 
+const parseAmount = (amountStr: any): number => {
+  if (typeof amountStr === 'number') return amountStr;
+  if (!amountStr) return 0;
+  
+  const cleanStr = String(amountStr)
+    .replace(/[^\d.,]/g, '')
+    .replace(/\./g, '')
+    .replace(',', '.');
+    
+  return parseFloat(cleanStr) || 0;
+};
+
 const Expenses = () => {
   const { t } = useTranslation();
   const { currency } = useCurrency();
@@ -109,17 +121,17 @@ const Expenses = () => {
       result = result.filter(item => item.payment_method.toLowerCase() === currentFilters.paymentMethod?.toLowerCase());
     }
     if (currentFilters.minAmount) {
-      result = result.filter(item => Number(item.expenses_amount) >= parseFloat(currentFilters.minAmount));
+      result = result.filter(item => parseAmount(item.expenses_amount) >= parseAmount(currentFilters.minAmount));
     }
     if (currentFilters.maxAmount) {
-      result = result.filter(item => Number(item.expenses_amount) <= parseFloat(currentFilters.maxAmount));
+      result = result.filter(item => parseAmount(item.expenses_amount) <= parseAmount(currentFilters.maxAmount));
     }
     if (currentFilters.date) {
       result = result.filter(item => item.date.startsWith(currentFilters.date));
     }
     result.sort((a, b) => {
-      const amountA = Number(a.expenses_amount);
-      const amountB = Number(b.expenses_amount);
+      const amountA = parseAmount(a.expenses_amount);
+      const amountB = parseAmount(b.expenses_amount);
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
 

@@ -192,11 +192,11 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
           <button 
             type="button"
             onClick={handleClearFilters}
-            title={t('filter_clear_tooltip') || "Filtreleri Temizle"}
+            title={t('filter_btn_clear')}
             className="flex items-center justify-center h-[40px] px-3 bg-gray-100 text-[#333D50] rounded-xl hover:bg-gray-200 transition-colors flex-shrink-0 text-xs font-medium gap-1"
           >
             <RotateCcw size={14} />
-            <span className="hidden sm:inline">Temizle</span>
+            <span className="hidden sm:inline">{t("filter_btn_clear")}</span>
           </button>
         </div>
 
@@ -275,7 +275,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
         </div>
 
         <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
-          <div className="flex items-center justify-between text-xs bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
+          <div className="flex items-center justify-start gap-3 text-xs bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
             <span className="font-medium text-[#333D50]">{t('filter_date_sort_label')}</span>
             <button 
               type="button" 
@@ -285,7 +285,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
               {dateSort === 'asc' ? t('filter_sort_oldest') : t('filter_sort_newest')}
             </button>
           </div>
-          <div className="flex items-center justify-between text-xs bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
+          <div className="flex items-center justify-start gap-3 text-xs bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
             <span className="font-medium text-[#333D50]">{t('filter_amount_sort_label')}</span>
             <button 
               type="button" 
