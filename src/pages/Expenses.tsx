@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import Button from '../components/common/Button';
-import HarcamaEkleModal from '../components/common/HarcamaModallari';
+import HarcamaEkleModal from '../components/common/GiderModallari';
 import FiltreleModal, { FilterState } from '../components/common/FiltreleModal';
 import BaseModal from '../components/common/Modal';
 import { apiRequest } from '../utils/api';

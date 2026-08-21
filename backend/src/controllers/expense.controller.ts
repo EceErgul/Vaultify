@@ -8,6 +8,8 @@ export const getExpenses = async (req: AuthRequest, res: Response, next: NextFun
     const isInvisible = await checkInvisibleMode(req.userId!);
     if (isInvisible) return res.status(200).json({ success: true, data: [] });
 
+    await expenseService.processRecurringExpenses(req.userId!);
+
     const expenses = await expenseService.getExpenses(req.userId!);
     res.status(200).json({ success: true, data: expenses });
   } catch (error) {

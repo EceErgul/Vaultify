@@ -33,6 +33,8 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
   const [date, setDate] = useState('');
   const [category, setCategory] = useState<string>(initialData?.category || '');
   const [paymentMethod, setPaymentMethod] = useState<string>(initialData?.paymentMethod || '');
+  const [isRecurring, setIsRecurring] = useState<boolean>(initialData?.is_recurring || false);
+  const [recurrenceDay, setRecurrenceDay] = useState<number | ''>(initialData?.recurrence_day || '');
 
   const kategoriler = [
     t('exp_cat_home'),
@@ -59,6 +61,12 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
       const [year, month, day] = initialData.date.split('T')[0].split('-');
       setDate(`${day}/${month}/${year}`);
     }
+    if (initialData?.is_recurring !== undefined) {
+      setIsRecurring(initialData.is_recurring);
+    }
+    if (initialData?.recurrence_day !== undefined) {
+      setRecurrenceDay(initialData.recurrence_day);
+    }
   }, [initialData]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,33 +82,36 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
       return;
     }
 
+    if (isRecurring && (!recurrenceDay || Number(recurrenceDay) < 1 || Number(recurrenceDay) > 31)) {
+      alert('Lütfen 1 ile 31 arasında geçerli bir yinelenme günü girin.');
+      return;
+    }
+
     const [day, month, year] = date.split('/');
     const formattedDate = `${year}-${month}-${day}`;
 
     try {
       setLoading(true);
 
+      const requestBody = {
+        expense_name: name,
+        expenses_amount: Number(amount),
+        date: formattedDate,
+        expense_category: category,
+        payment_method: paymentMethod,
+        is_recurring: isRecurring,
+        recurrence_day: isRecurring ? Number(recurrenceDay) : null
+      };
+
       if (isEditMode) {
         await apiRequest(`/expenses/${initialData.id}`, {
           method: 'PUT',
-          body: {
-            expense_name: name,
-            expenses_amount: Number(amount),
-            date: formattedDate,
-            expense_category: category,
-            payment_method: paymentMethod
-          }
+          body: requestBody
         });
       } else {
         await apiRequest('/expenses', {
           method: 'POST',
-          body: {
-            expense_name: name,
-            expenses_amount: Number(amount),
-            date: formattedDate,
-            expense_category: category,
-            payment_method: paymentMethod
-          }
+          body: requestBody
         });
       }
 
@@ -149,6 +160,38 @@ const HarcamaEkleModal: React.FC<HarcamaEkleModalProps> = ({ onClose, onExpenseA
           <Input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} placeholder={t('exp_amount_placeholder')} disabled={loading} />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm select-none pointer-events-none">{currencySymbol}</span>
         </div>
+
+        <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t("exp_is_recursive")}</label>
+        <div className="flex items-center gap-2 py-1">
+          <input 
+            type="checkbox" 
+            checked={isRecurring} 
+            onChange={(e) => setIsRecurring(e.target.checked)} 
+            className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer"
+            disabled={loading}
+          />
+          <span className="text-xs sm:text-sm text-[var(--text-main)]">{t("exp_recursive_label")}</span>
+        </div>
+
+        {isRecurring && (
+          <>
+            <label className="text-xs sm:text-sm font-medium text-[#333D50]">{t("exp_recurrence_day_label")}</label>
+            <Input 
+              type="number" 
+              placeholder={t("exp_recurrence_day_placeholder")}
+              value={recurrenceDay} 
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === '' || (Number(val) >= 1 && Number(val) <= 31)) {
+                  setRecurrenceDay(val === '' ? '' : Number(val));
+                }
+              }} 
+              disabled={loading} 
+            />
+          </>
+        )}
+        {/* --------------------------------------------- */}
+
       </div>
 
       <div className="mt-6 sm:mt-10 flex justify-end pr-2 sm:pr-6 pb-2">

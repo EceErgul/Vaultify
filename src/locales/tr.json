@@ -349,6 +349,10 @@
   "income_btn_adding": "Ekleniyor...",
   "income_btn_apply": "Uygula",
   "income_btn_updating": "Güncelleniyor...",
+  "income_recurring_label": "Yinelenen",
+  "income_recurring_desc": "Bu geliri her ay otomatik tekrarla",
+  "income_recurring_day": "Yinelenme Günü",
+  "income_recurring_day_placeholder": "Örn: 1 (1-31 arası bir gün)",
 
   "exp_modal_title_add": "Gider Ekle",
   "exp_modal_title_edit": "Gideri Düzenle",
@@ -367,6 +371,10 @@
   "exp_btn_processing": "İşleniyor...",
   "exp_btn_confirm": "Onayla",
   "exp_btn_add": "+ Ekle",
+  "exp_is_recursive": "Yinelenen",
+  "exp_recursive_label": "Bu gideri her ay otomatik tekrarla",
+  "exp_recurrence_day_label": "Yinelenme Günü",
+  "exp_recurrence_day_placeholder": "Örn: 15 (1-31 arası bir gün giriniz)",
 
   "pwd_modal_title": "İşlemi Onaylayın",
   "pwd_modal_desc": "Değişiklikleri kaydetmek için lütfen mevcut şifrenizi girin.",

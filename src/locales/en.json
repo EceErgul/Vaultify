@@ -349,6 +349,10 @@
   "income_btn_adding": "Adding...",
   "income_btn_apply": "Apply",
   "income_btn_updating": "Updating...",
+  "income_recurring_label": "Recurring",
+  "income_recurring_desc": "Repeat this income automatically every month",
+  "income_recurring_day": "Recurrence Day",
+  "income_recurring_day_placeholder": "e.g. 1 (a day between 1-31)",
 
   "exp_modal_title_add": "Add Expense",
   "exp_modal_title_edit": "Edit Expense",
@@ -367,6 +371,10 @@
   "exp_btn_processing": "Processing...",
   "exp_btn_confirm": "Confirm",
   "exp_btn_add": "+ Add",
+  "exp_is_recursive": "Recursive",
+  "exp_recursive_label": "Repeat this expense automatically every month.",
+  "exp_recurrence_day_label": "Day of Recurrence",
+  "exp_recurrence_day_placeholder": "E.g., 15 (enter a day between 1 and 31)",
 
   "pwd_modal_title": "Confirm Action",
   "pwd_modal_desc": "Please enter your current password to save changes.",

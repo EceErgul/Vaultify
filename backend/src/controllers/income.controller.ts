@@ -8,6 +8,8 @@ export const getIncomes = async (req: AuthRequest, res: Response, next: NextFunc
     const isInvisible = await checkInvisibleMode(req.userId!);
     if (isInvisible) return res.status(200).json({ success: true, data: [] });
 
+    await incomeService.processRecurringIncomes(req.userId!);
+
     const incomes = await incomeService.getIncomes(req.userId!);
     res.status(200).json({ success: true, data: incomes });
   } catch (error) {
