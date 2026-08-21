@@ -231,7 +231,7 @@ const Expenses = () => {
                   <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">{item.expense_category}</td>
                   <td className="mobile-only border-r border-[var(--border-color)] px-4 font-regular">
                     <div className="combined-cell-content">
-                      <span className="main-text">{item.expense_name}</span>
+                      <span className="main-text text-[var(--text-main)]">{item.expense_name}</span>
                       <span className="sub-text text-[var(--text-muted)]">{item.expense_category}</span>
                     </div>
                   </td>
@@ -239,8 +239,8 @@ const Expenses = () => {
                   <td className="desktop-only border-r border-[var(--border-color)] px-4 text-center font-regular">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</td>
                   <td className="mobile-only border-r border-[var(--border-color)] px-4 font-regular">
                     <div className="combined-cell-content">
-                      <span className="main-text">{item.payment_method}</span>
-                      <span className="sub-text font-semibold">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</span>
+                      <span className="main-text text-[var(--text-main)]">{item.payment_method}</span>
+                      <span className="sub-text font-semibold text-[var(--text-main)]">{Number(item.expenses_amount).toLocaleString('tr-TR')} {currencySymbol}</span>
                     </div>
                   </td>
 

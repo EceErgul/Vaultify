@@ -102,6 +102,8 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
       dateSort,
       amountSort
     };
+      onApplyFilters(updatedFilters);
+    onClose();
 
     let activeCount = 0;
     if (searchTerm.trim() !== '') activeCount++;
