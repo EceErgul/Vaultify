@@ -27,7 +27,7 @@ const initialFilterValues: FilterState = {
   maxAmount: '',
   expenseName: '',
   dateSort: 'asc',
-  amountSort: 'asc',
+  amountSort: null,
 };
 
 const parseAmount = (amountStr: any): number => {
@@ -135,7 +135,7 @@ const Expenses = () => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
 
-      if (currentFilters.amountSort && currentFilters.amountSort !== initialFilterValues.amountSort) {
+      if (currentFilters.amountSort) {
         return currentFilters.amountSort === 'asc' ? amountA - amountB : amountB - amountA;
       }
       return currentFilters.dateSort === 'asc' ? dateA - dateB : dateB - dateA;

@@ -195,12 +195,10 @@ body {
 
   .custom-expense-table .combined-cell-content .main-text {
     font-weight: 500;
-    color: #000000;
   }
 
   .custom-expense-table .combined-cell-content .sub-text {
     font-size: 0.85rem;
-    color: #333333;
     opacity: 0.8;
   }
 }

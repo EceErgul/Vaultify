@@ -17,7 +17,7 @@ export interface FilterState {
   maxAmount: string;
   expenseName: string;
   dateSort: 'asc' | 'desc';
-  amountSort: 'asc' | 'desc';
+  amountSort: 'asc' | 'desc' | null;
 }
 
 interface FiltreleModalProps {
@@ -54,7 +54,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | null>(initialFilters.category);
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethod | null>(initialFilters.paymentMethod);
   const [dateSort, setDateSort] = useState<'asc' | 'desc'>(initialFilters.dateSort);
-  const [amountSort, setAmountSort] = useState<'asc' | 'desc'>(initialFilters.amountSort);
+  const [amountSort, setAmountSort] = useState<'asc' | 'desc' | null>(initialFilters.amountSort);
 
   const kategoriler = [
     t('exp_cat_home'),
@@ -123,7 +123,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
     setSelectedCategory(null);
     setSelectedPayment(null);
     setDateSort('desc');
-    setAmountSort('desc');
+    setAmountSort(null);
     setActiveTab(null);
     setFilterCount(0);
 
@@ -136,7 +136,7 @@ const FiltreleModal: React.FC<FiltreleModalProps> = ({
       maxAmount: '',
       expenseName: '',
       dateSort: 'desc',
-      amountSort: 'desc'
+      amountSort: null
     };
     onApplyFilters(clearedFilters);
     onClose();
