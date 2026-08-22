@@ -33,11 +33,12 @@ const currencySymbols: Record<CurrencyPreference, string> = {
 const useAssetTypes = () => {
   const { t } = useTranslation();
   return [
-    { label: t('asset_type_stock'), value: 'Hisse Senedi' as AssetsType },
-    { label: t('asset_type_currency'), value: 'Döviz' as AssetsType },
-    { label: t('asset_type_gold'), value: 'Altın' as AssetsType },
-    { label: t('asset_type_crypto'), value: 'Kripto' as AssetsType },
-    { label: t('asset_type_other'), value: 'Diğer' as AssetsType },
+    { label: t('asset_type_stock') || 'Borsa', value: 'Borsa' as AssetsType },
+    { label: t('asset_type_currency') || 'Döviz', value: 'Döviz' as AssetsType },
+    { label: t('asset_type_crypto') || 'Kripto', value: 'Kripto' as AssetsType },
+    { label: t('asset_type_commodity') || 'Emtia', value: 'Emtia' as AssetsType },
+    { label: t('asset_type_interest') || 'Faiz', value: 'Faiz' as AssetsType },
+    { label: t('asset_type_other') || 'Diğer', value: 'Diğer' as AssetsType },
   ];
 };
 

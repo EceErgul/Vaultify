@@ -437,8 +437,9 @@
 
   "asset_type_stock": "Stock Market",
   "asset_type_currency": "Currency",
-  "asset_type_gold": "Gold",
+  "asset_type_commodity": "Commodity",
   "asset_type_crypto": "Crypto",
+  "asset_type_interest": "Interest",
   "asset_type_other": "Other",
 
   "currency_tl": "Turkish Lira (₺)",

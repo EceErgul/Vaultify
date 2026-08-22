@@ -37,44 +37,42 @@ export const getLivePrice = async (assetType: string, assetName: string): Promis
   if (name === 'EURO') name = 'EUR';
 
   try {
-    if (type === 'doviz' || type === 'forex' || type === 'currency') {
+    if (type.includes('doviz') || type.includes('currency') || type.includes('forex')) {
       const data = await getCachedData('/economy/allCurrency');
       const list = data?.result || [];
       const found = list.find((c: any) => c.code === name || c.name.toUpperCase().includes(name));
-      if (found) return Number(String(found.buying).replace(',', '.'));
+      if (found) {
+        const rawPrice = found.buying || found.price || 0;
+        return Number(String(rawPrice).replace(',', '.'));
+      }
     }
 
-    if (type === 'hisse' || type === 'stock' || type === 'borsa') {
+    if (type.includes('borsa') || type.includes('hisse') || type.includes('stock')) {
       const data = await getCachedData('/economy/hisseSenedi');
       const list = data?.result || [];
       const found = list.find((c: any) => {
         const apiCode = c.code?.toUpperCase();
         const apiName = c.text?.toUpperCase() || c.name?.toUpperCase();
-        return apiCode === name || apiName.includes(name);
+        return apiCode === name || apiName?.includes(name);
       });
-      if (found) return Number(String(found.price || found.rate || found.buying).replace(',', '.'));
+      if (found) {
+        const rawPrice = found.price || found.lastprice || found.buying || 0;
+        return Number(String(rawPrice).replace(',', '.'));
+      }
     }
 
-    if (type === 'kripto' || type === 'crypto' || type === 'coin') {
+    if (type.includes('kripto') || type.includes('crypto') || type.includes('coin')) {
       const data = await getCachedData('/economy/cryto');
       const list = data?.result || [];
       const found = list.find((c: any) => c.code?.toUpperCase() === name || c.name?.toUpperCase() === name);
-      if (found) return Number(String(found.price || found.buying).replace(',', '.'));
+      if (found) {
+        const rawPrice = found.price || found.buying || 0;
+        return Number(String(rawPrice).replace(',', '.'));
+      }
     }
 
-    if (type === 'altin' || type === 'gold' || type === 'metal') {
-      const data = await getCachedData('/economy/goldPrice');
-      const list = data?.result || [];
-      const found = list.find((g: any) => {
-        const apiName = clearText(g.name || '').toUpperCase();
-        return apiName.includes(name) || name.includes(apiName);
-      });
-      
-      if (found) {
-        const price = Number(String(found.selling || found.buying).replace(',', '.'));
-        console.log(`✅ Fiyat bulundu: ${price}`);
-        return price;
-      }
+    if (type.includes('emtia') || type.includes('faiz')) {
+      return 0; 
     }
 
     console.warn(`❌ Canlı fiyat bulunamadı: Tür -> ${assetType}, İsim -> ${assetName}`);

@@ -436,8 +436,9 @@
 
   "asset_type_stock": "Borsa",
   "asset_type_currency": "Döviz",
-  "asset_type_gold": "Altın",
+  "asset_type_commodity": "Emtia",
   "asset_type_crypto": "Kripto",
+  "asset_type_interest": "Faiz",
   "asset_type_other": "Diğer",
 
   "currency_tl": "Türk Lirası (₺)",
