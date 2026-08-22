@@ -14,10 +14,11 @@ const router = Router();
 
 router.use(protect);
 
-router.get('/:assetId/analyze', analyzeAsset);
-router.get('/:id', getAssetById);
 router.get('/', getAssets);
 router.post('/', createAsset);
+
+router.get('/:assetId/analyze', analyzeAsset);
+router.get('/:id', getAssetById);
 router.delete('/:id', deleteAsset);
 
 router.get('/:assetId/transactions', getAssetTransactions);

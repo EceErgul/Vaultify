@@ -71,8 +71,22 @@ export const getLivePrice = async (assetType: string, assetName: string): Promis
       }
     }
 
-    if (type.includes('emtia') || type.includes('faiz')) {
-      return 0; 
+    if (type.includes('emtia')) {
+      const data = await getCachedData('/economy/goldPrice');
+      const list = data?.result || [];
+      const found = list.find((g: any) => {
+        const apiName = clearText(g.name || '').toUpperCase();
+        return apiName.includes(name) || name.includes(apiName);
+      });
+      
+      if (found) {
+        const price = Number(String(found.selling || found.buying || 0).replace(',', '.'));
+        return price;
+      }
+    }
+
+    if (type.includes('faiz')) {
+      return 0;
     }
 
     console.warn(`❌ Canlı fiyat bulunamadı: Tür -> ${assetType}, İsim -> ${assetName}`);
