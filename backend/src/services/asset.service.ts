@@ -1,12 +1,11 @@
-import { query } from '../config/db';
-import * as settingService from '../services/setting.service';
 import pool from '../config/db';
+import * as settingService from '../services/setting.service';
 
 export const getAssets = async (userId: string) => {
   const isInvisible = await settingService.checkInvisibleMode(userId);
   if (isInvisible) return [];
 
-  const result = await query(
+  const result = await pool.query(
     'SELECT * FROM assets WHERE user_id = $1 ORDER BY asset_name ASC',
     [userId]
   );
@@ -31,7 +30,7 @@ export const getAssets = async (userId: string) => {
 
 export const getAssetById = async (userId: string, assetId: string) => {
   try {
-    const result = await query(
+    const result = await pool.query(
       'SELECT * FROM assets WHERE id = $1 AND user_id = $2',
       [assetId, userId]
     );
@@ -108,7 +107,7 @@ export const createAsset = async (userId: string, assetData: any) => {
 
     await client.query('COMMIT');
     
-    const finalResult = await query('SELECT * FROM assets WHERE id = $1', [assetId]);
+    const finalResult = await pool.query('SELECT * FROM assets WHERE id = $1', [assetId]);
     return finalResult.rows[0];
 
   } catch (error) {
@@ -120,7 +119,7 @@ export const createAsset = async (userId: string, assetData: any) => {
 };
 
 export const deleteAsset = async (userId: string, assetId: string) => {
-  const result = await query(
+  const result = await pool.query(
     'DELETE FROM assets WHERE id = $1 AND user_id = $2 RETURNING *',
     [assetId, userId]
   );
