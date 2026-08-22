@@ -3,6 +3,7 @@ import * as assetService from '../services/asset.service';
 import { AuthRequest } from '../middlewares/auth.middleware';
 import { checkInvisibleMode } from '../services/setting.service';
 import { getLivePrice } from '../services/market.service';
+import pool from "../config/db"
 
 export const getAssets = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
@@ -33,11 +34,12 @@ export const createAsset = async (req: AuthRequest, res: Response, next: NextFun
     const asset = await assetService.createAsset(req.userId!, req.body);
     const initialLivePrice = await getLivePrice(asset.asset_type, asset.asset_name) || 0;
 
-    const insertResult = await asset.client.query(
-    'INSERT INTO assets (user_id, asset_type, asset_name, total_quantity, total_cost, live_unit_price, fetched_at) VALUES ($1, $2, $3, $4, $5, $6, NOW()) RETURNING id',
-    [asset.userId, asset.asset_type, asset.asset_name, asset.total_quantity, asset.total_cost, initialLivePrice]
-  );
-    res.status(201).json({ success: true, data: asset });
+    const updatedResult = await pool.query(
+      'UPDATE assets SET live_unit_price = $1, fetched_at = NOW() WHERE id = $2 RETURNING *',
+      [initialLivePrice, asset.id]
+    );
+
+    res.status(201).json({ success: true, data: updatedResult.rows[0] });
   } catch (error) {
     next(error);
   }
