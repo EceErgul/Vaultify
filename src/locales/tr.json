@@ -197,6 +197,7 @@
   "subs_months_subscribed_suffix": " Aydır Abonesin",
   "subs_payment_day_p1": "Her ayın ",
   "subs_payment_day_p2": ". günü \n ödenir.",
+  "subs_add_btn": "Abonelik Ekle",
   "subs_delete_btn": "- Abonelik Sil",
 
   "set_pwd_verify_title": "Şifrenizi Doğrulayın",
@@ -286,7 +287,6 @@
   "sub_btn_apply": "Uygula",
   "sub_error_id_missing": "Hata: Abonelik bilgisi eksik, lütfen sayfayı yenileyip yeniden deneyin.",
 
-  "subs_add_btn": "Abonelik Ekle",
   "sub_del_title": "Abonelik Sil",
   "sub_del_confirm_title": "Emin misiniz?",
   "sub_select_all": "Hepsini Seç",
@@ -301,6 +301,9 @@
   "sub_btn_deleting": "Siliniyor...",
   "sub_btn_yes_delete": "Evet, Sil",
   "sub_error_delete": "Silme işlemi başarısız oldu. Lütfen yeniden deneyin.",
+  "sub_alert_missing_fields": "Lütfen tüm zorunlu alanları doldurun.",
+  "sub_error_adding": "Abonelik eklenirken bir hata oluştu.",
+  "sub_error_updating": "Abonelik güncellenirken bir hata oluştu.",
 
   "asset_trans_title": "İşlem Ekle",
   "asset_trans_type": "İşlem Türü",
@@ -323,7 +326,7 @@
   "filter_tab_category": "Kategori",
   "filter_tab_payment": "Ödeme",
   "filter_tab_amount": "Tutar",
-  "filter_tab_instruction":"Detaylı filtreleme için üstteki sekmelerden birini seçin.",
+  "filter_tab_instruction": "Detaylı filtreleme için üstteki sekmelerden birini seçin.",
   "filter_date_placeholder": "gg/aa/yyyy",
   "filter_min_placeholder": "Min",
   "filter_max_placeholder": "Max",
@@ -353,6 +356,7 @@
   "income_recurring_desc": "Bu geliri her ay otomatik tekrarla",
   "income_recurring_day": "Yinelenme Günü",
   "income_recurring_day_placeholder": "Örn: 1 (1-31 arası bir gün)",
+  "income_alert_invalid_day": "Lütfen 1-31 arası bir gün girin.",
 
   "exp_modal_title_add": "Gider Ekle",
   "exp_modal_title_edit": "Gideri Düzenle",
@@ -400,7 +404,9 @@
 
   "placeholder_select": "Seçiniz",
   "placeholder_category": "Kategori Seçiniz",
+  "placeholder_select_category": "Kategori Seçiniz",
   "placeholder_payment": "Ödeme Yöntemi Seçiniz",
+  "placeholder_select_payment": "Ödeme Yöntemi Seçiniz",
   "placeholder_select_asset_type": "Varlık Türü Seçiniz",
   "placeholder_search": "Arama...",
 

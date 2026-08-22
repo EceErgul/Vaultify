@@ -1,36 +1,21 @@
 import React, { useState } from 'react';
 import BaseModal from './Modal';
 import Button from './Button';
+import { Subscription } from '../../types/index';
 import { apiRequest } from '../../utils/api';
 import { useTranslation } from '../../context/LanguageContext';
 import { useCurrency } from '../../context/CurrencyContext';
-
-interface Subscription {
-  id: string;
-  user_id: string;
-  subscription_name: string;
-  cost: number | string;
-  payment_day: number;
-  start_date: string;
-  is_trial: boolean;
-}
+import { formatCurrency } from '../../utils/currencyUtils';
 
 interface AbonelikSilModalProps {
   onClose: () => void;
   subscriptions: Subscription[];
+  onSuccess?: () => void;
 }
 
-const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscriptions }) => {
+const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscriptions, onSuccess }) => {
   const { t } = useTranslation();
   const { currency } = useCurrency();
-
-  const currencySymbols: Record<string, string> = {
-    TL: '₺',
-    USD: '$',
-    EUR: '€',
-    GBP: '£'
-  };
-  const currencySymbol = currencySymbols[currency] || '₺';
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,6 +30,7 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
 
   const calculateSure = (startDateStr: string) => {
     const baslangic = new Date(startDateStr);
+    if (isNaN(baslangic.getTime())) return 1;
     const simdi = new Date();
     const ayFarki = (simdi.getFullYear() - baslangic.getFullYear()) * 12 + (simdi.getMonth() - baslangic.getMonth());
     return ayFarki <= 0 ? 1 : ayFarki;
@@ -63,10 +49,11 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
         )
       );
       
+      onSuccess?.();
       onClose(); 
     } catch (error) {
       console.error('Silme hatası:', error);
-      alert(t('sub_error_delete'));
+      alert(t('sub_error_delete') || 'Silme işlemi sırasında bir hata oluştu.');
     } finally {
       setLoading(false);
       setIsConfirming(false);
@@ -82,10 +69,10 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
   }) => (
     <div
       onClick={onChange}
-      className="w-5 h-5 bg-white border border-gray-300 rounded-[4px] flex items-center justify-center shrink-0 cursor-pointer shadow-sm"
+      className="w-5 h-5 bg-[var(--bg-card)] border border-[var(--danger-border)] rounded-[4px] flex items-center justify-center shrink-0 cursor-pointer shadow-sm"
     >
       {checked && (
-        <svg viewBox="0 0 100 100" className="w-3 h-3 stroke-black stroke-[15px]">
+        <svg viewBox="0 0 100 100" className="w-3 h-3 stroke-[var(--text-main)] stroke-[15px]">
           <line x1="0" y1="0" x2="100" y2="100" />
           <line x1="100" y1="0" x2="0" y2="100" />
         </svg>
@@ -110,20 +97,20 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
               <span className="text-sm font-bold text-[var(--text-main)]">{t('sub_select_all')}</span>
             </div>
 
-            <div className="max-h-[240px] overflow-y-auto border border-red-900 rounded-sm">
+            <div className="max-h-[240px] overflow-y-auto border border-[var(--danger-border)] rounded-sm">
               <table className="w-full border-collapse">
                 <thead className="sticky top-0 z-10">
                   <tr className="bg-[var(--danger-header-bg)] text-white text-xs h-10">
-                    <th className="w-12 border-b border-r border-red-900"></th>
-                    <th className="p-2 border-b border-r border-red-900 text-left font-bold">{t('sub_name_label')}</th>
-                    <th className="p-2 border-b border-r border-red-900 font-bold text-center">{t('sub_payday_label')}</th>
-                    <th className="p-2 border-b border-r border-red-900 font-bold text-center">{t('sub_price_label')}</th>
-                    <th className="p-2 border-b border-red-900 font-bold text-center">{t('sub_duration_months')}</th>
+                    <th className="w-12 border-b border-r border-[var(--danger-border)]"></th>
+                    <th className="p-2 border-b border-r border-[var(--danger-border)] text-left font-bold">{t('sub_name_label')}</th>
+                    <th className="p-2 border-b border-r border-[var(--danger-border)] font-bold text-center">{t('sub_payday_label')}</th>
+                    <th className="p-2 border-b border-r border-[var(--danger-border)] font-bold text-center">{t('sub_price_label')}</th>
+                    <th className="p-2 border-b border-[var(--danger-border)] font-bold text-center">{t('sub_duration_months')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {subscriptions.length === 0 ? (
-                    <tr className="bg-[var(--danger-row-odd)] text-white">
+                    <tr className="bg-[var(--danger-row-odd)] text-[var(--text-main)]">
                       <td colSpan={5} className="text-center p-4 text-xs italic">{t('sub_empty_list')}</td>
                     </tr>
                   ) : (
@@ -132,7 +119,7 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                       return (
                         <tr 
                           key={sub.id} 
-                          className={`text-[11px] h-10 border-b border-red-900 cursor-pointer hover:opacity-90 select-none text-white ${
+                          className={`text-[11px] h-10 border-b border-[var(--danger-border)] cursor-pointer hover:opacity-90 select-none text-[var(--text-main)] ${
                             (index + 1) % 2 === 0 
                               ? 'bg-[var(--danger-row-even)]' 
                               : 'bg-[var(--danger-row-odd)]'
@@ -143,14 +130,14 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                             else setSelectedIds([...selectedIds, sub.id]);
                           }}
                         >
-                          <td className="text-center p-2 border-r border-red-900">
+                          <td className="text-center p-2 border-r border-[var(--danger-border)]">
                             <div className="flex justify-center items-center">
                               <CustomCheckbox checked={isChecked} />
                             </div>
                           </td>
-                          <td className="p-2 border-r border-red-900 font-medium">{sub.subscription_name}</td>
-                          <td className="p-2 border-r border-red-900 text-center">{calculateKalanGun(sub.payment_day)}</td>
-                          <td className="p-2 border-r border-red-900 text-center font-semibold">{Number(sub.cost).toLocaleString('tr-TR')} {currencySymbol}</td>
+                          <td className="p-2 border-r border-[var(--danger-border)] font-medium">{sub.subscription_name}</td>
+                          <td className="p-2 border-r border-[var(--danger-border)] text-center">{calculateKalanGun(sub.payment_day)}</td>
+                          <td className="p-2 border-r border-[var(--danger-border)] text-center font-semibold">{formatCurrency(Number(sub.cost || 0), currency)}</td>
                           <td className="p-2 text-center">{calculateSure(sub.start_date)} {t('sub_duration_months')}</td>
                         </tr>
                       );
@@ -168,16 +155,14 @@ const AbonelikSilModal: React.FC<AbonelikSilModalProps> = ({ onClose, subscripti
                 onClick={() => setIsConfirming(true)}
                 className="h-[40px]"
               >
-                {t('sub_btn_delete_count').replace('{count}', String(selectedIds.length))}
+                {t('sub_btn_delete_count')?.replace('{count}', String(selectedIds.length)) || `${selectedIds.length} Öğeyi Sil`}
               </Button>
             </div>
           </>
         ) : (
           <div className="flex flex-col items-center justify-center py-10 gap-6">
             <p className="text-center font-medium text-lg text-[var(--text-main)]">
-              {t('sub_confirm_message').split('{count}')[0]}
-              <span className="font-bold">{selectedIds.length}</span>
-              {t('sub_confirm_message').split('{count}')[1]} <br/>
+              <span className="font-bold">{selectedIds.length}</span> {t('sub_confirm_message') || 'adet aboneliği silmek istediğinize emin misiniz?'} <br/>
               {t('sub_confirm_warning')}
             </p>
             <div className="flex gap-4">

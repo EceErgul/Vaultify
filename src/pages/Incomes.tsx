@@ -11,12 +11,13 @@ import { useCurrency } from '../context/CurrencyContext';
 interface IncomeItem {
   id: string;
   date: string;
+  user_id?: string;
   income_name: string;
   income_category: string;
   income_amount: number | string;
 }
 
-const Incomes = () => {
+const Incomes: React.FC = () => {
   const { t } = useTranslation();
   const { currency } = useCurrency();
 
@@ -42,7 +43,7 @@ const Incomes = () => {
       setLoading(true);
       const data = await apiRequest('/incomes');
       setGelirler(Array.isArray(data) ? data : (data.incomes || data.data || []));
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       setGelirler([]);
     } finally {
@@ -76,7 +77,7 @@ const Incomes = () => {
       setIsDeleteMode(false);
       setSelectedIds([]);
       setIsConfirmModalOpen(false);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Silme hatası:", error);
       alert("Silme işlemi sırasında bir hata oluştu.");
     }
@@ -161,7 +162,7 @@ const Incomes = () => {
                       ) : (
                         <button
                           onClick={() => handleRowEdit(item)}
-                          className="text-xs bg-[var(--table-header-bg-blue)]/30 hover:bg-[var(--table-header-bg-blue)]/60 text-[var(--text-main)] dark:text-white px-2 py-1 rounded transition-all"
+                          className="text-xs bg-[var(--table-header-bg-blue)]/30 hover:bg-[var(--table-header-bg-blue)]/60 text-[var(--text-main)] dark:text-white px-2 py-1 rounded transition-all cursor-pointer"
                           title="Düzenle"
                         >
                           ✏️
@@ -245,9 +246,10 @@ const Incomes = () => {
           initialData={{
             id: selectedIncome.id,
             date: selectedIncome.date,
-            name: selectedIncome.income_name,
-            category: selectedIncome.income_category as any,
-            amount: Number(selectedIncome.income_amount)
+            user_id: selectedIncome.user_id || '',
+            income_name: selectedIncome.income_name,
+            income_category: selectedIncome.income_category as NonNullable<React.ComponentProps<typeof GelirDuzenleModal>['initialData']>['income_category'],
+            income_amount: Number(selectedIncome.income_amount)
           }}
         />
       )}

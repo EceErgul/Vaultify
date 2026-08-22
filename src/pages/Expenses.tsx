@@ -11,6 +11,7 @@ import { useCurrency } from '../context/CurrencyContext';
 
 interface Expense {
   id: string;
+  user_id?: string;
   expense_name: string;
   expense_category: string;
   payment_method: string;
@@ -30,7 +31,7 @@ const initialFilterValues: FilterState = {
   amountSort: null,
 };
 
-const parseAmount = (amountStr: any): number => {
+const parseAmount = (amountStr: string | number | null | undefined): number => {
   if (typeof amountStr === 'number') return amountStr;
   if (!amountStr) return 0;
   
@@ -42,7 +43,7 @@ const parseAmount = (amountStr: any): number => {
   return parseFloat(cleanStr) || 0;
 };
 
-const Expenses = () => {
+const Expenses: React.FC = () => {
   const { t } = useTranslation();
   const { currency } = useCurrency();
 
@@ -69,7 +70,7 @@ const Expenses = () => {
       setLoading(true);
       const data = await apiRequest('/expenses');
       setHarcamalar(Array.isArray(data) ? data : (data.expenses || data.data || []));
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       setHarcamalar([]);
     } finally {
@@ -154,7 +155,7 @@ const Expenses = () => {
       fetchExpenses();
       setIsDeleteMode(false);
       setSelectedIds([]);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
     }
   };
@@ -246,7 +247,7 @@ const Expenses = () => {
 
                   {!isDeleteMode && (
                     <td className="text-center">
-                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-600 dark:text-blue-400 hover:text-black dark:hover:text-white">{t('exp_edit_btn')}</button>
+                      <button onClick={() => handleEdit(item)} className="text-xs underline text-blue-600 dark:text-blue-400 hover:text-black dark:hover:text-white cursor-pointer">{t('exp_edit_btn')}</button>
                     </td>
                   )}
                 </tr>
@@ -270,10 +271,10 @@ const Expenses = () => {
           initialData={editingExpense ? { 
             id: editingExpense.id,
             date: editingExpense.date, 
-            amount: editingExpense.expenses_amount, 
-            category: editingExpense.expense_category, 
-            name: editingExpense.expense_name,
-            paymentMethod: editingExpense.payment_method 
+            expenses_amount: Number(editingExpense.expenses_amount), 
+            expense_category: editingExpense.expense_category as NonNullable<React.ComponentProps<typeof HarcamaEkleModal>['initialData']>['expense_category'], 
+            expense_name: editingExpense.expense_name,
+            payment_method: editingExpense.payment_method as NonNullable<React.ComponentProps<typeof HarcamaEkleModal>['initialData']>['payment_method']
           } : undefined}
           isEditMode={!!editingExpense}
         />

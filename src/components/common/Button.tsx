@@ -17,7 +17,7 @@ const Button: React.FC<ButtonProps> = ({ variant = 'add', children, className = 
     cancel: 'bg-[#EAEAEA] text-black dark:bg-[#334155] dark:text-slate-200',
   };
 
-  const baseStyles = "h-[26px] sm:h-[35px] px-3 sm:px-6 text-xs sm:text-sm rounded-lg border border-[var(--border-color)] shadow-sm font-medium transition-all duration-150 flex items-center justify-center gap-2 flex-shrink-0 whitespace-nowrap select-none hover:opacity-90";
+  const baseStyles = "h-[26px] sm:h-[35px] px-3 sm:px-6 text-xs sm:text-sm rounded-lg border border-[var(--border-color)] shadow-sm font-medium transition-all duration-150 flex items-center justify-center gap-2 flex-shrink-0 whitespace-nowrap select-none hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:opacity-50";
 
   return (
     <button 

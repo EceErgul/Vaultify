@@ -6,10 +6,9 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const Input: React.FC<InputProps> = ({ isTotal = false, className, ...props }) => {
   const baseStyles = "w-full h-[45px] px-4 rounded-[6px] text-sm transition-all focus:outline-none";
-  
   const variantStyles = isTotal 
-    ? "bg-[#CDCDCD] text-[#333D50] cursor-not-allowed" 
-    : "bg-[#FFFFFF] border border-[#CDCDCD] text-[#333D50] focus:border-gray-400";
+    ? "bg-[var(--border-color)] text-[var(--text-muted)] cursor-not-allowed" 
+    : "bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-main)] focus:border-[var(--text-muted)]";
 
   return (
     <input 

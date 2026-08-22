@@ -5,26 +5,24 @@ import ReactMarkdown from 'react-markdown';
 
 interface AIAssetInsightsProps {
   assetId?: string | number;
-  assetName: string;
-  balance: number;
-  currency: string;
 }
 
-export const AIAssetInsights: React.FC<AIAssetInsightsProps> = ({ assetId, assetName, balance, currency }) => {
-  const { t } = useTranslation();
+export const AIAssetInsights: React.FC<AIAssetInsightsProps> = ({ assetId }) => {
+  const { t, language } = useTranslation() as { t: (key: string) => string; language?: string };
   const [loading, setLoading] = useState(false);
   const [insight, setInsight] = useState<string | null>(null);
 
   const fetchAIAnalysis = async () => {
+    if (!assetId) return;
     setLoading(true);
     try {
       const res = await apiRequest(`/assets/${assetId}/analyze`, {
         method: 'GET',
-        headers: { 'Accept-Language': 'tr' }
+        headers: { 'Accept-Language': language || 'tr' }
       });
-      setInsight(res.data);
+      setInsight(res.data || res);
     } catch (err: any) {
-      setInsight("Analiz şu an kullanılamıyor.");
+      setInsight(t('ai_error_unavailable') || 'Analiz şu an kullanılamıyor.');
     } finally {
       setLoading(false);
     }

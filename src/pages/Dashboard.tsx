@@ -1,14 +1,26 @@
 import React, { useMemo, useEffect, useState } from 'react';
 import * as Recharts from 'recharts';
 import '../styles/dashboard.css';
-import { Income } from '../types/index';
+import { Income, CurrencyPreference } from '../types/index';
 import { getCategoryColorVar } from '../utils/colourHelpers';
 import { useUser } from '../context/UserContext';
 import { useTranslation } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
-import { apiRequest } from '../utils/api';
 
 const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } = Recharts as any;
+
+const currencySymbols: Record<CurrencyPreference, string> = {
+  TL: '₺',
+  USD: '$',
+  EUR: '€',
+  GBP: '£'
+};
+
+const resolveCssColor = (cssVarName: string) => {
+  if (!cssVarName) return '#3b82f6';
+  const cleanVarName = cssVarName.replace('var(', '').replace(')', '').trim();
+  return `var(${cleanVarName}, #3b82f6)`;
+};
 
 const Dashboard: React.FC = () => {
   const { dashboardData, loading } = useUser();
@@ -19,13 +31,7 @@ const Dashboard: React.FC = () => {
     typeof window !== 'undefined' ? window.innerWidth : 1200
   );
 
-  const currencySymbols: Record<string, string> = {
-    TL: '₺',
-    USD: '$',
-    EUR: '€',
-    GBP: '£'
-  };
-  const currencySymbol = currencySymbols[currency] || '₺';
+  const currencySymbol = currencySymbols[currency as CurrencyPreference] || '₺';
 
   useEffect(() => {
     setIsMounted(true);
@@ -49,47 +55,25 @@ const Dashboard: React.FC = () => {
   const assets = isInvisibleMode ? [] : (Array.isArray(dashboardData?.assets) ? dashboardData.assets : []);
   const subscriptions = isInvisibleMode ? [] : (Array.isArray(dashboardData?.subscriptions) ? dashboardData.subscriptions : []);
 
-  const resolveCssColor = (cssVarName: string) => {
-    if (!cssVarName) return '#3b82f6'; // Varsayılan mavi
-    const cleanVarName = cssVarName.replace('var(', '').replace(')', '').trim();
-    return `var(${cleanVarName}, #3b82f6)`;
-  };
-
   const sections = useMemo(() => {
     if (!isMounted || isInvisibleMode) return [];
 
-    const safeIncomes = Array.isArray(incomes) ? incomes : [];
-    const safeExpenses = Array.isArray(expenses) ? expenses : [];
-    const safeAssets = Array.isArray(assets) ? assets : [];
-    const safeSubscriptions = Array.isArray(subscriptions) ? subscriptions : [];
-    const totalIncome = safeIncomes.reduce((acc, curr) => acc + Number(curr.income_amount || 0), 0);
-    const totalExpense = safeExpenses.reduce((acc, curr) => acc + Number(curr.expenses_amount || 0), 0);
-    const totalAssets = safeAssets.reduce((acc, curr) => acc + Number(curr.total_cost || 0), 0);
-    const totalSubscriptions = safeSubscriptions.reduce((acc, curr) => acc + Number(curr.cost || 0), 0);
+    const totalIncome = incomes.reduce((acc: number, curr: any) => acc + Number(curr.income_amount || 0), 0);
+    const totalExpense = expenses.reduce((acc: number, curr: any) => acc + Number(curr.expenses_amount || 0), 0);
+    const totalAssets = assets.reduce((acc: number, curr: any) => acc + Number(curr.total_cost || 0), 0);
+    const totalSubscriptions = subscriptions.reduce((acc: number, curr: any) => acc + Number(curr.cost || 0), 0);
 
-    const incomeChartData = safeIncomes.map(item => ({
+    const incomeChartData = incomes.map((item: any) => ({
       name: item.income_category,
       value: Number(item.income_amount || 0),
       fill: resolveCssColor(getCategoryColorVar(item.income_category))
     }));
 
-    const expenseChartData = safeExpenses.map(item => ({
+    const expenseChartData = expenses.map((item: any) => ({
       name: item.expense_category || item.expense_category_chart,
       value: Number(item.expenses_amount || 0),
       fill: resolveCssColor(getCategoryColorVar(item.expense_category || item.expense_category_chart))
     }));
-
-    const handleGetAIAnalysis = async () => {
-      try {
-        const response = await apiRequest('/ai/analyze', {
-          method: 'POST',
-          body: JSON.stringify({ financeData: dashboardData }),
-        });
-        console.log("Gemini Analizi:", response.analysis);
-      } catch (error) {
-        console.error("AI istek hatası:", error);
-      }
-    };
 
     return [
       { 

@@ -1,33 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../components/common/Button';
-import { AbonelikEkleModal, AbonelikDuzenleModal } from '../components/common/AbonelikEkleVeDuzenleModal';
+import { AbonelikEkleModal, AbonelikDuzenleModal } from '../components/common/AbonelikModallari';
 import AbonelikSilModal from '../components/common/AbonelikSilModal';
 import { apiRequest } from '../utils/api';
 import { useTranslation } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
-
-interface Subscription {
-  id: string;
-  user_id: string;
-  subscription_name: string;
-  cost: number | string;
-  payment_day: number;
-  start_date: string;
-  is_trial: boolean;
-}
+import { Subscription } from '../types/index';
+import { formatCurrency } from '../utils/currencyUtils';
 
 const Subscriptions = () => {
   const { t } = useTranslation();
   const { currency } = useCurrency();
-
-  const currencySymbols: Record<string, string> = {
-    TL: '₺',
-    USD: '$',
-    EUR: '€',
-    GBP: '£'
-  };
-  const currencySymbol = currencySymbols[currency] || '₺';
-
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -86,7 +69,7 @@ const Subscriptions = () => {
     return () => window.removeEventListener('abonelikGuncellendi', handleUpdate);
   }, []);
 
-  const getCardColor = (paymentDay: number, isTrial: boolean) => {
+  const getCardColor = (paymentDay: number, isTrial?: boolean | null) => {
     if (isTrial) return '#B9B9B9';
     const bugun = new Date().getDate();
     let kalan = paymentDay - bugun;
@@ -140,7 +123,7 @@ const Subscriptions = () => {
         <div className="w-full sm:w-[280px] h-[160px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-sm flex flex-col items-center justify-center text-center p-4 box-border shadow-sm">
           <h3 className="text-xl font-medium mb-4 text-[var(--text-main)]">{t('subs_monthly_total')}</h3>
           <p className="text-sm leading-relaxed text-[var(--text-main)]">
-            {t('subs_monthly_text_part1')}{aylikToplam.toLocaleString('tr-TR')} {currencySymbol}<br/>{t('subs_monthly_text_part2')}
+            {t('subs_monthly_text_part1')}{formatCurrency(aylikToplam, currency)}<br/>{t('subs_monthly_text_part2')}
           </p>
         </div>
         <div className="w-full sm:w-[280px] h-[160px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-sm flex flex-col items-center justify-center text-center p-4 box-border shadow-sm">
@@ -148,7 +131,7 @@ const Subscriptions = () => {
           {siradakiOdeme ? (
             <p className="text-sm leading-relaxed text-[var(--text-main)]">
               {siradakiOdeme.subscription_name}<br/>
-              {getKalanGun(siradakiOdeme.payment_day) === 0 ? t('subs_today') : `${getKalanGun(siradakiOdeme.payment_day)}${t('subs_days_later_suffix')}`} ({Number(siradakiOdeme.cost).toLocaleString('tr-TR')} {currencySymbol})
+              {getKalanGun(siradakiOdeme.payment_day) === 0 ? t('subs_today') : `${getKalanGun(siradakiOdeme.payment_day)}${t('subs_days_later_suffix')}`} ({formatCurrency(Number(siradakiOdeme.cost), currency)})
             </p>
           ) : (
             <p className="text-sm text-[var(--text-muted)] italic">{t('subs_empty')}</p>
@@ -207,7 +190,7 @@ const Subscriptions = () => {
                     <h4 className="text-[15px] font-semibold mb-3 truncate text-black">{sub.subscription_name}</h4>
                     
                     <div className="space-y-2 text-[12px] font-regular text-black">
-                      <p>{Number(sub.cost).toLocaleString('tr-TR')} {t('subs_per_month')}</p>
+                      <p>{formatCurrency(Number(sub.cost), currency)} {t('subs_per_month')}</p>
                       <p className="font-medium">{kalanGun === 0 ? t('subs_today_payment') : `${kalanGun}${t('subs_days_later_payment_suffix')}`}</p>
                       <p className="pt-2">{abonelikSuresi}{t('subs_months_subscribed_suffix')}</p>
                       <p className="text-[11px] opacity-80 italic whitespace-pre-line">{t('subs_payment_day_p1')}<span className="font-bold">{sub.payment_day}</span>{t('subs_payment_day_p2')}</p>
@@ -249,14 +232,7 @@ const Subscriptions = () => {
       {isAddOpen && <AbonelikEkleModal onClose={() => { setIsAddOpen(false); fetchSubscriptions(); }} />}
       {isEditOpen && selectedSubscription && (
         <AbonelikDuzenleModal 
-          initialData={{
-            id: selectedSubscription.id,
-            name: selectedSubscription.subscription_name,
-            payDay: String(selectedSubscription.payment_day),
-            price: String(selectedSubscription.cost),
-            startDate: selectedSubscription.start_date,
-            isTrial: selectedSubscription.is_trial,
-          }}
+          initialData={selectedSubscription}
           onClose={() => { setIsEditOpen(false); setSelectedSubscription(null); fetchSubscriptions(); }} 
           onSuccess={() => { fetchSubscriptions(); window.dispatchEvent(new Event('abonelikGuncellendi')); }}
         />

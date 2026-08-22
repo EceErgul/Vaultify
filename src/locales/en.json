@@ -161,6 +161,7 @@
   "exp_modal_del_text_part2": " selected expense(s)? This action cannot be undone.",
   "exp_modal_cancel": "Cancel",
   "exp_modal_confirm": "Delete",
+  
 
   "inc_title": "Incomes",
   "inc_add_btn": "+ Add Income",
@@ -301,6 +302,9 @@
   "sub_btn_deleting": "Deleting...",
   "sub_btn_yes_delete": "Yes, Delete",
   "sub_error_delete": "Deletion failed. Please try again.",
+  "sub_alert_missing_fields": "Please fill in all required fields.",
+  "sub_error_adding": "An error occurred while adding the subscription.",
+  "sub_error_updating": "An error occurred while updating the subscription.",
 
   "asset_trans_title": "Add Transaction",
   "asset_trans_type": "Transaction Type",
@@ -323,7 +327,7 @@
   "filter_tab_category": "Category",
   "filter_tab_payment": "Payment",
   "filter_tab_amount": "Amount",
-  "filter_tab_instruction":"Select one of the tabs at the top for detailed filtering.",
+  "filter_tab_instruction": "Select one of the tabs at the top for detailed filtering.",
   "filter_date_placeholder": "dd/mm/yyyy",
   "filter_min_placeholder": "Min",
   "filter_max_placeholder": "Max",
@@ -353,6 +357,7 @@
   "income_recurring_desc": "Repeat this income automatically every month",
   "income_recurring_day": "Recurrence Day",
   "income_recurring_day_placeholder": "e.g. 1 (a day between 1-31)",
+  "income_alert_invalid_day": "Please enter a day between 1 and 31.",
 
   "exp_modal_title_add": "Add Expense",
   "exp_modal_title_edit": "Edit Expense",
@@ -399,7 +404,9 @@
   "asset_btn_add": "+ Add",
 
   "placeholder_select": "Select an option",
+  "placeholder_category": "Select a category",
   "placeholder_select_category": "Select a category",
+  "placeholder_payment": "Select a payment method",
   "placeholder_select_payment": "Select a payment method",
   "placeholder_select_asset_type": "Select an asset type",
   "placeholder_search": "Search...",

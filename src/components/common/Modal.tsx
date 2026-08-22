@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 interface BaseModalProps {
   title: string;
@@ -7,9 +7,25 @@ interface BaseModalProps {
 }
 
 const BaseModal: React.FC<BaseModalProps> = ({ title, onClose, children }) => {
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="relative w-[92%] max-w-[500px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[20px] shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 text-[var(--text-main)]">
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-[92%] max-w-[500px] bg-[var(--bg-card)] border border-[var(--border-color)] rounded-[20px] shadow-xl overflow-hidden animate-in fade-in zoom-in duration-200 text-[var(--text-main)]"
+      >
 
         <button 
           onClick={onClose}

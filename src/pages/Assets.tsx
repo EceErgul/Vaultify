@@ -2,12 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiRequest } from '../utils/api';
 import Button from '../components/common/Button';
-import { GeneralDeleteComponent, GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
+import { GeneralDeleteCheckbox } from '../components/common/GeneralDeleteComponent';
 import VarlikModallari from '../components/common/VarlikModallari';
 import BaseModal from '../components/common/Modal';
 import Slider from '../components/common/Slider';
 import { useTranslation } from '../context/LanguageContext';
 import { useCurrency } from '../context/CurrencyContext';
+import { CurrencyPreference } from '../types/index';
+
+const currencySymbols: Record<CurrencyPreference, string> = {
+  TL: '₺',
+  USD: '$',
+  EUR: '€',
+  GBP: '£'
+};
 
 const Assets: React.FC = () => {
   const navigate = useNavigate();
@@ -20,13 +28,7 @@ const Assets: React.FC = () => {
   const { t } = useTranslation();
   const { currency } = useCurrency();
 
-  const currencySymbols: Record<string, string> = {
-    TL: '₺',
-    USD: '$',
-    EUR: '€',
-    GBP: '£'
-  };
-  const currencySymbol = currencySymbols[currency] || '₺';
+  const currencySymbol = currencySymbols[currency as CurrencyPreference] || '₺';
 
   const fetchAssets = async () => {
     try {
