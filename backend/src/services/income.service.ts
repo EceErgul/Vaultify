@@ -51,8 +51,8 @@ export const processRecurringIncomes = async (userId: string) => {
       if (existingEntry.rows.length === 0) {
         await pool.query(
           `INSERT INTO incomes (user_id, income_name, income_category, income_amount, date, is_recurring, recurrence_day, last_generated_date) 
-           VALUES ($1, $2, $3, $4, $5, true, $6, $5)`,
-          [userId, template.income_name, template.income_category, template.income_amount, formattedDate, day]
+           VALUES ($1, $2, $3, $4, $5, true, $6, $7)`,
+          [userId, template.income_name, template.income_category, template.income_amount, formattedDate, day, formattedDate]
         );
       }
 
